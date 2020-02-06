@@ -6,21 +6,26 @@ import { DropdownButton } from 'react-bootstrap';
 import DropdownItem from 'react-bootstrap/DropdownItem';
 
 function Workloads() {
+	const [ratios, setRatios]  = useState();
 	const [workloads, setWorkloads] = useState();
-	const [isLoadiing, setIsLoading] = useState(true);
-	const cards = Array(25).fill("Loading...")
+	const [isLoading, setIsLoading] = useState(true);
+	const cards = Array(25).fill("Loading...");
 
 	const fetchWorkload = async () => {
 		try {
 		setIsLoading(true);
-		const res = await fetch("http://localhost:5000/workload");
+		const res = await fetch("http://ec2-3-16-11-19.us-east-2.compute.amazonaws.com:8000/workload");
 		const data = await res.json();
+		const response = await fetch("http://ec2-3-16-11-19.us-east-2.compute.amazonaws.com:8000/fetch_data");
+		const responseData = await response.json();
 		if (!res.ok) {
 				throw new Error(data.message);
 		}
 		
 		setWorkloads(data);
+		setRatios(responseData);
 		setIsLoading(false);
+
 
 		} catch (err) {
 		console.log(err);
@@ -29,6 +34,7 @@ function Workloads() {
 	useEffect(() => {
 		fetchWorkload();
 	}, []);
+
 
 	const initilizeCards = () => {
 		return cards.map(card => {
@@ -45,13 +51,14 @@ function Workloads() {
 	const updateCards = () => {
 		return Object.keys(workloads).map(key => {
 			return (
-				<Card className="p-3" style={{width: "18rem"}}>
+				<Card key={key} className="p-3" style={{width: "18rem"}}>
 						<Card.Img variant="top" />
 					<Card.Title>POD {parseInt(key)}</Card.Title>
 					<Card.Body>
 						<Card.Text>
 							<div>
 								<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
+								<p>Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}</p>
 								<DropdownButton title={"PCG All Time Hours:"+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)} id="total_time_dropdown">
 									<DropdownItem>PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}</DropdownItem>
 									<DropdownItem>PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}</DropdownItem>
@@ -67,9 +74,9 @@ function Workloads() {
 				</Card>
 			)
 		})
-	}
+	};
 
-	return isLoadiing ? 
+	return isLoading ?
 	(
 	<CardColumns>
 		{initilizeCards()}

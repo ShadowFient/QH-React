@@ -13,8 +13,9 @@ const ExperienceRatios = props => {
         setIsLoading(true);
         const response = await fetch("http://localhost:5000/fetch_data");
         const responseData = await response.json();
-        console.log(responseData.data);
-        setData(responseData.data);
+        // console.log(responseData.data);
+        console.log(responseData);
+        // setData(responseData.data);
         if (!response.ok) {
           throw new Error(responseData.message);
         }
