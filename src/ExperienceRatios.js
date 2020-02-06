@@ -1,37 +1,53 @@
 import React, { useEffect, useState } from "react";
 import ExperienceRatio from "./ExperienceRatio";
-import CardColumns from 'react-bootstrap/CardColumns';
+import CardColumns from "react-bootstrap/CardColumns";
+import Spinner from "react-bootstrap/Spinner";
 
 const ExperienceRatios = props => {
-    const [pod_ids, setPodIds] = useState();
-    let experience_ratios;
-    useEffect(() => {
-        const fetchPodIds = async () => {
-          try {
-            const response = await fetch(
-              "http://localhost:5000/get_pod_ids"
-            );
-            const responseData = await response.json();
-            // console.log(responseData.ids);
-            setPodIds(responseData.ids);
-            if (!response.ok) {
-              throw new Error(responseData.message);
-            }
-            
-          } catch (err) {
-            console.log(err);
-          }
-        };
-        fetchPodIds();
-      }, []);
+  const [data, setData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  let experience_ratios;
+  useEffect(() => {
+    const fetchPodIds = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("http://localhost:5000/fetch_data");
+        const responseData = await response.json();
+        console.log(responseData.data);
+        setData(responseData.data);
+        if (!response.ok) {
+          throw new Error(responseData.message);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+      setIsLoading(false);
+    };
+    fetchPodIds();
+  }, []);
 
-    if (pod_ids && pod_ids.length > 0) {
-        experience_ratios = pod_ids.map(pod_id => {
-          return <ExperienceRatio id={pod_id} key={pod_id} />;
-        });
-    }
+  if (data && data.length > 0) {
+    experience_ratios = data.map(dataItem => {
+      return <ExperienceRatio key={dataItem[0]} id={dataItem[0]} ratio={dataItem[1]} isLoading={isLoading} />;
+    });
+  }
 
-  return <CardColumns>{experience_ratios}</CardColumns>;
+
+  if (isLoading) {
+    experience_ratios =(
+        <Spinner animation="border" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+    );
+  } else {
+      experience_ratios = <CardColumns>{experience_ratios}</CardColumns>;
+  }
+
+  return (
+    <>
+      {experience_ratios}
+    </>
+  );
 };
 
 export default ExperienceRatios;
