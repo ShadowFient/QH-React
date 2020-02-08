@@ -14,9 +14,9 @@ function Workloads() {
 	const fetchWorkload = async () => {
 		try {
 		setIsLoading(true);
-		const res = await fetch("http://ec2-3-16-11-19.us-east-2.compute.amazonaws.com:8000/workload");
+		const res = await fetch("https://qhpredictiveapi:8000/workload");
 		const data = await res.json();
-		const response = await fetch("http://ec2-3-16-11-19.us-east-2.compute.amazonaws.com:8000/fetch_data");
+		const response = await fetch("https://qhpredictiveapi:8000/fetch_data");
 		const responseData = await response.json();
 		if (!res.ok) {
 				throw new Error(data.message);
