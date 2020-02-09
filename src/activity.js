@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import Popup from "reactjs-popup";
 import './index.css';
-import { Card, Button, CardBody, CardTitle, CardText, CardColumns, Row, Col, ButtonGroup } from "reactstrap";
-import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import { ListGroup, ListGroupItem } from 'reactstrap';
+import { Card, CardBody, CardTitle, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import { ListGroup, ListGroupItem } from 'react-bootstrap';
 
 class Activity extends Component {
     constructor(props) {
@@ -12,13 +11,13 @@ class Activity extends Component {
             error: null,
             isLoaded: false,
             activities: [],
-            table: new Array(),
+            table: [],
             temp: new Map()
         }
     }
 
     componentDidMount() {
-        fetch("http://127.0.0.1:5000/")
+        fetch("https://qhpredictiveapi.com/activity")
             .then(res => res.json())
             .then(
                 (data) => {
@@ -37,7 +36,7 @@ class Activity extends Component {
     }
 
     render() {
-        const { error, isLoaded, activities, table, temp } = this.state;
+        const { error, isLoaded, activities, table } = this.state;
         if (error) {
             return (
                 <div>ERROR: {error.message}</div>
@@ -45,76 +44,73 @@ class Activity extends Component {
         } else if (!isLoaded) {
             return <div>Loading...</div>
         } else {
-            {
-                activities.map((activity) =>
-                    <div>
-                        {table.push([activity.POD, activity.Group_Name, activity.GroupID, activity.Month, activity.PCGPDC_TIME_HOURS_SUCC, activity.PCGPDC_TIME_HOURS_UNSUCC,
-                        activity.PCGPAC_TIME_HOURS_SUCC, activity.PCGPAC_TIME_HOURS_UNSUCC, activity.PCGFLLUP_TIME_HOURS_SUCC, activity.PCGFLLUP_TIME_HOURS_UNSUCC,
-                        activity.PCGNEWALERT_TIME_HOURS_SUCC, activity.PCGNEWALERT_TIME_HOURS_UNSUCC, activity.PCGREF_TIME_HOURS_SUCC, activity.PCGREF_TIME_HOURS_UNSUCC,
-                        activity.PCGTERM_TIME_HOURS_SUCC, activity.PCGTERM_TIME_HOURS_UNSUCC, activity.PCGEMPGRP_TIME_HOURS_SUCC, activity.PCGEMPGRP_TIME_HOURS_UNSUCC])}
+            activities.map((activity) =>
+                <div>
+                    {table.push([activity.POD, activity.Group_Name, activity.GroupID, activity.Month, activity.PCGPDC_TIME_HOURS_SUCC, activity.PCGPDC_TIME_HOURS_UNSUCC,
+                    activity.PCGPAC_TIME_HOURS_SUCC, activity.PCGPAC_TIME_HOURS_UNSUCC, activity.PCGFLLUP_TIME_HOURS_SUCC, activity.PCGFLLUP_TIME_HOURS_UNSUCC,
+                    activity.PCGNEWALERT_TIME_HOURS_SUCC, activity.PCGNEWALERT_TIME_HOURS_UNSUCC, activity.PCGREF_TIME_HOURS_SUCC, activity.PCGREF_TIME_HOURS_UNSUCC,
+                    activity.PCGTERM_TIME_HOURS_SUCC, activity.PCGTERM_TIME_HOURS_UNSUCC, activity.PCGEMPGRP_TIME_HOURS_SUCC, activity.PCGEMPGRP_TIME_HOURS_UNSUCC])}
 
-                    </div>
-                )
-            }
+                </div>
+            );
             return <ParseData value={table} />
         }
     }
 }
 function ParseData(props) {
-    const table = props.value
-    var podnum = new Map()
-    var id = new Map()
-    var i
+    const table = props.value;
+    let podnum = new Map();
+    let i;
     for (i in table) {
-        var x = table[i][0]
+        let x = table[i][0];
         if (podnum.has(x)) {
-            var z = podnum.get(x)
-            var y = table[i]
-            var temp = new Array()
+            let z = podnum.get(x);
+            let y = table[i];
+            let temp = [];
             // console.log(z)
             if (Array.isArray(z[0])) {
-                for (var ele = 0; ele < z.length; ele++) {
+                for (let ele = 0; ele < z.length; ele++) {
                     temp[temp.length] = z[ele]
                 }
             } else {
-                temp[temp.length] = z
+                temp[temp.length] = z;
             }
 
 
-            temp[temp.length] = y
-            podnum.set(x, temp)
+            temp[temp.length] = y;
+            podnum.set(x, temp);
         } else {
-            podnum.set(x, table[i])
+            podnum.set(x, table[i]);
         }
     }
     return <CardDisplay value={podnum} />
 }
 
 function CardDisplay(props) {
-    var data = props.value
+    let data = props.value;
 
     //store keys
-    var x = data.keys()
-    var keys = new Array()
+    let x = data.keys();
+    let keys = [];
     for (var i of x) {
-        keys.push(i)
+        keys.push(i);
     }
-    keys.sort(function (a, b) { return a - b })
+    keys.sort(function (a, b) { return a - b });
 
-    var pt = new Array()
+    let pt = [];
 
-    for (var j of keys) {
-        var vl = [] //all clients that belong to POD ${j}
-        var c = data.get(j)
+    for (let j of keys) {
+        let vl = []; //all clients that belong to POD ${j}
+        let c = data.get(j);
 
         // //call DropDownSelection function
         // var month_list = <DropDownSelection value={c} />
 
         // call PopupWindows function
-        for (var b of c) { //b : one pod -- one client in multiple clients
-            vl[vl.length] = (<PopupWindows value={b} />)
+        for (let b of c) { //b : one pod -- one client in multiple clients
+            vl[vl.length] = (<PopupWindows value={b} />);
         }
-        pt.push(<div><Card><CardTitle><h5><center>POD: {j}</center></h5></CardTitle><CardBody>{vl}</CardBody></Card></div>)
+        pt.push(<div><Card><CardTitle><h5><center>POD: {j}</center></h5></CardTitle><CardBody>{vl}</CardBody></Card></div>);
         // pt.push(<div class="container-sm"><Card><CardTitle>POD: {j}</CardTitle><CardBody>{month_list}</CardBody></Card></div>)
     }
     return (
@@ -129,19 +125,19 @@ function CardDisplay(props) {
 }
 
 function DropDownSelection(props) {
-    var data = props.value // all clients in on pod
+    let data = props.value; // all clients in on pod
 
-    var groupN = data[0][1]
+    let groupN = data[0][1];
 
-    var cmp = ["PCGPDC_TIME_HOURS_SUCC", "PCGPDC_TIME_HOURS_UNSUCC", "PCGPAC_TIME_HOURS_SUCC",
+    let cmp = ["PCGPDC_TIME_HOURS_SUCC", "PCGPDC_TIME_HOURS_UNSUCC", "PCGPAC_TIME_HOURS_SUCC",
         "PCGPAC_TIME_HOURS_UNSUCC", "PCGFLLUP_TIME_HOURS_SUCC", "PCGFLLUP_TIME_HOURS_UNSUCC",
         "PCGNEWALERT_TIME_HOURS_SUCC", "PCGNEWALERT_TIME_HOURS_UNSUCC", "PCGREF_TIME_HOURS_SUCC",
         "PCGREF_TIME_HOURS_UNSUCC", "PCGTERM_TIME_HOURS_SUCC", "PCGTERM_TIME_HOURS_UNSUCC",
         "PCGEMPGRP_TIME_HOURS_SUCC", "PCGEMPGRP_TIME_HOURS_UNSUCC"]
-    var mth = new Map()
+    let mth = new Map();
     
-    var result = new Array()
-    for (var single of data) {
+    let result = [];
+    for (let single of data) {
         if (mth.has(single[3])) {
             // result.push(<h5>{groupN}</h5>)
             var keys = [ ...mth.keys()]
@@ -169,10 +165,10 @@ function DropDownSelection(props) {
                         )}</div>
                     </DropdownMenu>
                 </UncontrolledDropdown>
-            )
-            groupN = single[1]
-            mth.clear()
-            mth.set(single[3], single.splice(4, 14))
+            );
+            groupN = single[1];
+            mth.clear();
+            mth.set(single[3], single.splice(4, 14));
         } else {
             mth.set(single[3], single.splice(4, 14))
         }
@@ -183,21 +179,21 @@ function DropDownSelection(props) {
 }
 
 
-var groupName = ""
+let groupName = "";
 
 function PopupWindows(props) {
-    var html = []
-    var data = props.value
-    var cmp = ["PCGPDC_TIME_HOURS_SUCC", "PCGPDC_TIME_HOURS_UNSUCC", "PCGPAC_TIME_HOURS_SUCC",
+    let html = [];
+    let data = props.value;
+    let cmp = ["PCGPDC_TIME_HOURS_SUCC", "PCGPDC_TIME_HOURS_UNSUCC", "PCGPAC_TIME_HOURS_SUCC",
         "PCGPAC_TIME_HOURS_UNSUCC", "PCGFLLUP_TIME_HOURS_SUCC", "PCGFLLUP_TIME_HOURS_UNSUCC",
         "PCGNEWALERT_TIME_HOURS_SUCC", "PCGNEWALERT_TIME_HOURS_UNSUCC", "PCGREF_TIME_HOURS_SUCC",
         "PCGREF_TIME_HOURS_UNSUCC", "PCGTERM_TIME_HOURS_SUCC", "PCGTERM_TIME_HOURS_UNSUCC",
-        "PCGEMPGRP_TIME_HOURS_SUCC", "PCGEMPGRP_TIME_HOURS_UNSUCC"]
+        "PCGEMPGRP_TIME_HOURS_SUCC", "PCGEMPGRP_TIME_HOURS_UNSUCC"];
 
     
     if (groupName.localeCompare(data[1]) !== 0) {
-        groupName = data[1]
-        html.push(<CardTitle class="nextline">{groupName}</CardTitle>)
+        groupName = data[1];
+        html.push(<CardTitle class="nextline">{groupName}</CardTitle>);
     }
 
     html.push(
@@ -212,60 +208,8 @@ function PopupWindows(props) {
             )}
         </Popup>
 
-    )
+    );
     return <div class="container-sm">{html}</div>
 }
 
-//////// ideal
-// function AS(props){
-//     var data=props.value
-//     var x=data.keys() 
-//     var keys= new Array()
-//     for (var i of x){
-//         keys.push(i)
-//     }
-//     keys.sort(function(a, b){return a - b})
-//     // console.log(keys[1],keys[4])
-
-//     var podtoclient=new Map()
-//     var monthMao=new Map()
-//     for (var i of keys){
-//         var list=data.get(i)
-//         var arr=[]
-//         for(var j in list){
-
-
-//         }
-//     }
-//     return(
-//         <div>
-//             <Row>
-//             <Col sm="6">
-//                 <Card body>
-//                     <CardTitle>POD</CardTitle>
-//                     <select>
-//                         {keys.map((key)=>
-//                             <option>{key}</option>
-//                         )}
-//                     </select>
-//                     <CardTitle>POD's Client</CardTitle>
-//                     <select>
-
-//                     </select>
-//                     {/* <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-//                     <Button>Go somewhere</Button> */}
-
-//                 </Card>
-//             </Col>
-//             <Col sm="6">
-//                 <Card body>
-//                     <CardTitle>Statistic Graph</CardTitle>
-//                     <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-//                     <Button>Go somewhere</Button>
-//                 </Card>
-//             </Col>
-//             </Row>
-//         </div>
-//     )
-// }
 export default Activity;
