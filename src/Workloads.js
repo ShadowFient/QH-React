@@ -2,30 +2,45 @@ import React, {useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Card from 'react-bootstrap/Card';
 import CardColumns from 'react-bootstrap/CardColumns'
-import { DropdownButton } from 'react-bootstrap';
+import {Col, Container, DropdownButton, Row} from 'react-bootstrap';
 import DropdownItem from 'react-bootstrap/DropdownItem';
+import Clients from "./Clients";
 
 function Workloads() {
 	const [ratios, setRatios]  = useState();
 	const [workloads, setWorkloads] = useState();
+	const [clients, setClients] = useState();
 	const [isLoading, setIsLoading] = useState(true);
-	const cards = Array(25).fill("Loading...");
+	const cards = Array(24).fill("Loading...");
 
 	const fetchWorkload = async () => {
 		try {
 		setIsLoading(true);
-		const res = await fetch("https://qhpredictiveapi.com:8000/workload");
-		const data = await res.json();
-		const response = await fetch("https://qhpredictiveapi.com:8000/fetch_data");
-		const responseData = await response.json();
-		if (!res.ok) {
-				throw new Error(data.message);
-		}
-		
-		setWorkloads(data);
-		setRatios(responseData);
-		setIsLoading(false);
 
+		const workLoad = await fetch("https://qhpredictiveapi.com:8000/workload");
+		const workLoadData = await workLoad.json();
+		if (!workLoad.ok) {
+			throw new Error(workLoadData.message);
+		}
+
+		const ratios = await fetch("https://qhpredictiveapi.com:8000/fetch_data");
+		const ratiosData = await ratios.json();
+		if (!ratios.ok) {
+			throw new Error(ratiosData.message);
+		}
+
+		const clients = await fetch("https://qhpredictiveapi.com:8000/pod_to_clients");
+		const clientsData = await clients.json();
+		if (!clients.ok) {
+			throw new Error(clientsData.message);
+		}
+
+		setWorkloads(workLoadData);
+		setRatios(ratiosData);
+		setClients(clientsData);
+		// console.log(clientsData);
+
+		setIsLoading(false);
 
 		} catch (err) {
 		console.log(err);
@@ -46,7 +61,7 @@ function Workloads() {
 			</Card>
 			)
 		});
-	}
+	};
 
 	const updateCards = () => {
 		return Object.keys(workloads).map(key => {
@@ -59,6 +74,9 @@ function Workloads() {
 							<div>
 								<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
 								<p>Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}</p>
+								<Container>
+									<Row>
+										<Col>
 								<DropdownButton title={"PCG All Time Hours:"+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)} id="total_time_dropdown">
 									<DropdownItem>PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}</DropdownItem>
 									<DropdownItem>PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}</DropdownItem>
@@ -68,6 +86,16 @@ function Workloads() {
 									<DropdownItem>Term Time: {workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}</DropdownItem>
 									<DropdownItem>EMPGRP Time: {workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}</DropdownItem>
 								</DropdownButton>
+
+										</Col>
+
+									</Row>
+									<Row>
+										<Col>
+											<Clients data={clients[parseInt(key)]} />
+										</Col>
+									</Row>
+								</Container>
 							</div>
 						</Card.Text>
 					</Card.Body>
