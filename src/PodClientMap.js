@@ -1,4 +1,5 @@
 import React, {useState,useEffect} from 'react';
+import {Card} from 'react-bootstrap';
 
 const PodClientMap = () => {
 const [pcm,setPcm] = useState([]);
@@ -11,10 +12,16 @@ res.json().then(res=>setPcm(res))
 fetchData();
 });
 
+// return(
+//     <div>
+//         {Object.keys(pcm).map(key=><h2>Pod {key}: {
+//         pcm[key].map(client=><span>{client}&ensp;</span>)}</h2>)}
+//     </div>
+// );
 return(
     <div>
-        {Object.keys(pcm).map(key=><h2>Pod {key}: {
-        pcm[key].map(client=><span>{client}&ensp;</span>)}</h2>)}
+        {Object.keys(pcm).map(key=><Card style={{width: '18rem'}}><Card.Body><Card.Title>Pod {key}:</Card.Title> {
+        pcm[key].map(client=><span>{client}&ensp;</span>)}</Card.Body></Card>)}
     </div>
 );
 
