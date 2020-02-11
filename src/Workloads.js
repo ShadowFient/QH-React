@@ -59,7 +59,9 @@ function Workloads() {
 							<div>
 								<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
 								<p>Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}</p>
-								<DropdownButton title={"PCG All Time Hours:"+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)} id="total_time_dropdown">
+								<DropdownButton title={"PCG All Time Hours:"+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)}
+												id="total_time_dropdown"
+												variant='success'>
 									<DropdownItem>PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}</DropdownItem>
 									<DropdownItem>PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}</DropdownItem>
 									<DropdownItem>Follow Up Time: {workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}</DropdownItem>
