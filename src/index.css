@@ -12,6 +12,25 @@ code {
     monospace;
 }
 
+.save-revert {
+  background-color: #4CAF50;
+  padding: 1rem;
+}
+
+.brand {
+  font-weight: 500
+}
+
+.navbar {
+  margin-bottom: 0.7rem;
+  padding: 1rem;
+}
+
+.cards {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .button {
   /* width:50%; */
   background-color: #4CAF50; /* Green */
@@ -20,7 +39,7 @@ code {
   padding: 8px 20px;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
+
   font-size: 16px;
   transition-duration: 0.4s;
   position: relative;
