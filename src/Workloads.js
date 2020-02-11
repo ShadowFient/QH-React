@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import CardColumns from 'react-bootstrap/CardColumns'
 import {Col, Container, DropdownButton, Row} from 'react-bootstrap';
 import DropdownItem from 'react-bootstrap/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown'
 import Clients from "./Clients";
 
 function Workloads() {
@@ -64,6 +65,10 @@ function Workloads() {
 	};
 
 	const updateCards = () => {
+	    let dropdownButtonStyle = {
+	    	"width": "100%",
+            "margin-bottom": "1rem"
+		};
 		return Object.keys(workloads).map(key => {
 			return (
 				<Card key={key} className="p-3" style={{width: "18rem"}}>
@@ -71,34 +76,25 @@ function Workloads() {
 					<Card.Title>POD {parseInt(key)}</Card.Title>
 					<Card.Body>
 						<Card.Text>
-							<div>
-								<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
-								<p>Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}</p>
-								<Container>
-									<Row>
-										<Col>
-								<DropdownButton title={"PCG All Time Hours:"+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)} id="total_time_dropdown">
-									<DropdownItem>PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}</DropdownItem>
-									<DropdownItem>PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}</DropdownItem>
-									<DropdownItem>Follow Up Time: {workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}</DropdownItem>
-									<DropdownItem>New Alert Time: {workloads[key].PCGNEWALERT_TIME_HOURS.toFixed(2)}</DropdownItem>
-									<DropdownItem>Reference Time: {workloads[key].PCGREF_TIME_HOURS.toFixed(2)}</DropdownItem>
-									<DropdownItem>Term Time: {workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}</DropdownItem>
-									<DropdownItem>EMPGRP Time: {workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}</DropdownItem>
-								</DropdownButton>
-
-										</Col>
-
-									</Row>
-									<Row>
-										<Col>
-											<Clients data={clients[parseInt(key)]} />
-										</Col>
-									</Row>
-								</Container>
-							</div>
+							<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
+							<p>Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}</p>
 						</Card.Text>
 					</Card.Body>
+                    <Dropdown>
+					<Dropdown.Toggle id="total_time_dropdown" style={dropdownButtonStyle}>
+						{"PCG All Time Hours:"+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)}
+					</Dropdown.Toggle>
+                    <Dropdown.Menu>
+						<DropdownItem>PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}</DropdownItem>
+						<DropdownItem>PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}</DropdownItem>
+						<DropdownItem>Follow Up Time: {workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}</DropdownItem>
+						<DropdownItem>New Alert Time: {workloads[key].PCGNEWALERT_TIME_HOURS.toFixed(2)}</DropdownItem>
+						<DropdownItem>Reference Time: {workloads[key].PCGREF_TIME_HOURS.toFixed(2)}</DropdownItem>
+						<DropdownItem>Term Time: {workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}</DropdownItem>
+						<DropdownItem>EMPGRP Time: {workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}</DropdownItem>
+					</Dropdown.Menu>
+					</Dropdown>
+					<Clients data={clients[parseInt(key)]} />
 				</Card>
 			)
 		})

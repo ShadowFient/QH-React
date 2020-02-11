@@ -8,7 +8,7 @@ const Clients = props => {
 
     if (clientsArray && clientsArray.length > 0) {
         clients = clientsArray.map(client => {
-            return (<ListGroup.Item>{client}</ListGroup.Item>);
+            return (<ListGroup.Item style={{"border": "1px solid rgba(0,0,0,.125)"}}>{client}</ListGroup.Item>);
         });
     }
 
