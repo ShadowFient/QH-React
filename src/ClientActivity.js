@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Popup from "reactjs-popup";
 import './index.css';
-import { Card, CardBody, CardTitle } from "reactstrap";
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 
-class Activity extends Component {
+
+class ClientActivity extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -37,6 +37,9 @@ class Activity extends Component {
 
     render() {
         const { error, isLoaded, activities, table } = this.state;
+
+        var groupid = this.props.group_id
+        var podid = this.props.pod_id
         if (error) {
             return (
                 <div>ERROR: {error.message}</div>
@@ -53,13 +56,14 @@ class Activity extends Component {
 
                 </div>
             );
-            return <ParseData value={table} />
+            return <ParseData value={table} group_id={groupid} pod_id={podid} />
         }
     }
 }
-
 function ParseData(props) {
     const table = props.value;
+    const groupid = props.group_id;
+    const podid = props.pod_id;
     var podnum = new Map();
     let i;
     for (i in table) {
@@ -81,75 +85,40 @@ function ParseData(props) {
             podnum.set(x, table[i]);
         }
     }
-    return <CardDisplay value={podnum} />
+    var getpod = podnum.get(podid)
+    return <CardDisplay value={getpod} group_id={groupid} />
 }
 
 function CardDisplay(props) {
-    let data = props.value;
-
-    //store keys
-    let x = data.keys();
-    let keys = [];
-    for (var i of x) {
-        keys.push(i);
-    }
-    keys.sort(function (a, b) { return a - b });
-
-    let pt = [];
-
-    for (let j of keys) {
-        let vl = []; //all clients that belong to POD ${j}
-        let c = data.get(j);
-
-        // call PopupWindows function
-        for (let b of c) { //b : one pod -- one client in multiple clients
-            vl[vl.length] = (<PopupWindows value={b} />);
-        }
-        pt.push(<div><Card><CardTitle><h5><center>POD: {j}</center></h5></CardTitle><CardBody>{vl}</CardBody></Card></div>);
-    }
-    return (
-        <div>
-            {pt.map((item) =>
-                <div>
-                    {item}
-                </div>
-            )}
-        </div>
-    )
-}
-
-
-let groupName = "";
-
-function PopupWindows(props) {
-    let html = [];
-    let data = props.value;
-    let cmp = ["PCGPDC_TIME_HOURS_SUCC", "PCGPDC_TIME_HOURS_UNSUCC", "PCGPAC_TIME_HOURS_SUCC",
+    var gpsOfClients = props.value;
+    var groupid=props.group_id;
+    var data = Array(14).fill(0);
+    var cmp = ["PCGPDC_TIME_HOURS_SUCC", "PCGPDC_TIME_HOURS_UNSUCC", "PCGPAC_TIME_HOURS_SUCC",
         "PCGPAC_TIME_HOURS_UNSUCC", "PCGFLLUP_TIME_HOURS_SUCC", "PCGFLLUP_TIME_HOURS_UNSUCC",
         "PCGNEWALERT_TIME_HOURS_SUCC", "PCGNEWALERT_TIME_HOURS_UNSUCC", "PCGREF_TIME_HOURS_SUCC",
         "PCGREF_TIME_HOURS_UNSUCC", "PCGTERM_TIME_HOURS_SUCC", "PCGTERM_TIME_HOURS_UNSUCC",
-        "PCGEMPGRP_TIME_HOURS_SUCC", "PCGEMPGRP_TIME_HOURS_UNSUCC"];
-
-
-    if (groupName.localeCompare(data[1]) !== 0) {
-        groupName = data[1];
-        html.push(<CardTitle class="nextline">{groupName}</CardTitle>);
+        "PCGEMPGRP_TIME_HOURS_SUCC", "PCGEMPGRP_TIME_HOURS_UNSUCC"]
+    for(var i in gpsOfClients){
+        if(gpsOfClients[i][2]===groupid){
+            for(var j in data){
+                data[j]=Number(data[j])+Number(gpsOfClients[i][Number(j)+Number(4)])
+            }
+        }
     }
-
-    html.push(
-        <Popup modal trigger={<button class="button">{data[3]}</button>} position="right bottom">
+    return (
+        <Popup modal trigger={<button class="button">{groupid}</button>} position="right bottom">
             {close => (
                 <ListGroup>
-                    {data.splice(4, 14).map((ele) => <ListGroupItem>{cmp.shift()}: {ele}</ListGroupItem>)}
+                    {data.map((ele,index) => <ListGroupItem>{cmp[index]}: {ele}</ListGroupItem>)}
                     <a className="close" onClick={close}>
                         &times;
                     </a>
                 </ListGroup>
             )}
         </Popup>
-
-    );
-    return <div class="container-sm">{html}</div>
+    )
 }
 
-export default Activity;
+
+
+export default ClientActivity;

@@ -66,7 +66,7 @@ function Workloads() {
 		};
 		return Object.keys(workloads).map(key => {
 			return (
-				<Card key={key} className="p-3" style={{width: "18rem"}}>
+				<Card key={key} className="p-3" container="container-sm">
 						<Card.Img variant="top" />
 					<Card.Title>POD {parseInt(key)}</Card.Title>
 					<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
@@ -85,7 +85,7 @@ function Workloads() {
 							<DropdownItem>EMPGRP Time: {workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}</DropdownItem>
 						</Dropdown.Menu>
 					</Dropdown>
-					<Clients data={clients[parseInt(key)]} />
+					<Clients data={clients[parseInt(key)]} podid={parseInt(key)} />
 				</Card>
 			)
 		})
