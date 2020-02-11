@@ -1,21 +1,27 @@
 import React from "react";
-import {ListGroup} from "react-bootstrap";
-
+import { ListGroup } from "react-bootstrap";
+import ClientActivity from "./ClientActivity";
 const Clients = props => {
-    const clientsArray = props.data;
-    let clients;
+  const { clientsPerPOD, podId, activities } = props;
+  let clients;
 
-    if (clientsArray && clientsArray.length > 0) {
-        clients = clientsArray.map((client, index) => {
-            return (<ListGroup.Item key={index} style={{"border": "2px solid #84BD00"}}>{client}</ListGroup.Item>);
-        });
-    }
+  if (clientsPerPOD && clientsPerPOD.length > 0) {
+    clients = clientsPerPOD.map((client, index) => {
+      return (
+        <ListGroup.Item key={index} style={{ border: "2px solid #84BD00" }}>
+          {
+            <ClientActivity
+              group_id={client}
+              pod_id={podId}
+              activities={activities}
+            />
+          }
+        </ListGroup.Item>
+      );
+    });
+  }
 
-    return (
-        <ListGroup>
-            {clients}
-        </ListGroup>
-    );
+  return <ListGroup>{clients}</ListGroup>;
 };
 
 export default Clients;

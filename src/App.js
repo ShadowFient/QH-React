@@ -1,19 +1,17 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
+import QHNavBar from './NavBar'
 import Workloads from "./Workloads";
-import Activity from "./Activity"
-import QHNavBar from "./NavBar"
-import PodClientMap from "./PodClientMap";
 
 function App() {
   return (
+  	<div>
+		  <QHNavBar />
       <div>
-          <QHNavBar />
-          <div>
-              <Workloads />
-          </div>
+        <Workloads />
       </div>
+    </div>
   )
 }
 

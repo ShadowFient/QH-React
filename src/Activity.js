@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Popup from "reactjs-popup";
 import './index.css';
-import { Card, CardBody, CardTitle, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import { Card, CardBody, CardTitle } from "reactstrap";
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 
 class Activity extends Component {
@@ -57,17 +57,17 @@ class Activity extends Component {
         }
     }
 }
+
 function ParseData(props) {
     const table = props.value;
-    let podnum = new Map();
+    var podnum = new Map();
     let i;
     for (i in table) {
-        let x = table[i][0];
+        let x = table[i][0];    //set pod id as key
         if (podnum.has(x)) {
             let z = podnum.get(x);
             let y = table[i];
             let temp = [];
-            // console.log(z)
             if (Array.isArray(z[0])) {
                 for (let ele = 0; ele < z.length; ele++) {
                     temp[temp.length] = z[ele]
@@ -75,8 +75,6 @@ function ParseData(props) {
             } else {
                 temp[temp.length] = z;
             }
-
-
             temp[temp.length] = y;
             podnum.set(x, temp);
         } else {
@@ -103,15 +101,11 @@ function CardDisplay(props) {
         let vl = []; //all clients that belong to POD ${j}
         let c = data.get(j);
 
-        // //call DropDownSelection function
-        // var month_list = <DropDownSelection value={c} />
-
         // call PopupWindows function
         for (let b of c) { //b : one pod -- one client in multiple clients
             vl[vl.length] = (<PopupWindows value={b} />);
         }
         pt.push(<div><Card><CardTitle><h5><center>POD: {j}</center></h5></CardTitle><CardBody>{vl}</CardBody></Card></div>);
-        // pt.push(<div class="container-sm"><Card><CardTitle>POD: {j}</CardTitle><CardBody>{month_list}</CardBody></Card></div>)
     }
     return (
         <div>
@@ -122,60 +116,6 @@ function CardDisplay(props) {
             )}
         </div>
     )
-}
-
-function DropDownSelection(props) {
-    let data = props.value; // all clients in on pod
-
-    let groupN = data[0][1];
-
-    let cmp = ["PCGPDC_TIME_HOURS_SUCC", "PCGPDC_TIME_HOURS_UNSUCC", "PCGPAC_TIME_HOURS_SUCC",
-        "PCGPAC_TIME_HOURS_UNSUCC", "PCGFLLUP_TIME_HOURS_SUCC", "PCGFLLUP_TIME_HOURS_UNSUCC",
-        "PCGNEWALERT_TIME_HOURS_SUCC", "PCGNEWALERT_TIME_HOURS_UNSUCC", "PCGREF_TIME_HOURS_SUCC",
-        "PCGREF_TIME_HOURS_UNSUCC", "PCGTERM_TIME_HOURS_SUCC", "PCGTERM_TIME_HOURS_UNSUCC",
-        "PCGEMPGRP_TIME_HOURS_SUCC", "PCGEMPGRP_TIME_HOURS_UNSUCC"]
-    let mth = new Map();
-    
-    let result = [];
-    for (let single of data) {
-        if (mth.has(single[3])) {
-            // result.push(<h5>{groupN}</h5>)
-            var keys = [ ...mth.keys()]
-            result.push(
-                <UncontrolledDropdown >
-                    <DropdownToggle caret>
-                        Month
-                    </DropdownToggle>
-                    <DropdownMenu>
-                    <DropdownItem header>{groupN}</DropdownItem>
-                    <div> {keys.map((ele) =>
-                            <div>
-                                {/* <DropdownItem>{ele}</DropdownItem> */}
-                                <Popup modal trigger={<button class="button">{ele}</button>} position="right bottom">
-                                    {close => (
-                                        <ListGroup>
-                                            {mth.get(ele).map((ele1) => <ListGroupItem>{cmp.shift()}: {ele1}</ListGroupItem>)}
-                                            <a className="close" onClick={close}>
-                                                &times;
-                                            </a>
-                                        </ListGroup>
-                                    )}
-                                </Popup></div>
-
-                        )}</div>
-                    </DropdownMenu>
-                </UncontrolledDropdown>
-            );
-            groupN = single[1];
-            mth.clear();
-            mth.set(single[3], single.splice(4, 14));
-        } else {
-            mth.set(single[3], single.splice(4, 14))
-        }
-
-    }
-
-    return <div>{result}</div>
 }
 
 
@@ -190,7 +130,7 @@ function PopupWindows(props) {
         "PCGREF_TIME_HOURS_UNSUCC", "PCGTERM_TIME_HOURS_SUCC", "PCGTERM_TIME_HOURS_UNSUCC",
         "PCGEMPGRP_TIME_HOURS_SUCC", "PCGEMPGRP_TIME_HOURS_UNSUCC"];
 
-    
+
     if (groupName.localeCompare(data[1]) !== 0) {
         groupName = data[1];
         html.push(<CardTitle class="nextline">{groupName}</CardTitle>);
