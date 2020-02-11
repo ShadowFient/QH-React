@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'
 import Card from 'react-bootstrap/Card';
 import CardColumns from 'react-bootstrap/CardColumns'
-import {Col, Container, DropdownButton, Row} from 'react-bootstrap';
 import DropdownItem from 'react-bootstrap/DropdownItem';
-import Dropdown from 'react-bootstrap/Dropdown'
+import Dropdown from 'react-bootstrap/Dropdown';
 import Clients from "./Clients";
 
 function Workloads() {
@@ -16,35 +14,32 @@ function Workloads() {
 
 	const fetchWorkload = async () => {
 		try {
-		setIsLoading(true);
+			setIsLoading(true);
 
-		const workLoad = await fetch("https://qhpredictiveapi.com:8000/workload");
-		const workLoadData = await workLoad.json();
-		if (!workLoad.ok) {
-			throw new Error(workLoadData.message);
-		}
+			const workLoad = await fetch("https://qhpredictiveapi.com:8000/workload");
+			const workLoadData = await workLoad.json();
+			if (!workLoad.ok) {
+				throw new Error(workLoadData.message);
+			}
 
-		const ratios = await fetch("https://qhpredictiveapi.com:8000/fetch_data");
-		const ratiosData = await ratios.json();
-		if (!ratios.ok) {
-			throw new Error(ratiosData.message);
-		}
+			const ratios = await fetch("https://qhpredictiveapi.com:8000/fetch_data");
+			const ratiosData = await ratios.json();
+			if (!ratios.ok) {
+				throw new Error(ratiosData.message);
+			}
 
-		const clients = await fetch("https://qhpredictiveapi.com:8000/pod_to_clients");
-		const clientsData = await clients.json();
-		if (!clients.ok) {
-			throw new Error(clientsData.message);
-		}
+			const clients = await fetch("https://qhpredictiveapi.com:8000/pod_to_clients");
+			const clientsData = await clients.json();
+			if (!clients.ok) {
+				throw new Error(clientsData.message);
+			}
 
-		setWorkloads(workLoadData);
-		setRatios(ratiosData);
-		setClients(clientsData);
-		// console.log(clientsData);
-
-		setIsLoading(false);
-
+			setWorkloads(workLoadData);
+			setRatios(ratiosData);
+			setClients(clientsData);
+			setIsLoading(false);
 		} catch (err) {
-		console.log(err);
+			console.log(err);
 		}
 	};
 	useEffect(() => {
@@ -53,13 +48,13 @@ function Workloads() {
 
 
 	const initilizeCards = () => {
-		return cards.map(card => {
+		return cards.map((card, index) => {
 			return (
-			<Card className="p-3" style={{width: "18rem"}}>
-				<Card.Body>
-					<Card.Text>{card}</Card.Text>
-				</Card.Body>
-			</Card>
+				<Card key={index} className="p-3" style={{width: "18rem"}}>
+					<Card.Body>
+						<Card.Text>{card}</Card.Text>
+					</Card.Body>
+				</Card>
 			)
 		});
 	};
@@ -67,32 +62,28 @@ function Workloads() {
 	const updateCards = () => {
 	    let dropdownButtonStyle = {
 	    	"width": "100%",
-            "margin-bottom": "1rem"
+            "marginBottom": "1rem"
 		};
 		return Object.keys(workloads).map(key => {
 			return (
 				<Card key={key} className="p-3" style={{width: "18rem"}}>
 						<Card.Img variant="top" />
 					<Card.Title>POD {parseInt(key)}</Card.Title>
-					<Card.Body>
-						<Card.Text>
-							<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
-							<p>Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}</p>
-						</Card.Text>
-					</Card.Body>
+					<p>Predicted FTEs: {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}</p>
+					<p>Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}</p>
                     <Dropdown>
-					<Dropdown.Toggle id="total_time_dropdown" style={dropdownButtonStyle}>
-						{"PCG All Time Hours:"+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)}
-					</Dropdown.Toggle>
-                    <Dropdown.Menu>
-						<DropdownItem>PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}</DropdownItem>
-						<DropdownItem>PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}</DropdownItem>
-						<DropdownItem>Follow Up Time: {workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}</DropdownItem>
-						<DropdownItem>New Alert Time: {workloads[key].PCGNEWALERT_TIME_HOURS.toFixed(2)}</DropdownItem>
-						<DropdownItem>Reference Time: {workloads[key].PCGREF_TIME_HOURS.toFixed(2)}</DropdownItem>
-						<DropdownItem>Term Time: {workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}</DropdownItem>
-						<DropdownItem>EMPGRP Time: {workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}</DropdownItem>
-					</Dropdown.Menu>
+						<Dropdown.Toggle id="total_time_dropdown" style={dropdownButtonStyle} variant="success">
+							{"PCG All Time Hours: "+(workloads[key].PCG_ALL_TIME_HOURS).toFixed(2)}
+						</Dropdown.Toggle>
+						<Dropdown.Menu>
+							<DropdownItem>PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}</DropdownItem>
+							<DropdownItem>PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}</DropdownItem>
+							<DropdownItem>Follow Up Time: {workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}</DropdownItem>
+							<DropdownItem>New Alert Time: {workloads[key].PCGNEWALERT_TIME_HOURS.toFixed(2)}</DropdownItem>
+							<DropdownItem>Reference Time: {workloads[key].PCGREF_TIME_HOURS.toFixed(2)}</DropdownItem>
+							<DropdownItem>Term Time: {workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}</DropdownItem>
+							<DropdownItem>EMPGRP Time: {workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}</DropdownItem>
+						</Dropdown.Menu>
 					</Dropdown>
 					<Clients data={clients[parseInt(key)]} />
 				</Card>
