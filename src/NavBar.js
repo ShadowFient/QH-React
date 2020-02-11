@@ -15,7 +15,7 @@ function QHNavBar() {
                <img alt="icon"
                     src={logo}
                     width="140"
-                    height="30"
+                    height="50"
                     className="d-inline-block align-top" /> {' '}
            </Navbar.Brand>
            <Navbar.Collapse className="justify-content-end">

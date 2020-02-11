@@ -7,7 +7,7 @@ const Clients = props => {
 
     if (clientsArray && clientsArray.length > 0) {
         clients = clientsArray.map((client, index) => {
-            return (<ListGroup.Item key={index} style={{"border": "3px solid #84BD00"}}>{client}</ListGroup.Item>);
+            return (<ListGroup.Item key={index} style={{"border": "2px solid #84BD00"}}>{client}</ListGroup.Item>);
         });
     }
 
