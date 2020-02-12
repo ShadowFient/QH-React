@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import "./index.css";
+import "../index.css";
 import { Button, ListGroup, ListGroupItem, Modal} from "react-bootstrap";
 
 const ClientActivity = props => {

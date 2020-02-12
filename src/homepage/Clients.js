@@ -1,6 +1,7 @@
 import React from "react";
 import { ListGroup } from "react-bootstrap";
 import ClientActivity from "./ClientActivity";
+
 const Clients = props => {
   const { clientsPerPOD, podId, activities } = props;
   let clients;

@@ -1,8 +1,8 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
-import QHNavBar from './NavBar'
-import Workloads from "./Workloads";
+import QHNavBar from './shared/NavBar';
+import Workloads from "./homepage/Workloads";
 
 function App() {
   return (

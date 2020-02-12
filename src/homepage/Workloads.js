@@ -4,7 +4,7 @@ import CardColumns from "react-bootstrap/CardColumns";
 import DropdownItem from "react-bootstrap/DropdownItem";
 import Dropdown from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
-import teamLogo from './group-24px.svg'
+import teamLogo from '../images/group-24px.svg';
 
 function Workloads() {
   const [ratios, setRatios] = useState();

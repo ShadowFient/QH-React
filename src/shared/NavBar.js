@@ -2,8 +2,8 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from 'react-bootstrap/Navbar'
 import Button from "react-bootstrap/Button";
-import logo from './quantum-health-logo.svg'
-import './index.css'
+import logo from '../images/quantum-health-logo.svg';
+import '../index.css';
 
 function QHNavBar() {
 	let btnPadding = {
