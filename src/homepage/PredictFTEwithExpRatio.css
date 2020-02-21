@@ -1,0 +1,7 @@
+.MuiSlider-markLabel {
+  left: 15% !important;
+}
+
+.MuiSlider-markLabel ~ .MuiSlider-markLabel {
+  left: 90% !important;
+}

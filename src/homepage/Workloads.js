@@ -4,7 +4,8 @@ import CardColumns from "react-bootstrap/CardColumns";
 import DropdownItem from "react-bootstrap/DropdownItem";
 import Dropdown from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
-import teamLogo from '../images/group-24px.svg';
+import PredictFTEwithExpRatio from "./PredictFTEwithExpRatio";
+import teamLogo from "../images/group-24px.svg";
 
 function Workloads() {
   const [ratios, setRatios] = useState();
@@ -73,28 +74,33 @@ function Workloads() {
     let dropdownButtonStyle = {
       width: "100%",
       marginBottom: "1rem",
-		  backgroundColor: "#84BD00",
-		  "border": "0px"
-	  };
+      backgroundColor: "#84BD00",
+      border: "0px"
+    };
+
+    const ratioChangeHandler = (index, changedRatio) => {
+      ratios[index].EXP_RATIO = changedRatio;
+    }
 
     return Object.keys(workloads).map(key => {
       return (
         <Card key={key} className="p-3" container="container-sm">
           <Card.Img variant="top" />
           <Card.Title>
-            <img alt={"team_icon"}
-                 src={teamLogo}
-                 style={{marginRight: "0.5rem"}}
-                 className="d-inline-block align-top"/>
+            <img
+              alt={"team_icon"}
+              src={teamLogo}
+              style={{ marginRight: "0.5rem" }}
+              className="d-inline-block align-top"
+            />
             POD {parseInt(key)}
           </Card.Title>
-          <p>
-            Predicted FTEs:{" "}
-            {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}
-          </p>
-          <p>
-            Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
-          </p>
+          <PredictFTEwithExpRatio
+            index={parseInt(key)}
+            pcgTime={workloads[key].PCG_ALL_TIME_HOURS}
+            initExperienceRatio={ratios[parseInt(key)].EXP_RATIO}
+            ratioChangeHandler={ratioChangeHandler}
+          />
           <Dropdown>
             <Dropdown.Toggle
               id="total_time_dropdown"
@@ -103,7 +109,7 @@ function Workloads() {
               {"PCG All Time Hours: " +
                 workloads[key].PCG_ALL_TIME_HOURS.toFixed(2)}
             </Dropdown.Toggle>
-            <Dropdown.Menu style={{"width": "100%"}}>
+            <Dropdown.Menu style={{ width: "100%" }}>
               <DropdownItem>
                 PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}
               </DropdownItem>
