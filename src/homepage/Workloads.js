@@ -6,6 +6,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar"
 import teamLogo from '../images/group-24px.svg';
+import { Container, Row, Col } from 'reactstrap';
 
 function Workloads() {
   const [ratios, setRatios] = useState();
@@ -14,6 +15,7 @@ function Workloads() {
   const [activities, setActivities] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [configs, setConfigs] = useState();
+  const [psrworks, setPsrWorks] = useState(); // initial psr
   const cards = Array(24).fill("Loading...");
 
   const fetchWorkload = async () => {
@@ -53,11 +55,21 @@ function Workloads() {
         throw new Error(clientsData.message);
       }
 
+      // fetch psr data
+      const psrworks = await fetch(
+        "http://localhost:5000/psr"      // TODO: change to deployment server address
+      );
+      const psrworksData = await psrworks.json();
+      if (!psrworks.ok) {
+        throw new Error(psrworksData.message)
+      }
+
       setWorkloads(workLoadData);
       setRatios(ratiosData);
       setClients(clientsData);
       setActivities(activitiesData);
       setConfigs(configsData);
+      setPsrWorks(psrworksData);
       setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -83,9 +95,9 @@ function Workloads() {
     let dropdownButtonStyle = {
       width: "100%",
       marginBottom: "1rem",
-		  backgroundColor: "#84BD00",
-		  "border": "0px"
-	  };
+      backgroundColor: "#84BD00",
+      "border": "0px"
+    };
 
     return Object.keys(workloads).map(key => {
       return (
@@ -98,13 +110,33 @@ function Workloads() {
                  className="d-inline-block align-top"/>
             POD {parseInt(key)}
           </Card.Title>
-          <p>
-            Predicted FTEs:{" "}
-            {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}
-          </p>
-          <p>
-            Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
-          </p>
+          <Container>
+            <Row>
+              <Col>
+                <p>
+                  Predicted PCG FTEs:{" "}
+                  {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}
+                </p>
+                <p>
+                  PCG's Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
+                </p>
+              </Col>
+              <Col>{/* Add PSR's data */}
+                <p>
+                  Predicted PSR FTEs:{" "}
+                  {(psrworks[key].PSR_PHONE_ACTS_LIKE_MEM / 1570).toFixed(2)}
+                </p>
+                <p>
+                  PSR's Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
+                </p>
+              </Col>
+            </Row>
+            <Row>
+
+            </Row>
+          </Container>
+
+          {/* Dropdown button for PCG */}
           <Dropdown>
             <Dropdown.Toggle
               id="total_time_dropdown"
@@ -113,7 +145,7 @@ function Workloads() {
               {"PCG All Time Hours: " +
                 workloads[key].PCG_ALL_TIME_HOURS.toFixed(2)}
             </Dropdown.Toggle>
-            <Dropdown.Menu style={{"width": "100%"}}>
+            <Dropdown.Menu style={{ "width": "100%" }}>
               <DropdownItem>
                 PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}
               </DropdownItem>
@@ -138,6 +170,25 @@ function Workloads() {
               </DropdownItem>
             </Dropdown.Menu>
           </Dropdown>
+
+          {/* Dropdown button for PSR */}
+          <Dropdown>
+            <Dropdown.Toggle
+              id="total_time_dropdown"
+              style={dropdownButtonStyle}
+            >
+              {"PSR Act Like Hours: " +
+                psrworks[key].PSR_PHONE_ACTS_LIKE_MEM.toFixed(2)}
+            </Dropdown.Toggle>
+            <Dropdown.Menu style={{ "width": "100%" }}>
+              <DropdownItem>
+                Percentage of predicted total PSR phone calls:
+                {psrworks[key].PERC_TOTAL_PSR_PHONE.toFixed(2) * 100 + "%"}
+              </DropdownItem>
+            </Dropdown.Menu>
+          </Dropdown>
+
+          {/* List the POD's clients */}
           <Clients
             clientsPerPOD={clients[parseInt(key)]}
             podId={parseInt(key)}
@@ -150,21 +201,21 @@ function Workloads() {
 
   return isLoading ? (
     <div>
-      <QHNavBar loading={isLoading}/>
+      <QHNavBar loading={isLoading} />
       <div>
         <CardColumns>{initilizeCards()}</CardColumns>
       </div>
     </div>
   ) : (
-    <div>
-      <QHNavBar loading={isLoading} clientsConfig={clients}
-                updateConfig={setClients} currentConfigs={configs}
-                setIsLoading={setIsLoading} updateWorkloads={setWorkloads}/>
       <div>
-        <CardColumns>{updateCards()}</CardColumns>
+        <QHNavBar loading={isLoading} clientsConfig={clients}
+          updateConfig={setClients} currentConfigs={configs}
+          setIsLoading={setIsLoading} updateWorkloads={setWorkloads} />
+        <div>
+          <CardColumns>{updateCards()}</CardColumns>
+        </div>
       </div>
-    </div>
-  );
+    );
 }
 
 export default Workloads;
