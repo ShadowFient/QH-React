@@ -87,7 +87,7 @@ function CardDisplay(props) {
     "EMPGRP Unsuccess Hours"
   ];
   for (let i in gpsOfClients) {
-    if (gpsOfClients[i][2] === groupid) {
+    if (gpsOfClients[i][2] === groupid[0]) {
       for (let j in data) {
         data[j] =
           Number(data[j]) + Number(gpsOfClients[i][Number(j) + Number(4)]);
@@ -96,15 +96,15 @@ function CardDisplay(props) {
   }
   return (
   	<>
-  	<button className="button" onClick={handleShow}>{groupid}</button>
+  	<button className="button" onClick={handleShow}>{groupid[1]}</button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Clients: {groupid}</Modal.Title>
+          <Modal.Title>Clients: {groupid[1]}</Modal.Title>
         </Modal.Header>
         <ListGroup>
           {data.map((ele, index) => (
-            <ListGroupItem key={index} sytle={{"font-size": "large"}}>
-              {cmp[index]}: {ele.toFixed(2)}
+            <ListGroupItem key={index}>
+              <h5><small>{cmp[index]}: {ele.toFixed(2)}</small></h5>
             </ListGroupItem>
           ))}
         </ListGroup>
