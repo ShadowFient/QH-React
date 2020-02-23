@@ -39,7 +39,7 @@ function QHNavBar(props) {
 			"name": configNameRef.current.value,
 			"config": clientsConfig
 		};
-		fetch("http://localhost:5000/save_config", {     // TODO: change to deployment server address:8000
+		fetch("https://qhpredictiveapi.com:8000/save_config", {
 			method: "POST",
 			headers: {"Content-Type": "application/json"},
 			body: JSON.stringify(config)
@@ -58,10 +58,10 @@ function QHNavBar(props) {
 
 	async function loadConfig(selectedName) {
 		setIsLoading(true);
-		fetch("http://localhost:5000/load_config?name=" + selectedName)    // TODO: change to deployment server address:8000
+		fetch("https://qhpredictiveapi.com:8000/load_config?name=" + selectedName)
 			.then(response => response.json())
 			.then(config => {
-				fetch("http://localhost:5000/workload?name=" + selectedName)     // TODO: change to deployment server address:8000
+				fetch("https://qhpredictiveapi.com:8000/workload?name=" + selectedName)
 					.then(response => response.json())
 					.then(workloads => {
 						updateConfig(config);

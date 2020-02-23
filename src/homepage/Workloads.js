@@ -21,7 +21,7 @@ function Workloads() {
     try {
       setIsLoading(true);
 
-      const workLoad = await fetch("http://localhost:5000/workload");
+      const workLoad = await fetch("https://qhpredictiveapi.com:8000/workload");
       const workLoadData = await workLoad.json();
       if (!workLoad.ok) {
         throw new Error(workLoadData.message);
@@ -34,20 +34,20 @@ function Workloads() {
       }
 
       const clients = await fetch(
-        "http://localhost:5000/pod_to_clients"  // TODO: change to deployment server address:8000
+        "https://qhpredictiveapi.com:8000/pod_to_clients"
       );
       const clientsData = await clients.json();
       if (!clients.ok) {
         throw new Error(clientsData.message);
       }
 
-      const activities = await fetch("https://qhpredictiveapi.com/activity");
+      const activities = await fetch("https://qhpredictiveapi.com:8000/activity");
       const activitiesData = await activities.json();
       if (!activities.ok) {
         throw new Error(activitiesData.message);
       }
       const configs = await fetch(
-        "http://localhost:5000/current_configs"    // TODO: change to deployment server address:8000
+        "https://qhpredictiveapi.com:8000/current_configs"
       );
       const configsData = await configs.json();
       if (!clients.ok) {
