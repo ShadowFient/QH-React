@@ -30,7 +30,7 @@ function QHNavBar(props) {
 
 	let btnPadding = {
 		marginRight: "0.7rem",
-		backgroundColor: "#84BD00",
+		backgroundColor: "#fcd406",
 		border: "0px"
 	};
 
@@ -39,7 +39,7 @@ function QHNavBar(props) {
 			"name": configNameRef.current.value,
 			"config": clientsConfig
 		};
-		fetch("http://localhost:5000/save_config", {     // TODO: change to deployment server address
+		fetch("http://localhost:5000/save_config", {     // TODO: change to deployment server address:8000
 			method: "POST",
 			headers: {"Content-Type": "application/json"},
 			body: JSON.stringify(config)
@@ -58,10 +58,10 @@ function QHNavBar(props) {
 
 	async function loadConfig(selectedName) {
 		setIsLoading(true);
-		fetch("http://localhost:5000/load_config?name=" + selectedName)    // TODO: change to deployment server address
+		fetch("http://localhost:5000/load_config?name=" + selectedName)    // TODO: change to deployment server address:8000
 			.then(response => response.json())
 			.then(config => {
-				fetch("http://localhost:5000/workload?name=" + selectedName)     // TODO: change to deployment server address
+				fetch("http://localhost:5000/workload?name=" + selectedName)     // TODO: change to deployment server address:8000
 					.then(response => response.json())
 					.then(workloads => {
 						updateConfig(config);
@@ -89,7 +89,7 @@ function QHNavBar(props) {
 
 
 	return (
-		<Navbar className='navbar'>
+		<Navbar className='navbar' sticky="top" bg={"light"}>
 			<Navbar.Brand href="#home">
 				<img alt="icon"
 				     src={logo}

@@ -7,7 +7,6 @@ import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar"
 import teamLogo from '../images/group-24px.svg';
 import PredictFTEwithExpRatio from "./PredictFTEwithExpRatio";
-import teamLogo from "../images/group-24px.svg";
 
 function Workloads() {
   const [ratios, setRatios] = useState();
@@ -22,7 +21,7 @@ function Workloads() {
     try {
       setIsLoading(true);
 
-      const workLoad = await fetch("https://qhpredictiveapi.com:8000/workload");
+      const workLoad = await fetch("http://localhost:5000/workload");
       const workLoadData = await workLoad.json();
       if (!workLoad.ok) {
         throw new Error(workLoadData.message);
@@ -35,7 +34,7 @@ function Workloads() {
       }
 
       const clients = await fetch(
-        "http://localhost:5000/pod_to_clients"  // TODO: change to deployment server address
+        "http://localhost:5000/pod_to_clients"  // TODO: change to deployment server address:8000
       );
       const clientsData = await clients.json();
       if (!clients.ok) {
@@ -48,7 +47,7 @@ function Workloads() {
         throw new Error(activitiesData.message);
       }
       const configs = await fetch(
-        "http://localhost:5000/current_configs"    // TODO: change to deployment server address
+        "http://localhost:5000/current_configs"    // TODO: change to deployment server address:8000
       );
       const configsData = await configs.json();
       if (!clients.ok) {
@@ -69,7 +68,7 @@ function Workloads() {
     fetchWorkload();
   }, []);
 
-  const initilizeCards = () => {
+  const initializeCards = () => {
     return cards.map((card, index) => {
       return (
         <Card key={index} className="p-3" container={"container-sm"}>
@@ -91,7 +90,7 @@ function Workloads() {
 
     const ratioChangeHandler = (index, changedRatio) => {
       ratios[index].EXP_RATIO = changedRatio;
-    }
+    };
 
     return Object.keys(workloads).map(key => {
       return (
@@ -159,7 +158,7 @@ function Workloads() {
     <div>
       <QHNavBar loading={isLoading}/>
       <div>
-        <CardColumns>{initilizeCards()}</CardColumns>
+        <CardColumns>{initializeCards()}</CardColumns>
       </div>
     </div>
   ) : (
