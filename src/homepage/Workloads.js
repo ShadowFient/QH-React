@@ -4,6 +4,8 @@ import CardColumns from "react-bootstrap/CardColumns";
 import DropdownItem from "react-bootstrap/DropdownItem";
 import Dropdown from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
+import QHNavBar from "../shared/NavBar"
+import teamLogo from '../images/group-24px.svg';
 import PredictFTEwithExpRatio from "./PredictFTEwithExpRatio";
 import teamLogo from "../images/group-24px.svg";
 
@@ -13,6 +15,7 @@ function Workloads() {
   const [clients, setClients] = useState();
   const [activities, setActivities] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [configs, setConfigs] = useState();
   const cards = Array(24).fill("Loading...");
 
   const fetchWorkload = async () => {
@@ -32,7 +35,7 @@ function Workloads() {
       }
 
       const clients = await fetch(
-        "https://qhpredictiveapi.com:8000/pod_to_clients"
+        "http://localhost:5000/pod_to_clients"  // TODO: change to deployment server address
       );
       const clientsData = await clients.json();
       if (!clients.ok) {
@@ -44,11 +47,19 @@ function Workloads() {
       if (!activities.ok) {
         throw new Error(activitiesData.message);
       }
+      const configs = await fetch(
+        "http://localhost:5000/current_configs"    // TODO: change to deployment server address
+      );
+      const configsData = await configs.json();
+      if (!clients.ok) {
+        throw new Error(clientsData.message);
+      }
 
       setWorkloads(workLoadData);
       setRatios(ratiosData);
       setClients(clientsData);
       setActivities(activitiesData);
+      setConfigs(configsData);
       setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -145,9 +156,21 @@ function Workloads() {
   };
 
   return isLoading ? (
-    <CardColumns>{initilizeCards()}</CardColumns>
+    <div>
+      <QHNavBar loading={isLoading}/>
+      <div>
+        <CardColumns>{initilizeCards()}</CardColumns>
+      </div>
+    </div>
   ) : (
-    <CardColumns>{updateCards()}</CardColumns>
+    <div>
+      <QHNavBar loading={isLoading} clientsConfig={clients}
+                updateConfig={setClients} currentConfigs={configs}
+                setIsLoading={setIsLoading} updateWorkloads={setWorkloads}/>
+      <div>
+        <CardColumns>{updateCards()}</CardColumns>
+      </div>
+    </div>
   );
 }
 
