@@ -114,20 +114,20 @@ function Workloads() {
             <Row>
               <Col>
                 <p>
-                  Predicted PCG FTEs:{" "}
+                  <b>PCG</b> Predicted FTEs:{" "}
                   {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}
                 </p>
                 <p>
-                  PCG's Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
+                  <b>PCG</b>'s Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
                 </p>
               </Col>
               <Col>{/* Add PSR's data */}
                 <p>
-                  Predicted PSR FTEs:{" "}
+                  <b>PSR</b> Predicted FTEs:{" "}
                   {(psrworks[key].PSR_PHONE_ACTS_LIKE_MEM / 1570).toFixed(2)}
                 </p>
                 <p>
-                  PSR's Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
+                  <b>PSR</b>'s Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
                 </p>
               </Col>
             </Row>
