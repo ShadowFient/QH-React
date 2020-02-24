@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Slider from "@material-ui/core/Slider";
+import { Container, Row } from "reactstrap";
 
-import './PredictFTEwithExpRatio.css';
+import "./PredictFTEwithExpRatio.css";
 
 const marks = [
   {
@@ -15,7 +16,13 @@ const marks = [
 ];
 
 const PredictFTEwithExpRatio = props => {
-  const { index, pcgTime, initExperienceRatio, ratioChangeHandler } = props;
+  const {
+    index,
+    pcgTime,
+    initExperienceRatio,
+    ratioChangeHandler,
+    isPcgRatio
+  } = props;
   const MonthCap1 = 0.76;
   const MonthCap2 = 0.83;
   const MonthCap3 = 0.88;
@@ -59,14 +66,18 @@ const PredictFTEwithExpRatio = props => {
     event.preventDefault();
     const changedRatio = value / 100;
     setRatio(changedRatio);
-    ratioChangeHandler(index, changedRatio);
+    ratioChangeHandler(isPcgRatio, index, changedRatio);
   };
 
   return (
-    <>
-      <p>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
+    <Container>
+      <Row>
+        <b>PCG</b>
+      </Row>
+      <Row>
+        <p>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
         <Slider
-          style={{ color: "#84BD00", marginBottom: "25px" }}
+          style={{ color: "#fcd406", marginBottom: "25px" }}
           defaultValue={parseInt(initExperienceRatio * 100)}
           onChangeCommitted={sliderHandler}
           min={0}
@@ -76,7 +87,8 @@ const PredictFTEwithExpRatio = props => {
           valueLabelDisplay="auto"
           valueLabelFormat={formatValueText}
         />
-    </>
+      </Row>
+    </Container>
   );
 };
 

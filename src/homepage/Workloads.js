@@ -4,19 +4,20 @@ import CardColumns from "react-bootstrap/CardColumns";
 import DropdownItem from "react-bootstrap/DropdownItem";
 import Dropdown from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
-import QHNavBar from "../shared/NavBar"
-import teamLogo from '../images/group-24px.svg';
-import PredictFTEwithExpRatio from "./PredictFTEwithExpRatio";
-import { Container, Row, Col } from 'reactstrap';
+import QHNavBar from "../shared/NavBar";
+import teamLogo from "../images/group-24px.svg";
+import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
+import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
 
 function Workloads() {
-  const [ratios, setRatios] = useState();
+  const [pcgRatios, setPcgRatios] = useState();
+  const [psrRatios, setPsrRatios] = useState();
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
   const [activities, setActivities] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [configs, setConfigs] = useState();
-  const [psrworks, setPsrWorks] = useState(); // initial psr
+  const [psrWorks, setPsrWorks] = useState(); // initial psr
   const cards = Array(24).fill("Loading...");
 
   const fetchWorkload = async () => {
@@ -29,27 +30,34 @@ function Workloads() {
         throw new Error(workLoadData.message);
       }
 
-      const ratios = await fetch("https://qhpredictiveapi.com:8000/fetch_data");
-      const ratiosData = await ratios.json();
-      if (!ratios.ok) {
-        throw new Error(ratiosData.message);
+      const pcgRatios = await fetch(
+        "https://qhpredictiveapi.com:8000/fetch_data"
+      );
+      const pcgRatiosData = await pcgRatios.json();
+      if (!pcgRatios.ok) {
+        throw new Error(pcgRatiosData.message);
       }
 
+      //TODO: Will replace this approach (Deep clone) with reading data from database
+      const psrRatiosData = JSON.parse(JSON.stringify(pcgRatiosData));
+
       const clients = await fetch(
-        "http://localhost:5000/pod_to_clients"  // TODO: change to deployment server address:8000
+        "https://qhpredictiveapi.com:8000/pod_to_clients"
       );
       const clientsData = await clients.json();
       if (!clients.ok) {
         throw new Error(clientsData.message);
       }
 
-      const activities = await fetch("https://qhpredictiveapi.com/activity");
+      const activities = await fetch(
+        "https://qhpredictiveapi.com:8000/activity"
+      );
       const activitiesData = await activities.json();
       if (!activities.ok) {
         throw new Error(activitiesData.message);
       }
       const configs = await fetch(
-        "http://localhost:5000/current_configs"    // TODO: change to deployment server address:8000
+        "https://qhpredictiveapi.com:8000/current_configs"
       );
       const configsData = await configs.json();
       if (!clients.ok) {
@@ -57,16 +65,15 @@ function Workloads() {
       }
 
       // fetch psr data
-      const psrworks = await fetch(
-        "http://localhost:5000/psr"      // TODO: change to deployment server address
-      );
+      const psrworks = await fetch("https://qhpredictiveapi.com:8000/psr");
       const psrworksData = await psrworks.json();
       if (!psrworks.ok) {
-        throw new Error(psrworksData.message)
+        throw new Error(psrworksData.message);
       }
 
       setWorkloads(workLoadData);
-      setRatios(ratiosData);
+      setPcgRatios(pcgRatiosData);
+      setPsrRatios(psrRatiosData);
       setClients(clientsData);
       setActivities(activitiesData);
       setConfigs(configsData);
@@ -100,8 +107,12 @@ function Workloads() {
       border: "0px"
     };
 
-    const ratioChangeHandler = (index, changedRatio) => {
-      ratios[index].EXP_RATIO = changedRatio;
+    const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
+      if (isPcgRatio) {
+        pcgRatios[index].EXP_RATIO = changedRatio;
+      } else {
+        psrRatios[index].EXP_RATIO = changedRatio;
+      }
     };
 
     return Object.keys(workloads).map(key => {
@@ -117,37 +128,24 @@ function Workloads() {
             />
             POD {parseInt(key)}
           </Card.Title>
-          <PredictFTEwithExpRatio
+
+          {/* Predicted PCG FTE with its experience ratio */}
+          <PredictPcgFTEwithExpRatio
             index={parseInt(key)}
             pcgTime={workloads[key].PCG_ALL_TIME_HOURS}
-            initExperienceRatio={ratios[parseInt(key)].EXP_RATIO}
+            initExperienceRatio={pcgRatios[parseInt(key)].EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
+            isPcgRatio={true}
           />
-          <Container>
-            <Row>
-              <Col>
-                <p>
-                  <b>PCG</b> Predicted FTEs:{" "}
-                  {(workloads[key].PCG_ALL_TIME_HOURS / 1570).toFixed(2)}
-                </p>
-                <p>
-                  <b>PCG</b>'s Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
-                </p>
-              </Col>
-              <Col>{/* Add PSR's data */}
-                <p>
-                  <b>PSR</b> Predicted FTEs:{" "}
-                  {(psrworks[key].PSR_PHONE_ACTS_LIKE_MEM / 1570).toFixed(2)}
-                </p>
-                <p>
-                  <b>PSR</b>'s Experience Ratios: {ratios[parseInt(key)].EXP_RATIO * 100 + "%"}
-                </p>
-              </Col>
-            </Row>
-            <Row>
 
-            </Row>
-          </Container>
+          {/* Predicted PSR FTE with its experience ratio */}
+          <PredictPsrFTEwithExpRatio
+            index={parseInt(key)}
+            psrTime={psrWorks[key].PSR_PHONE_ACTS_LIKE_MEM}
+            initExperienceRatio={psrRatios[parseInt(key)].EXP_RATIO}
+            ratioChangeHandler={ratioChangeHandler}
+            isPcgRatio={false}
+          />
 
           {/* Dropdown button for PCG */}
           <Dropdown>
@@ -191,12 +189,12 @@ function Workloads() {
               style={dropdownButtonStyle}
             >
               {"PSR Act Like Hours: " +
-                psrworks[key].PSR_PHONE_ACTS_LIKE_MEM.toFixed(2)}
+                psrWorks[key].PSR_PHONE_ACTS_LIKE_MEM.toFixed(2)}
             </Dropdown.Toggle>
-            <Dropdown.Menu style={{ "width": "100%" }}>
+            <Dropdown.Menu style={{ width: "100%" }}>
               <DropdownItem>
                 Percentage of predicted total PSR phone calls:
-                {psrworks[key].PERC_TOTAL_PSR_PHONE.toFixed(2) * 100 + "%"}
+                {" " + psrWorks[key].PERC_TOTAL_PSR_PHONE.toFixed(2) * 100 + "%"}
               </DropdownItem>
             </Dropdown.Menu>
           </Dropdown>
@@ -220,15 +218,20 @@ function Workloads() {
       </div>
     </div>
   ) : (
+    <div>
+      <QHNavBar
+        loading={isLoading}
+        clientsConfig={clients}
+        updateConfig={setClients}
+        currentConfigs={configs}
+        setIsLoading={setIsLoading}
+        updateWorkloads={setWorkloads}
+      />
       <div>
-        <QHNavBar loading={isLoading} clientsConfig={clients}
-          updateConfig={setClients} currentConfigs={configs}
-          setIsLoading={setIsLoading} updateWorkloads={setWorkloads} />
-        <div>
-          <CardColumns>{updateCards()}</CardColumns>
-        </div>
+        <CardColumns>{updateCards()}</CardColumns>
       </div>
-    );
+    </div>
+  );
 }
 
 export default Workloads;
