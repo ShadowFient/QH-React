@@ -15,70 +15,94 @@ function Workloads() {
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
   const [activities, setActivities] = useState();
-  const [isLoading, setIsLoading] = useState(true);
   const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState(); // initial psr
+
+  const [workloadLoading, setWorkloadLoading] = useState(true);
+  const [pcgRatioLoading, setPCGRatioLoading] = useState(true);
+  const [clientsConfigLoading, setClientsConfigLoading] = useState(true);
+  const [psrLoading, setPSRLoading] = useState(true);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
+
   const cards = Array(24).fill("Loading...");
+
+ function setAllLoading(status)  {
+   setWorkloadLoading(status);
+   setActivityLoading(status);
+   setClientsConfigLoading(status);
+   setPCGRatioLoading(status);
+   setPSRLoading(status);
+   setCurrentConfigLoading(status);
+ }
 
   const fetchWorkload = async () => {
     try {
-      setIsLoading(true);
+    	setAllLoading(true);
 
-      const workLoad = await fetch("https://qhpredictiveapi.com:8000/workload");
-      const workLoadData = await workLoad.json();
-      if (!workLoad.ok) {
-        throw new Error(workLoadData.message);
-      }
+    	fetch("https://qhpredictiveapi.com:8000/workload")
+        .then(response => response.json())
+        .then(workload => {
+          setWorkloads(workload);
+          setWorkloadLoading(false);
+          console.log("workload done; status: " + workloadLoading);
+        })
+        .catch(error => {
+          throw new Error(error.toString());
+        });
 
-      const pcgRatios = await fetch(
-        "https://qhpredictiveapi.com:8000/fetch_data"
-      );
-      const pcgRatiosData = await pcgRatios.json();
-      if (!pcgRatios.ok) {
-        throw new Error(pcgRatiosData.message);
-      }
+      fetch("https://qhpredictiveapi.com:8000/fetch_data")
+        .then(response => response.json())
+        .then(pcgRatios => {
+          setPcgRatios(pcgRatios);
+          setPsrRatios(pcgRatios);
+          setPCGRatioLoading(false);
+          console.log("exp_ratio done; status: " + pcgRatioLoading);
+        })
+        .catch(error => {
+          throw new Error(error.toString());
+        });
 
-      //TODO: Will replace this approach (Deep clone) with reading data from database
-      const psrRatiosData = JSON.parse(JSON.stringify(pcgRatiosData));
+      fetch("https://qhpredictiveapi.com:8000/pod_to_clients")
+        .then(response => response.json())
+        .then(config => {
+          setClients(config);
+          setClientsConfigLoading(false);
+          console.log("clients done")
+        })
+        .catch(error => {
+          throw new Error(error.toString());
+        });
 
-      const clients = await fetch(
-        "https://qhpredictiveapi.com:8000/pod_to_clients"
-      );
-      const clientsData = await clients.json();
-      if (!clients.ok) {
-        throw new Error(clientsData.message);
-      }
+      fetch("https://qhpredictiveapi.com:8000/activity")
+        .then(response => response.json())
+        .then(activity => {
+          setActivities(activity);
+          setActivityLoading(false);
+          console.log("activity done")
+        })
+        .catch(error => {
+          throw new Error(error.toString());
+        });
 
-      const activities = await fetch(
-        "https://qhpredictiveapi.com:8000/activity"
-      );
-      const activitiesData = await activities.json();
-      if (!activities.ok) {
-        throw new Error(activitiesData.message);
-      }
-      const configs = await fetch(
-        "https://qhpredictiveapi.com:8000/current_configs"
-      );
-      const configsData = await configs.json();
-      if (!clients.ok) {
-        throw new Error(clientsData.message);
-      }
+      fetch("https://qhpredictiveapi.com:8000/current_configs")
+        .then(response => response.json())
+        .then(current_configs => {
+          setConfigs(current_configs);
+          setCurrentConfigLoading(false);})
+        .catch(error => {
+          throw new Error(error.toString());
+        });
 
       // fetch psr data
-      const psrworks = await fetch("https://qhpredictiveapi.com:8000/psr");
-      const psrworksData = await psrworks.json();
-      if (!psrworks.ok) {
-        throw new Error(psrworksData.message);
-      }
-
-      setWorkloads(workLoadData);
-      setPcgRatios(pcgRatiosData);
-      setPsrRatios(psrRatiosData);
-      setClients(clientsData);
-      setActivities(activitiesData);
-      setConfigs(configsData);
-      setPsrWorks(psrworksData);
-      setIsLoading(false);
+      fetch("https://qhpredictiveapi.com:8000/psr")
+        .then(response => response.json())
+        .then(psr => {
+          setPsrWorks(psr);
+          setPSRLoading(false);})
+        .catch(error => {
+          throw new Error(error.toString());
+        });
     } catch (err) {
       console.log(err);
     }
@@ -210,9 +234,11 @@ function Workloads() {
     });
   };
 
-  return isLoading ? (
+  return (workloadLoading || pcgRatioLoading || clientsConfigLoading
+    || psrLoading || activityLoading || currentConfigsLoading) ? (
     <div>
-      <QHNavBar loading={isLoading} />
+      <QHNavBar loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
+    || psrLoading || activityLoading || currentConfigsLoading)} />
       <div>
         <CardColumns>{initializeCards()}</CardColumns>
       </div>
@@ -220,11 +246,12 @@ function Workloads() {
   ) : (
     <div>
       <QHNavBar
-        loading={isLoading}
+        loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
+          || psrLoading || activityLoading || currentConfigsLoading)}
         clientsConfig={clients}
         updateConfig={setClients}
         currentConfigs={configs}
-        setIsLoading={setIsLoading}
+        setIsLoading={setAllLoading}
         updateWorkloads={setWorkloads}
       />
       <div>
