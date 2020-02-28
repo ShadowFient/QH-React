@@ -8,6 +8,8 @@ import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
+import { Button } from "react-bootstrap";
+import GraphForPCG from "./GraphForPCG"
 
 function Workloads() {
   const [pcgRatios, setPcgRatios] = useState();
@@ -27,20 +29,20 @@ function Workloads() {
 
   const cards = Array(24).fill("Loading...");
 
- function setAllLoading(status)  {
-   setWorkloadLoading(status);
-   setActivityLoading(status);
-   setClientsConfigLoading(status);
-   setPCGRatioLoading(status);
-   setPSRLoading(status);
-   setCurrentConfigLoading(status);
- }
+  function setAllLoading(status) {
+    setWorkloadLoading(status);
+    setActivityLoading(status);
+    setClientsConfigLoading(status);
+    setPCGRatioLoading(status);
+    setPSRLoading(status);
+    setCurrentConfigLoading(status);
+  }
 
   const fetchWorkload = async () => {
     try {
-    	setAllLoading(true);
+      setAllLoading(true);
 
-    	fetch("https://qhpredictiveapi.com:8000/workload")
+      fetch("https://qhpredictiveapi.com:8000/workload")
         .then(response => response.json())
         .then(workload => {
           setWorkloads(workload);
@@ -89,7 +91,8 @@ function Workloads() {
         .then(response => response.json())
         .then(current_configs => {
           setConfigs(current_configs);
-          setCurrentConfigLoading(false);})
+          setCurrentConfigLoading(false);
+        })
         .catch(error => {
           throw new Error(error.toString());
         });
@@ -99,7 +102,8 @@ function Workloads() {
         .then(response => response.json())
         .then(psr => {
           setPsrWorks(psr);
-          setPSRLoading(false);})
+          setPSRLoading(false);
+        })
         .catch(error => {
           throw new Error(error.toString());
         });
@@ -139,7 +143,15 @@ function Workloads() {
       }
     };
 
+    const PCGcmp = ["PDC Time", "PAC Time", "Follow Up Time", "New Alert Time",
+      "Reference Time", "Term Time", "EMPGRP"];
+
+    // TO DO: 
+    const PSRcmp = [];
+
     return Object.keys(workloads).map(key => {
+      let PCGActy = [];
+      let PSRActy = [];   //TO DO
       return (
         <Card key={key} className="p-3" container="container-sm">
           <Card.Img variant="top" />
@@ -182,27 +194,28 @@ function Workloads() {
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ width: "100%" }}>
               <DropdownItem>
-                PDC Time: {workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}
+                PDC Time: {PCGActy[PCGActy.length] = workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}
               </DropdownItem>
               <DropdownItem>
-                PAC Time: {workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}
+                PAC Time: {PCGActy[PCGActy.length] = workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}
               </DropdownItem>
               <DropdownItem>
-                Follow Up Time: {workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}
+                Follow Up Time: {PCGActy[PCGActy.length] = workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}
               </DropdownItem>
               <DropdownItem>
                 New Alert Time:{" "}
-                {workloads[key].PCGNEWALERT_TIME_HOURS.toFixed(2)}
+                {PCGActy[PCGActy.length] = workloads[key].PCGNEWALERT_TIME_HOURS.toFixed(2)}
               </DropdownItem>
               <DropdownItem>
-                Reference Time: {workloads[key].PCGREF_TIME_HOURS.toFixed(2)}
+                Reference Time: {PCGActy[PCGActy.length] = workloads[key].PCGREF_TIME_HOURS.toFixed(2)}
               </DropdownItem>
               <DropdownItem>
-                Term Time: {workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}
+                Term Time: {PCGActy[PCGActy.length] = workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}
               </DropdownItem>
               <DropdownItem>
-                EMPGRP Time: {workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}
+                EMPGRP Time: {PCGActy[PCGActy.length] = workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}
               </DropdownItem>
+              <Button><GraphForPCG cmp={PCGcmp} data={PCGActy} /></Button>
             </Dropdown.Menu>
           </Dropdown>
 
@@ -236,29 +249,29 @@ function Workloads() {
 
   return (workloadLoading || pcgRatioLoading || clientsConfigLoading
     || psrLoading || activityLoading || currentConfigsLoading) ? (
-    <div>
-      <QHNavBar loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
-    || psrLoading || activityLoading || currentConfigsLoading)} />
       <div>
-        <CardColumns>{initializeCards()}</CardColumns>
+        <QHNavBar loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
+          || psrLoading || activityLoading || currentConfigsLoading)} />
+        <div>
+          <CardColumns>{initializeCards()}</CardColumns>
+        </div>
       </div>
-    </div>
-  ) : (
-    <div>
-      <QHNavBar
-        loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
-          || psrLoading || activityLoading || currentConfigsLoading)}
-        clientsConfig={clients}
-        updateConfig={setClients}
-        currentConfigs={configs}
-        setIsLoading={setAllLoading}
-        updateWorkloads={setWorkloads}
-      />
+    ) : (
       <div>
-        <CardColumns>{updateCards()}</CardColumns>
+        <QHNavBar
+          loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
+            || psrLoading || activityLoading || currentConfigsLoading)}
+          clientsConfig={clients}
+          updateConfig={setClients}
+          currentConfigs={configs}
+          setIsLoading={setAllLoading}
+          updateWorkloads={setWorkloads}
+        />
+        <div>
+          <CardColumns>{updateCards()}</CardColumns>
+        </div>
       </div>
-    </div>
-  );
+    );
 }
 
 export default Workloads;

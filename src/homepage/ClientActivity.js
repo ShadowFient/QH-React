@@ -1,6 +1,7 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "../index.css";
-import { Button, ListGroup, ListGroupItem, Modal} from "react-bootstrap";
+import { Button, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
+import GraphForActivity from "./GraphForActivity"
 
 const ClientActivity = props => {
   const table = [];
@@ -34,6 +35,7 @@ const ClientActivity = props => {
   return <ParseData value={table} group_id={group_id} pod_id={pod_id} />;
 };
 
+// Store data in a map and set POD ID as a key and its clients as value
 function ParseData(props) {
   const table = props.value;
   const groupid = props.group_id;
@@ -59,15 +61,16 @@ function ParseData(props) {
       podnum.set(x, table[i]);
     }
   }
+  // Get all clients data for the parsing POD ID
   const getpod = podnum.get(podid);
-  return <CardDisplay value={getpod} group_id={groupid} />;
+  return <CardDisplay getpod={getpod} group_id={groupid} />;
 }
 
 function CardDisplay(props) {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const gpsOfClients = props.value;
+  const gpsOfClients = props.getpod;
   const groupid = props.group_id;
   const data = Array(14).fill(0);
   const cmp = [
@@ -78,7 +81,7 @@ function CardDisplay(props) {
     "Followup Success Hours",
     "Followup Unsuccess Hours",
     "New Alert Success Hours",
-    "NEW Alert Unsuccess Hours",
+    "New Alert Unsuccess Hours",
     "Ref Success Hours",
     "Ref Unsuccess Hours",
     "Term Success Hours",
@@ -86,6 +89,8 @@ function CardDisplay(props) {
     "EMPGRP Success Hours",
     "EMPGRP Unsuccess Hours"
   ];
+
+  // Calculate annual hours for each activity
   for (let i in gpsOfClients) {
     if (gpsOfClients[i][2] === groupid[0]) {
       for (let j in data) {
@@ -95,13 +100,14 @@ function CardDisplay(props) {
     }
   }
   return (
-  	<>
-  	<button className="button" onClick={handleShow}>{groupid[1]}</button>
+    <>
+      <button className="button" onClick={handleShow}>{groupid[1]}</button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Clients: {groupid[1]}</Modal.Title>
         </Modal.Header>
         <ListGroup>
+          <ListGroupItem><GraphForActivity cmp={cmp} data={data} /></ListGroupItem>
           {data.map((ele, index) => (
             <ListGroupItem key={index}>
               <h5><small>{cmp[index]}: {ele.toFixed(2)}</small></h5>
