@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import DropdownItem from "react-bootstrap/DropdownItem";
-import Dropdown from "react-bootstrap/Dropdown";
+import Dropdown, { DropdownDivider } from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
@@ -98,7 +98,7 @@ function Workloads() {
         });
 
       // fetch psr data
-      fetch("https://qhpredictiveapi.com:8000/psr")
+      fetch("http://127.0.0.1:5000/psr")    //TO DO
         .then(response => response.json())
         .then(psr => {
           setPsrWorks(psr);
@@ -146,12 +146,8 @@ function Workloads() {
     const PCGcmp = ["PDC Time", "PAC Time", "Follow Up Time", "New Alert Time",
       "Reference Time", "Term Time", "EMPGRP"];
 
-    // TO DO: 
-    const PSRcmp = [];
-
     return Object.keys(workloads).map(key => {
       let PCGActy = [];
-      let PSRActy = [];   //TO DO
       return (
         <Card key={key} className="p-3" container="container-sm">
           <Card.Img variant="top" />
@@ -177,7 +173,7 @@ function Workloads() {
           {/* Predicted PSR FTE with its experience ratio */}
           <PredictPsrFTEwithExpRatio
             index={parseInt(key)}
-            psrTime={psrWorks[key].PSR_PHONE_ACTS_LIKE_MEM}
+            psrTime={(psrWorks[key].PRED_PHONE_VOLUME*psrWorks[key].SUCC_TIME_PSR_PHONE/60).toFixed(2)}
             initExperienceRatio={psrRatios[parseInt(key)].EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
@@ -225,13 +221,19 @@ function Workloads() {
               id="total_time_dropdown"
               style={dropdownButtonStyle}
             >
-              {"PSR Act Like Hours: " +
-                psrWorks[key].PSR_PHONE_ACTS_LIKE_MEM.toFixed(2)}
+              {"PSR All Time Hours: " +
+                (psrWorks[key].PRED_PHONE_VOLUME*psrWorks[key].SUCC_TIME_PSR_PHONE/60).toFixed(2)}
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ width: "100%" }}>
               <DropdownItem>
+                <b>More Information: </b>
+              </DropdownItem>
+              <DropdownItem>
                 Percentage of predicted total PSR phone calls:
                 {" " + psrWorks[key].PERC_TOTAL_PSR_PHONE.toFixed(2) * 100 + "%"}
+              </DropdownItem>
+              <DropdownItem>
+                PSR Act-Like Members: {psrWorks[key].PSR_PHONE_ACTS_LIKE_MEM.toFixed(2)}
               </DropdownItem>
             </Dropdown.Menu>
           </Dropdown>
