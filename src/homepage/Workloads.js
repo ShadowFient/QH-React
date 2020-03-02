@@ -17,6 +17,7 @@ function Workloads() {
   const [clients, setClients] = useState();
   const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
+  const [activities, setActivities] = useState();
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
