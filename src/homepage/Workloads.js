@@ -17,6 +17,7 @@ function Workloads() {
   const [clients, setClients] = useState();
   const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
+  const [activities, setActivities] = useState();
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
@@ -56,8 +57,8 @@ function Workloads() {
 
       fetch(apiHost + "/fetch_data")
         .then(response => response.json())
-        .then(pcgRatios => {
-          setExpRatios(pcgRatios);
+        .then(expRatios => {
+          setExpRatios(expRatios);
           setExpRatioLoading(false);
           console.log("exp_ratio done; status: " + expRatioLoading);
         })
@@ -276,6 +277,7 @@ function Workloads() {
           expRatios={expRatios}
           updateExpRatios={setExpRatios}
           updateConfigsList={setConfigs}
+          updatePSRWork={setPsrWorks}
         />
         <div>
           <CardColumns>{updateCards()}</CardColumns>

@@ -13,7 +13,7 @@ function QHNavBar(props) {
 
 	const {clientsConfig, loading, updateConfig, currentConfigs,
 		setIsLoading, updateWorkloads, expRatios, updateExpRatios,
-		updateConfigsList} = props;
+		updateConfigsList, updatePSRWork} = props;
 
 	const [showSaveStatus, setShowSaveStatus] = useState(false);
 	const [showConfigNamePop, setShowConfigNamePop] = useState(false);
@@ -74,12 +74,17 @@ function QHNavBar(props) {
 						fetch(apiHost +"/fetch_data?name=" + selectedName)
 							.then(response => response.json())
 							.then(ratios => {
-								updateConfig(config);
-								updateWorkloads(workloads);
-								updateExpRatios(ratios);
-								setIsLoading(false);
-								setLoadMessage(loadSucceedMessage);
-								setShowLoadStatus(true);})
+								fetch(apiHost+ "/psr?name=" + selectedName)
+									.then(response => response.json())
+									.then(psr => {
+										updateConfig(config);
+										updateWorkloads(workloads);
+										updateExpRatios(ratios);
+										updatePSRWork(psr);
+										setIsLoading(false);
+										setLoadMessage(loadSucceedMessage);
+										setShowLoadStatus(true);})
+									})
 							})
 					.catch(error => {
 						setSaveStatusMessage(loadFailedMessage + error.toString());
