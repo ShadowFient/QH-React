@@ -9,20 +9,17 @@ import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
-import { Button } from "react-bootstrap";
 import GraphForPCG from "./GraphForPCG"
 
 function Workloads() {
-  const [pcgRatios, setPcgRatios] = useState();
-  const [psrRatios, setPsrRatios] = useState();
+  const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
-  const [activities, setActivities] = useState();
   const [configs, setConfigs] = useState();
-  const [psrWorks, setPsrWorks] = useState(); // initial psr
+  const [psrWorks, setPsrWorks] = useState();
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
-  const [pcgRatioLoading, setPCGRatioLoading] = useState(true);
+  const [expRatioLoading, setExpRatioLoading] = useState(true);
   const [clientsConfigLoading, setClientsConfigLoading] = useState(true);
   const [psrLoading, setPSRLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
@@ -30,11 +27,14 @@ function Workloads() {
 
   const cards = Array(24).fill("Loading...");
 
+  const apiHost = "https://qhpredictiveapi.com:8000";
+  // const apiHost = "http://127.0.0.1:5000";
+
   function setAllLoading(status) {
     setWorkloadLoading(status);
     setActivityLoading(status);
     setClientsConfigLoading(status);
-    setPCGRatioLoading(status);
+    setExpRatioLoading(status);
     setPSRLoading(status);
     setCurrentConfigLoading(status);
   }
@@ -43,7 +43,7 @@ function Workloads() {
     try {
       setAllLoading(true);
 
-      fetch("https://qhpredictiveapi.com:8000/workload")
+      fetch(apiHost + "/workload")
         .then(response => response.json())
         .then(workload => {
           setWorkloads(workload);
@@ -54,19 +54,18 @@ function Workloads() {
           throw new Error(error.toString());
         });
 
-      fetch("https://qhpredictiveapi.com:8000/fetch_data")
+      fetch(apiHost + "/fetch_data")
         .then(response => response.json())
         .then(pcgRatios => {
-          setPcgRatios(pcgRatios);
-          setPsrRatios(pcgRatios);
-          setPCGRatioLoading(false);
-          console.log("exp_ratio done; status: " + pcgRatioLoading);
+          setExpRatios(pcgRatios);
+          setExpRatioLoading(false);
+          console.log("exp_ratio done; status: " + expRatioLoading);
         })
         .catch(error => {
           throw new Error(error.toString());
         });
 
-      fetch("https://qhpredictiveapi.com:8000/pod_to_clients")
+      fetch(apiHost + "/pod_to_clients")
         .then(response => response.json())
         .then(config => {
           setClients(config);
@@ -77,7 +76,7 @@ function Workloads() {
           throw new Error(error.toString());
         });
 
-      fetch("https://qhpredictiveapi.com:8000/activity")
+      fetch(apiHost + "/activity")
         .then(response => response.json())
         .then(activity => {
           setActivities(activity);
@@ -88,7 +87,7 @@ function Workloads() {
           throw new Error(error.toString());
         });
 
-      fetch("https://qhpredictiveapi.com:8000/current_configs")
+      fetch(apiHost + "/current_configs")
         .then(response => response.json())
         .then(current_configs => {
           setConfigs(current_configs);
@@ -99,7 +98,7 @@ function Workloads() {
         });
 
       // fetch psr data
-      fetch("https://qhpredictiveapi.com:8000/psr")    //TO DO
+      fetch(apiHost + "/psr")    //TO DO
         .then(response => response.json())
         .then(psr => {
           setPsrWorks(psr);
@@ -138,9 +137,9 @@ function Workloads() {
 
     const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
       if (isPcgRatio) {
-        pcgRatios[index].EXP_RATIO = changedRatio;
+        expRatios[index].EXP_RATIO = changedRatio;
       } else {
-        psrRatios[index].EXP_RATIO = changedRatio;
+        expRatios[index].PSR_EXP_RATIO = changedRatio;
       }
     };
 
@@ -166,7 +165,7 @@ function Workloads() {
           <PredictPcgFTEwithExpRatio
             index={parseInt(key)}
             pcgTime={workloads[key].PCG_ALL_TIME_HOURS}
-            initExperienceRatio={pcgRatios[parseInt(key)].EXP_RATIO}
+            initExperienceRatio={expRatios[parseInt(key)].EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={true}
           />
@@ -175,7 +174,7 @@ function Workloads() {
           <PredictPsrFTEwithExpRatio
             index={parseInt(key)}
             psrTime={(psrWorks[key].PRED_PHONE_VOLUME*psrWorks[key].SUCC_TIME_PSR_PHONE/60).toFixed(2)}
-            initExperienceRatio={psrRatios[parseInt(key)].EXP_RATIO}
+            initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
           />
@@ -255,10 +254,10 @@ function Workloads() {
     });
   };
 
-  return (workloadLoading || pcgRatioLoading || clientsConfigLoading
+  return (workloadLoading || expRatioLoading || clientsConfigLoading
     || psrLoading || activityLoading || currentConfigsLoading) ? (
       <div>
-        <QHNavBar loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
+        <QHNavBar loading={(workloadLoading || expRatioLoading || clientsConfigLoading
           || psrLoading || activityLoading || currentConfigsLoading)} />
         <div>
           <CardColumns>{initializeCards()}</CardColumns>
@@ -267,13 +266,16 @@ function Workloads() {
     ) : (
       <div>
         <QHNavBar
-          loading={(workloadLoading || pcgRatioLoading || clientsConfigLoading
+          loading={(workloadLoading || expRatioLoading || clientsConfigLoading
             || psrLoading || activityLoading || currentConfigsLoading)}
           clientsConfig={clients}
           updateConfig={setClients}
           currentConfigs={configs}
           setIsLoading={setAllLoading}
           updateWorkloads={setWorkloads}
+          expRatios={expRatios}
+          updateExpRatios={setExpRatios}
+          updateConfigsList={setConfigs}
         />
         <div>
           <CardColumns>{updateCards()}</CardColumns>

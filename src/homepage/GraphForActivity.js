@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Button, ButtonGroup, Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';

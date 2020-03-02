@@ -12,7 +12,8 @@ import Dropdown from "react-bootstrap/Dropdown";
 function QHNavBar(props) {
 
 	const {clientsConfig, loading, updateConfig, currentConfigs,
-		setIsLoading, updateWorkloads} = props;
+		setIsLoading, updateWorkloads, expRatios, updateExpRatios,
+		updateConfigsList} = props;
 
 	const [showSaveStatus, setShowSaveStatus] = useState(false);
 	const [showConfigNamePop, setShowConfigNamePop] = useState(false);
@@ -28,6 +29,10 @@ function QHNavBar(props) {
 	const loadSucceedMessage = "Succeed! The clients configuration has been loaded to the application.";
 	const loadFailedMessage = "Failed! The configuration was not loaded. ";
 
+  const apiHost = "https://qhpredictiveapi.com:8000";
+  // const apiHost = "http://127.0.0.1:5000";
+
+
 	let btnPadding = {
 		marginRight: "0.7rem",
 		backgroundColor: "#fcd406",
@@ -37,9 +42,10 @@ function QHNavBar(props) {
 	async function saveConfig() {
 		const config = {
 			"name": configNameRef.current.value,
-			"config": clientsConfig
+			"config": clientsConfig,
+			"exp_ratios": expRatios,
 		};
-		fetch("https://qhpredictiveapi.com:8000/save_config", {
+		fetch(apiHost+ "/save_config", {
 			method: "POST",
 			headers: {"Content-Type": "application/json"},
 			body: JSON.stringify(config)
@@ -47,6 +53,7 @@ function QHNavBar(props) {
 			return response.json();
 		}).then((data)=>{
 			setSaveStatusMessage(saveSucceedMessage);
+			updateConfigsList([...currentConfigs, config.name]);
 			handleConfigNameHide();
 			setShowSaveStatus(true);
 		}).catch(error => {
@@ -58,17 +65,22 @@ function QHNavBar(props) {
 
 	async function loadConfig(selectedName) {
 		setIsLoading(true);
-		fetch("https://qhpredictiveapi.com:8000/load_config?name=" + selectedName)
+		fetch(apiHost + "/load_config?name=" + selectedName)
 			.then(response => response.json())
 			.then(config => {
-				fetch("https://qhpredictiveapi.com:8000/workload?name=" + selectedName)
+				fetch(apiHost + "/workload?name=" + selectedName)
 					.then(response => response.json())
 					.then(workloads => {
-						updateConfig(config);
-						updateWorkloads(workloads);
-						setIsLoading(false);
-						setLoadMessage(loadSucceedMessage);
-						setShowLoadStatus(true);})
+						fetch(apiHost +"/fetch_data?name=" + selectedName)
+							.then(response => response.json())
+							.then(ratios => {
+								updateConfig(config);
+								updateWorkloads(workloads);
+								updateExpRatios(ratios);
+								setIsLoading(false);
+								setLoadMessage(loadSucceedMessage);
+								setShowLoadStatus(true);})
+							})
 					.catch(error => {
 						setSaveStatusMessage(loadFailedMessage + error.toString());
 						setShowLoadStatus(true);
