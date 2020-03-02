@@ -1,8 +1,9 @@
+/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import DropdownItem from "react-bootstrap/DropdownItem";
-import Dropdown, { DropdownDivider } from "react-bootstrap/Dropdown";
+import Dropdown from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
@@ -98,7 +99,7 @@ function Workloads() {
         });
 
       // fetch psr data
-      fetch("http://127.0.0.1:5000/psr")    //TO DO
+      fetch("https://qhpredictiveapi.com:8000/psr")    //TO DO
         .then(response => response.json())
         .then(psr => {
           setPsrWorks(psr);
@@ -190,6 +191,9 @@ function Workloads() {
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ width: "100%" }}>
               <DropdownItem>
+                <b>More Information: </b>
+              </DropdownItem>
+              <DropdownItem>
                 PDC Time: {PCGActy[PCGActy.length] = workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}
               </DropdownItem>
               <DropdownItem>
@@ -211,7 +215,9 @@ function Workloads() {
               <DropdownItem>
                 EMPGRP Time: {PCGActy[PCGActy.length] = workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}
               </DropdownItem>
-              <Button><GraphForPCG cmp={PCGcmp} data={PCGActy} /></Button>
+              <DropdownItem>
+                <GraphForPCG cmp={PCGcmp} data={PCGActy} />
+              </DropdownItem>
             </Dropdown.Menu>
           </Dropdown>
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal } from "react-bootstrap";
+import {Button, ButtonGroup, Modal} from "react-bootstrap";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
@@ -12,6 +12,13 @@ function GraphForActivity(props) {
   const cmp = props.cmp;
   const rowData = props.data;
   const data = Array(cmp.length).fill(0);
+
+	let btnPadding = {
+		marginRight: "0.7rem",
+		backgroundColor: "#84BD00",
+		border: "0px",
+    width: "100%"
+	};
 
   // Create data for graph
   let i;
@@ -26,8 +33,7 @@ function GraphForActivity(props) {
 
   return (
     <>
-      <Button onClick={handleShow}>Bar Chart</Button>
-
+      <Button onClick={handleShow} style={btnPadding}>Bar Chart</Button>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Clients: </Modal.Title>
@@ -36,24 +42,20 @@ function GraphForActivity(props) {
           <ResponsiveContainer>
             <BarChart
               data={data}
-              margin={{
-                top: 5, right: 20, left: 0, bottom: 5,
-              }}
-            >
+              margin={{top: 5, right: 20, left: 0, bottom: 5,}}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis dataKey="WorkingHours" />
               <Tooltip />
               <Legend />
               <Bar dataKey="WorkingHours" fill="#8884d8" />
-              {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
             </BarChart>
           </ResponsiveContainer>
         </div>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
+	        <div>
+            <Button variant="secondary" onClick={handleClose}>Close</Button>
+          </div>
         </Modal.Footer>
       </Modal>
     </>

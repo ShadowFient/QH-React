@@ -22,10 +22,17 @@ function GraphForPCG(props) {
       map.WorkingHours = temp1;
       data[i] = map;
     }
+
+    	let btnPadding = {
+        marginRight: "0.7rem",
+        backgroundColor: "#84BD00",
+        border: "0px",
+		    width: "100%"
+      };
   
     return (
       <>
-        <Button onClick={handleShow}>Bar Chart</Button>
+        <Button onClick={handleShow} style={btnPadding}>Bar Chart</Button>
   
         <Modal show={show} onHide={handleClose} size="lg">
           <Modal.Header closeButton>
