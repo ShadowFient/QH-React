@@ -12,7 +12,7 @@ import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
 import GraphForPCG from "./GraphForPCG"
 
 function Workloads(props) {
-  const {clients,clientsConfigLoading} = props;
+  const {clients, setClients, clientsConfigLoading} = props;
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
    const [configs, setConfigs] = useState();
@@ -257,6 +257,7 @@ function Workloads(props) {
           loading={(workloadLoading || expRatioLoading || clientsConfigLoading
             || psrLoading || activityLoading || currentConfigsLoading)}
           clientsConfig={clients}
+          updateConfig={setClients}
           currentConfigs={configs}
           setIsLoading={setAllLoading}
           updateWorkloads={setWorkloads}

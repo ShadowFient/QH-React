@@ -20,15 +20,16 @@ function App() {
       .catch(error => {
         throw new Error(error.toString());
       });
-
     }
     catch(err){
       console.log(err.toString());
     }
-  }
+  };
+
   useEffect(() => {
     fetchClients();
   }, []);
+
   const onDragEnd = result =>{
       //todo
       const {destination,source,draggableId} = result;
@@ -63,18 +64,17 @@ function App() {
 
       setClients(JSON.parse(JSON.stringify(clients)));
 
-
-  
-  }
+  };
 
   return (
-    
       <DragDropContext onDragEnd={onDragEnd}>
         <div>
-          <Workloads clients={clients} clientsConfig={clientsConfigLoading}/>
+          <Workloads clients={clients}
+                     setClients={setClients}
+                     clientsConfig={clientsConfigLoading}/>
         </div>
       </DragDropContext>
-  )
+  );
 }
 
 export default App;
