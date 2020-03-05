@@ -9,7 +9,6 @@ function GraphForMonthActivity(props) {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const cmp = props.cmp;
     const rowData = props.data;
     const month = ["January", "February", "March", "April", "May", "June", "July",
                     "August", "September", "October", "November", "December"];

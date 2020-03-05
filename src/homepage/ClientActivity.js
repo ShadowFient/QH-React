@@ -48,7 +48,7 @@ function ClientActivity(props) {
         </Modal.Header>
         <ListGroup>
           <ListGroupItem><GraphForActivity cmp={cmp} data={data} /></ListGroupItem>
-          <ListGroupItem><GraphForMonthActivity cmp={cmp} data={monthdt} /></ListGroupItem>
+          <ListGroupItem><GraphForMonthActivity data={monthdt} /></ListGroupItem>
           {data.map((ele, index) => (
             <ListGroupItem key={index}>
               <h5><small>{cmp[index]}: {ele.toFixed(2)}</small></h5>
