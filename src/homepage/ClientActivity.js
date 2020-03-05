@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../index.css";
 import { Button, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
 import GraphForActivity from "./GraphForActivity"
+import GraphForMonthActivity from "./GraphForMonthActivity";
 
 function ClientActivity(props) {
   const [show, setShow] = useState(false);
@@ -10,6 +11,7 @@ function ClientActivity(props) {
   const gpsOfClients = props.gpsOfClients;
   const groupid = props.group_id;
   const data = Array(14).fill(0);
+  const monthdt = [];
   const cmp = [
     "PDC Success Hours",
     "PDC Unsuccess Hours",
@@ -30,6 +32,7 @@ function ClientActivity(props) {
   // Calculate annual hours for each activity
   for (let i in gpsOfClients) {
     if (gpsOfClients[i][2] === groupid[0]) {
+      monthdt[monthdt.length] = gpsOfClients[i];
       for (let j in data) {
         data[j] =
           Number(data[j]) + Number(gpsOfClients[i][Number(j) + Number(4)]);
@@ -45,6 +48,7 @@ function ClientActivity(props) {
         </Modal.Header>
         <ListGroup>
           <ListGroupItem><GraphForActivity cmp={cmp} data={data} /></ListGroupItem>
+          <ListGroupItem><GraphForMonthActivity cmp={cmp} data={monthdt} /></ListGroupItem>
           {data.map((ele, index) => (
             <ListGroupItem key={index}>
               <h5><small>{cmp[index]}: {ele.toFixed(2)}</small></h5>

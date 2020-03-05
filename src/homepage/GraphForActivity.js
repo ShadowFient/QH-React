@@ -33,10 +33,10 @@ function GraphForActivity(props) {
 
   return (
     <>
-      <Button onClick={handleShow} style={btnPadding}>Bar Chart</Button>
+      <Button onClick={handleShow} style={btnPadding}>Annual Bar Chart</Button>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Clients: </Modal.Title>
+          <Modal.Title>Annual Predicted Working Hours: </Modal.Title>
         </Modal.Header>
         <div style={{ width: '100%', height: 300 }}>
           <ResponsiveContainer>
