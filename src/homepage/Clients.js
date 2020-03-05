@@ -4,7 +4,7 @@ import ClientActivity from "./ClientActivity";
 import {Draggable,Droppable} from "react-beautiful-dnd";
 
 const Clients = props => {
-  const { clientsPerPOD, podId, activities } = props;
+  const { clientsPerPOD, podId, gpsOfClients } = props;
   let clients;
 
   if (clientsPerPOD && clientsPerPOD.length > 0) {
@@ -18,7 +18,7 @@ const Clients = props => {
                 <ClientActivity
                   group_id={client}
                   pod_id={podId}
-                  activities={activities}
+                  gpsOfClients={gpsOfClients}
                 />
               }
             </ListGroup.Item>

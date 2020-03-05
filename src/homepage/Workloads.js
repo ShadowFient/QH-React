@@ -2,14 +2,12 @@
 import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
-import DropdownItem from "react-bootstrap/DropdownItem";
-import Dropdown from "react-bootstrap/Dropdown";
 import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
-import GraphForPCG from "./GraphForPCG"
+import DropdownButton from "./DropdownButton";
 
 function Workloads() {
   const [expRatios, setExpRatios] = useState();
@@ -99,7 +97,7 @@ function Workloads() {
         });
 
       // fetch psr data
-      fetch(apiHost + "/psr")    //TO DO
+      fetch(apiHost + "/psr")
         .then(response => response.json())
         .then(psr => {
           setPsrWorks(psr);
@@ -129,13 +127,6 @@ function Workloads() {
   };
 
   const updateCards = () => {
-    let dropdownButtonStyle = {
-      width: "100%",
-      marginBottom: "1rem",
-      backgroundColor: "#84BD00",
-      border: "0px"
-    };
-
     const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
       if (isPcgRatio) {
         expRatios[index].EXP_RATIO = changedRatio;
@@ -144,11 +135,60 @@ function Workloads() {
       }
     };
 
-    const PCGcmp = ["PDC Time", "PAC Time", "Follow Up Time", "New Alert Time",
-      "Reference Time", "Term Time", "EMPGRP"];
+    // Organize activities by POD
+    const PODmap = new Map();
+    const table = [];
+    activities.map(activity => (
+      <div>
+        {table.push([
+          activity.POD,
+          activity.Group_Name,
+          activity.GroupID,
+          activity.Month,
+          activity.PCGPDC_TIME_HOURS_SUCC,
+          activity.PCGPDC_TIME_HOURS_UNSUCC,
+          activity.PCGPAC_TIME_HOURS_SUCC,
+          activity.PCGPAC_TIME_HOURS_UNSUCC,
+          activity.PCGFLLUP_TIME_HOURS_SUCC,
+          activity.PCGFLLUP_TIME_HOURS_UNSUCC,
+          activity.PCGNEWALERT_TIME_HOURS_SUCC,
+          activity.PCGNEWALERT_TIME_HOURS_UNSUCC,
+          activity.PCGREF_TIME_HOURS_SUCC,
+          activity.PCGREF_TIME_HOURS_UNSUCC,
+          activity.PCGTERM_TIME_HOURS_SUCC,
+          activity.PCGTERM_TIME_HOURS_UNSUCC,
+          activity.PCGEMPGRP_TIME_HOURS_SUCC,
+          activity.PCGEMPGRP_TIME_HOURS_UNSUCC
+        ])}
+      </div>
+    ));
 
     return Object.keys(workloads).map(key => {
-      let PCGActy = [];
+      // Store data in a map and set POD ID as a key and its clients as value
+      let element;
+      for (element in table) {
+        let pod_id = parseInt(key); //set pod id as key
+        if (PODmap.has(pod_id)) {
+          let stored = PODmap.get(pod_id);
+          let addon = table[element];
+          let temp = [];
+          if (Array.isArray(stored[0])) {
+            for (let ele = 0; ele < stored.length; ele++) {
+              temp[temp.length] = stored[ele];
+            }
+          } else {
+            temp[temp.length] = stored;
+          }
+          temp[temp.length] = addon;
+          PODmap.set(pod_id, temp);
+        } else {
+          PODmap.set(pod_id, table[element]);
+        }
+      }
+      let gpsOfClients = PODmap.get(parseInt(key));
+      let pcgWk = workloads[key];
+      let psrWK = psrWorks[key];
+
       return (
         <Card key={key} className="p-3" container="container-sm">
           <Card.Img variant="top" />
@@ -174,81 +214,20 @@ function Workloads() {
           {/* Predicted PSR FTE with its experience ratio */}
           <PredictPsrFTEwithExpRatio
             index={parseInt(key)}
-            psrTime={(psrWorks[key].PRED_PHONE_VOLUME*psrWorks[key].SUCC_TIME_PSR_PHONE/60).toFixed(2)}
+            psrTime={(psrWorks[key].PRED_PHONE_VOLUME * psrWorks[key].SUCC_TIME_PSR_PHONE / 60).toFixed(2)}
             initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
           />
 
-          {/* Dropdown button for PCG */}
-          <Dropdown>
-            <Dropdown.Toggle
-              id="total_time_dropdown"
-              style={dropdownButtonStyle}
-            >
-              {"PCG All Time Hours: " +
-                workloads[key].PCG_ALL_TIME_HOURS.toFixed(2)}
-            </Dropdown.Toggle>
-            <Dropdown.Menu style={{ width: "100%" }}>
-              <DropdownItem>
-                <b>More Information: </b>
-              </DropdownItem>
-              <DropdownItem>
-                PDC Time: {PCGActy[PCGActy.length] = workloads[key].PCGPDC_TIME_HOURS.toFixed(2)}
-              </DropdownItem>
-              <DropdownItem>
-                PAC Time: {PCGActy[PCGActy.length] = workloads[key].PCGPAC_TIME_HOURS.toFixed(2)}
-              </DropdownItem>
-              <DropdownItem>
-                Follow Up Time: {PCGActy[PCGActy.length] = workloads[key].PCGFLLUP_TIME_HOURS.toFixed(2)}
-              </DropdownItem>
-              <DropdownItem>
-                New Alert Time:{" "}
-                {PCGActy[PCGActy.length] = workloads[key].PCGNEWALERT_TIME_HOURS.toFixed(2)}
-              </DropdownItem>
-              <DropdownItem>
-                Reference Time: {PCGActy[PCGActy.length] = workloads[key].PCGREF_TIME_HOURS.toFixed(2)}
-              </DropdownItem>
-              <DropdownItem>
-                Term Time: {PCGActy[PCGActy.length] = workloads[key].PCGTERM_TIME_HOURS.toFixed(2)}
-              </DropdownItem>
-              <DropdownItem>
-                EMPGRP Time: {PCGActy[PCGActy.length] = workloads[key].PCGEMPGRP_TIME_HOURS.toFixed(2)}
-              </DropdownItem>
-              <DropdownItem>
-                <GraphForPCG cmp={PCGcmp} data={PCGActy} />
-              </DropdownItem>
-            </Dropdown.Menu>
-          </Dropdown>
-
-          {/* Dropdown button for PSR */}
-          <Dropdown>
-            <Dropdown.Toggle
-              id="total_time_dropdown"
-              style={dropdownButtonStyle}
-            >
-              {"PSR All Time Hours: " +
-                (psrWorks[key].PRED_PHONE_VOLUME*psrWorks[key].SUCC_TIME_PSR_PHONE/60).toFixed(2)}
-            </Dropdown.Toggle>
-            <Dropdown.Menu style={{ width: "100%" }}>
-              <DropdownItem>
-                <b>More Information: </b>
-              </DropdownItem>
-              <DropdownItem>
-                Percentage of predicted total PSR phone calls:
-                {" " + psrWorks[key].PERC_TOTAL_PSR_PHONE.toFixed(2) * 100 + "%"}
-              </DropdownItem>
-              <DropdownItem>
-                PSR Act-Like Members: {psrWorks[key].PSR_PHONE_ACTS_LIKE_MEM.toFixed(2)}
-              </DropdownItem>
-            </Dropdown.Menu>
-          </Dropdown>
+          {/* Dropdown buttons for both PCG and PSR */}
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} />
 
           {/* List the POD's clients */}
           <Clients
             clientsPerPOD={clients[parseInt(key)]}
             podId={parseInt(key)}
-            activities={activities}
+            gpsOfClients={gpsOfClients}
           />
         </Card>
       );
