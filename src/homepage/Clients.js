@@ -2,6 +2,8 @@ import React from "react";
 import { ListGroup } from "react-bootstrap";
 import ClientActivity from "./ClientActivity";
 import {Draggable,Droppable} from "react-beautiful-dnd";
+import _ from 'lodash';
+
 
 const Clients = props => {
   const { clientsPerPOD, podId, gpsOfClients } = props;
@@ -32,4 +34,9 @@ const Clients = props => {
 return <Droppable droppableId={podId.toString()}>{(provided)=><div ref={provided.innerRef} {...provided.droppableProps}><ListGroup>{clients}</ListGroup>{provided.placeholder}</div>}</Droppable>;
 };
 
-export default Clients;
+const areEqual = (prevProps, nextProps) => {
+  // console.log("Pod " + _.isEqual(prevProps.clientsPerPOD, nextProps.clientsPerPOD));
+  return _.isEqual(prevProps.clientsPerPOD, nextProps.clientsPerPOD);
+}
+
+export default React.memo(Clients, areEqual);

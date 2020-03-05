@@ -65,4 +65,8 @@ function ClientActivity(props) {
   );
 }
 
-export default ClientActivity;
+const areEqual = (prevProps, nextProps) => {
+  return true;
+}
+
+export default React.memo(ClientActivity, areEqual);
