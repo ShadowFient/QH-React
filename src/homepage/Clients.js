@@ -10,10 +10,10 @@ const Clients = props => {
   if (clientsPerPOD && clientsPerPOD.length > 0) {
     clients = clientsPerPOD.map((client, index) => {
       return (
-        <Draggable draggableId={"client-" + client[0].toString()} index={index}>
+        <Draggable draggableId={"ACME COMPANY -"+client[0].toString()} index={index} key={"ACME COMPANY -"+client[0].toString()}>
           {
             (provided)=> <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
-            <ListGroup.Item key={index} style={{ border: "2px solid #84BD00" }}>
+            <ListGroup.Item key={"ACME COMPANY -"+client[0].toString()} style={{ border: "2px solid #84BD00" }}>
               {
                 <ClientActivity
                   group_id={client}
@@ -29,7 +29,7 @@ const Clients = props => {
     });
   }
 
-return <Droppable droppableId={"pod-"+podId}>{(provided)=><div ref={provided.innerRef} {...provided.droppableProps}><ListGroup>{clients}</ListGroup>{provided.placeholder}</div>}</Droppable>;
+return <Droppable droppableId={podId.toString()}>{(provided)=><div ref={provided.innerRef} {...provided.droppableProps}><ListGroup>{clients}</ListGroup>{provided.placeholder}</div>}</Droppable>;
 };
 
 export default Clients;

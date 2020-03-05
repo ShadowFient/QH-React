@@ -9,17 +9,16 @@ import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
 import DropdownButton from "./DropdownButton";
 
-function Workloads() {
+function Workloads(props) {
+  const {clients, setClients, clientsConfigLoading} = props;
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
-  const [clients, setClients] = useState();
-  const [configs, setConfigs] = useState();
+   const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
   const [activities, setActivities] = useState();
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
-  const [clientsConfigLoading, setClientsConfigLoading] = useState(true);
   const [psrLoading, setPSRLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
   const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
@@ -32,7 +31,6 @@ function Workloads() {
   function setAllLoading(status) {
     setWorkloadLoading(status);
     setActivityLoading(status);
-    setClientsConfigLoading(status);
     setExpRatioLoading(status);
     setPSRLoading(status);
     setCurrentConfigLoading(status);
@@ -59,17 +57,6 @@ function Workloads() {
           setExpRatios(expRatios);
           setExpRatioLoading(false);
           console.log("exp_ratio done; status: " + expRatioLoading);
-        })
-        .catch(error => {
-          throw new Error(error.toString());
-        });
-
-      fetch(apiHost + "/pod_to_clients")
-        .then(response => response.json())
-        .then(config => {
-          setClients(config);
-          setClientsConfigLoading(false);
-          console.log("clients done")
         })
         .catch(error => {
           throw new Error(error.toString());
