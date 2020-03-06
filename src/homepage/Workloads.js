@@ -9,6 +9,7 @@ import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
 import DropdownButton from "./DropdownButton";
 import {DragDropContext} from 'react-beautiful-dnd'
+import {clientLevelWork} from "./ClientActivity";
 
 function Workloads(props) {
   const [expRatios, setExpRatios] = useState();
@@ -117,11 +118,9 @@ function Workloads(props) {
   //for drag event
 
   const onDragEnd = result =>{   
-    //const stateCopy = [...pcgPodTotal];
+    //console.log(clientLevelWork);
+    
     const {destination,source,draggableId} = result;
-    //stateCopy[0] -=1000; 
-    //setPcgPodTotal(stateCopy);
-    //for updating the hours=============================
     //saving state=======================================
     if(!destination){
       return;
@@ -143,14 +142,22 @@ function Workloads(props) {
     setClients(JSON.parse(JSON.stringify(clients))); 
     return;  
     }
-//    let sourcePodPcg = document.getElementById("total_hours_" + source.droppableId).innerText;
-  //  let destinationPodPcg =  document.getElementById("total_hours_" + destination.droppableId).innerText;
-    //let text = sourcePodPcg.slice(0,20);
-    //let hours = sourcePodPcg.slice(20,sourcePodPcg.length);
-    //subtract from sourcepod, add to destinationpod
-    //console.log(clientLevelWork[draggableId][7].toFixed(2));
+    //for updating the hours=============================
+    
+    let sourcePodPcg = document.getElementById("total_pcg_"+source.droppableId).innerText;
+    let destinationPodPcg =  document.getElementById("total_pcg_" + destination.droppableId).innerText;
+    let text = sourcePodPcg.slice(0,20);
+    let hours_source = Number(sourcePodPcg.slice(20,sourcePodPcg.length));
+    //subtract from sourcepod
+    let sourcePcgTotal  = clientLevelWork[draggableId][7];
+    hours_source -= sourcePcgTotal;
     //reset values
-    //document.getElementById("total_hours_" + source.droppableId).innerText = text + hours.toString();
+    document.getElementById("total_pcg_" + source.droppableId).innerText = text + hours_source.toFixed(2).toString();
+    //add to destinationpod
+    let hours_dest = Number(destinationPodPcg.slice(20,destinationPodPcg.length));
+    hours_dest += sourcePcgTotal;
+    document.getElementById("total_pcg_" + destination.droppableId).innerText = text + hours_dest.toFixed(2).toString();
+    //save state when client is dragged across pods
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
     const finishPod = Array.from(finish);
@@ -268,7 +275,7 @@ function Workloads(props) {
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
-          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} />
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} pod_key={key}/>
 
           {/* List the POD's clients */}
           <Clients

@@ -4,6 +4,8 @@ import { Button, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
 import GraphForActivity from "./GraphForActivity"
 import GraphForMonthActivity from "./GraphForMonthActivity";
 
+const clientLevelWork = {};
+
 function ClientActivity(props) {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -11,6 +13,7 @@ function ClientActivity(props) {
   const gpsOfClients = props.gpsOfClients;
   const groupid = props.group_id;
   const data = Array(14).fill(0);
+  const client_data = Array(8).fill(0);
   const monthdt = [];
   const cmp = [
     "PDC Success Hours",
@@ -32,13 +35,26 @@ function ClientActivity(props) {
   // Calculate annual hours for each activity
   for (let i in gpsOfClients) {
     if (gpsOfClients[i][2] === groupid[0]) {
+      var total = 0.0;
       monthdt[monthdt.length] = gpsOfClients[i];
       for (let j in data) {
+        
+        if(j < 8){
+          if(parseInt(j) === 7){
+            client_data[7] = total;
+          }
+          else{
+            client_data[j] +=  Number(gpsOfClients[i][(2*j) + 4]) + Number(gpsOfClients[i][(2*j + 1) + 4]);
+            total += client_data[j];
+          } 
+          
+        }
         data[j] =
           Number(data[j]) + Number(gpsOfClients[i][Number(j) + Number(4)]);
       }
     }
   }
+  clientLevelWork[groupid[1]] = client_data;
   return (
     <>
       <button className="button" onClick={handleShow}>{groupid[1]}</button>
@@ -70,3 +86,4 @@ const areEqual = (prevProps, nextProps) => {
 }
 
 export default React.memo(ClientActivity, areEqual);
+export {clientLevelWork};

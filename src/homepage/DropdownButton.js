@@ -6,6 +6,7 @@ import GraphForPCG from "./GraphForPCG";
 function DropdownButton(props) {
     const pcg = props.pcgWK;
     const psr=props.psrWK;
+    const pod_key = parseInt(props.pod_key);
     const PCGActy = [];
     const PCGcmp = ["PDC Time", "PAC Time", "Follow Up Time", "New Alert Time",
         "Reference Time", "Term Time", "EMPGRP"];
@@ -17,15 +18,19 @@ function DropdownButton(props) {
         border: "0px"
         };
 
+        
     return (
         <>
         {/* Dropdown button for PCG */}
+        
         <Dropdown>
             <Dropdown.Toggle
                 id="total_time_dropdown"
                 style={dropdownButtonStyle}
             >
+                <label id={"total_pcg_"+pod_key.toString()}>
                 {"PCG All Time Hours: " + parseInt(pcg.PCG_ALL_TIME_HOURS).toFixed(2)}
+                </label>
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ width: "100%" }}>
                 <DropdownItem>
