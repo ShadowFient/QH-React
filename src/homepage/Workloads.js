@@ -8,17 +8,19 @@ import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
 import DropdownButton from "./DropdownButton";
+import {DragDropContext} from 'react-beautiful-dnd'
 
 function Workloads(props) {
-  const {clients, setClients, clientsConfigLoading} = props;
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
+  const [clients, setClients] = useState();
    const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
   const [activities, setActivities] = useState();
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
+  const [clientsConfigLoading, setClientsConfigLoading] = useState(true);
   const [psrLoading, setPSRLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
   const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
@@ -31,6 +33,7 @@ function Workloads(props) {
   function setAllLoading(status) {
     setWorkloadLoading(status);
     setActivityLoading(status);
+    setClientsConfigLoading(status);
     setExpRatioLoading(status);
     setPSRLoading(status);
     setCurrentConfigLoading(status);
@@ -61,6 +64,16 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
+        fetch(apiHost + "/pod_to_clients")
+        .then(response => response.json())
+        .then(config => {
+          setClients(config);
+          setClientsConfigLoading(false);
+          console.log("clients done")
+        })
+        .catch(error => {
+          throw new Error(error.toString());
+        });  
 
       fetch(apiHost + "/activity")
         .then(response => response.json())
@@ -100,6 +113,53 @@ function Workloads(props) {
   useEffect(() => {
     fetchWorkload();
   }, []);
+
+  //for drag event
+
+  const onDragEnd = result =>{   
+    //const stateCopy = [...pcgPodTotal];
+    const {destination,source,draggableId} = result;
+    //stateCopy[0] -=1000; 
+    //setPcgPodTotal(stateCopy);
+    //for updating the hours=============================
+    //saving state=======================================
+    if(!destination){
+      return;
+    }
+    if(destination.droppableId === source.droppableId 
+      && destination.index === source.index){
+        return;
+      }
+    const start = clients[parseInt(source.droppableId)];
+    const finish = clients[parseInt(destination.droppableId)];
+    if(start === finish){
+    //replica of the pod's clients
+    const newClients = Array.from(start);
+    let removed = newClients.splice(source.index,1);
+    //replace with removed element instead
+    newClients.splice(destination.index,0,removed[0]);
+    //replace 
+    clients[parseInt(source.droppableId)] = newClients;
+    setClients(JSON.parse(JSON.stringify(clients))); 
+    return;  
+    }
+//    let sourcePodPcg = document.getElementById("total_hours_" + source.droppableId).innerText;
+  //  let destinationPodPcg =  document.getElementById("total_hours_" + destination.droppableId).innerText;
+    //let text = sourcePodPcg.slice(0,20);
+    //let hours = sourcePodPcg.slice(20,sourcePodPcg.length);
+    //subtract from sourcepod, add to destinationpod
+    //console.log(clientLevelWork[draggableId][7].toFixed(2));
+    //reset values
+    //document.getElementById("total_hours_" + source.droppableId).innerText = text + hours.toString();
+    const startPod = Array.from(start);
+    let removed = startPod.splice(source.index,1);
+    const finishPod = Array.from(finish);
+    finishPod.splice(destination.index,0,removed[0]);
+    clients[parseInt(source.droppableId)] = startPod;
+    clients[parseInt(destination.droppableId)] = finishPod;
+    setClients(JSON.parse(JSON.stringify(clients)));
+
+}
 
   const initializeCards = () => {
     return cards.map((card, index) => {
@@ -231,6 +291,7 @@ function Workloads(props) {
         </div>
       </div>
     ) : (
+      <DragDropContext onDragEnd={onDragEnd}>
       <div>
         <QHNavBar
           loading={(workloadLoading || expRatioLoading || clientsConfigLoading
@@ -249,6 +310,7 @@ function Workloads(props) {
           <CardColumns>{updateCards()}</CardColumns>
         </div>
       </div>
+      </DragDropContext>
     );
 }
 

@@ -12,10 +12,10 @@ const Clients = props => {
   if (clientsPerPOD && clientsPerPOD.length > 0) {
     clients = clientsPerPOD.map((client, index) => {
       return (
-        <Draggable draggableId={"ACME COMPANY -"+client[0].toString()} index={index} key={"ACME COMPANY -"+client[0].toString()}>
+        <Draggable draggableId={client[1]} index={index} key={client[1]}>
           {
             (provided)=> <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
-            <ListGroup.Item key={"ACME COMPANY -"+client[0].toString()} style={{ border: "2px solid #84BD00" }}>
+            <ListGroup.Item key={client[1]} style={{ border: "2px solid #84BD00" }}>
               {
                 <ClientActivity
                   group_id={client}
