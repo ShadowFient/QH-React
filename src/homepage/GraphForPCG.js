@@ -32,7 +32,7 @@ function GraphForPCG(props) {
   
     return (
       <>
-        <Button onClick={handleShow} style={btnPadding}>Bar Chart</Button>
+        <Button onClick={handleShow} style={btnPadding}>POD {props.podId} Annual Chart</Button>
   
         <Modal show={show} onHide={handleClose} size="lg">
           <Modal.Header closeButton>

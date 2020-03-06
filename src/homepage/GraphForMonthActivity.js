@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Modal } from "react-bootstrap";
 import {
-    ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-} from 'recharts';
+    ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend
+} from 'recharts'; 
 
 
 function GraphForMonthActivity(props) {
@@ -54,6 +54,17 @@ function GraphForMonthActivity(props) {
         }
         
     }
+
+    let all = 0;
+    for (let x in data) {
+        for (let y in data[x]) {
+            if (typeof data[x][y] === 'number') {
+                all += data[x][y]
+            }
+        }
+    }
+    console.log("current client: "+ all)    // check if data matches
+
     return (
         <>
             <Button onClick={handleShow} style={btnPadding}>Monthly Bar Chart</Button>
@@ -65,7 +76,7 @@ function GraphForMonthActivity(props) {
                     <ResponsiveContainer>
                         <BarChart
                             data={data}
-                            margin={{ top: 5, right: 20, left: 0, bottom: 5, }}>
+                            margin={{ top: 5, right: 15, left: 0, bottom: 5, }}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis datakey="PDC_Success_Hours"/>
@@ -87,6 +98,35 @@ function GraphForMonthActivity(props) {
                             <Bar dataKey="EMPGRP_Unsuccess_Hours" stackId="g" fill="#82ca9d" />
 
                         </BarChart>
+                    </ResponsiveContainer>
+                </div>
+
+                <div style={{ width: '100%', height: 300 }}>
+                    <ResponsiveContainer>
+                        <LineChart
+                            data={data}
+                            margin={{ top: 50, right: 15, left: 0, bottom: 5, }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line dataKey="PDC_Success_Hours" stackId="a" stroke="#8884d8" />
+                            <Line dataKey="PDC_Unsuccess_Hours" stackId="a" stroke="#82ca9d" />
+                            <Line dataKey="PAC_Success_Hours" stackId="b" stroke="#8884d8" />
+                            <Line dataKey="PAC_Unsuccess_Hours" stackId="b" stroke="#82ca9d" />
+                            <Line dataKey="Followup_Success_Hours" stackId="c" stroke="#8884d8" />
+                            <Line dataKey="Followup_Unsuccess_Hours" stackId="c" stroke="#82ca9d" />
+                            <Line dataKey="New_Alert_Success_Hours" stackId="d" stroke="#8884d8" />
+                            <Line dataKey="New_Alert_Unsuccess_Hours" stackId="d" stroke="#82ca9d" />
+                            <Line dataKey="Ref_Success_Hours" stackId="e" stroke="#8884d8" />
+                            <Line dataKey="Ref_Unsuccess_Hours" stackId="e" stroke="#82ca9d" />
+                            <Line dataKey="Term_Success_Hours" stackId="f" stroke="#8884d8" />
+                            <Line dataKey="Term_Unsuccess_Hours" stackId="f" stroke="#82ca9d" />
+                            <Line dataKey="EMPGRP_Success_Hours" stackId="g" stroke="#8884d8" />
+                            <Line dataKey="EMPGRP_Unsuccess_Hours" stackId="g" stroke="#82ca9d" />
+
+                        </LineChart>
                     </ResponsiveContainer>
                 </div>
                 <Modal.Footer>

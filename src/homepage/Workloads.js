@@ -10,10 +10,10 @@ import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
 import DropdownButton from "./DropdownButton";
 
 function Workloads(props) {
-  const {clients, setClients, clientsConfigLoading} = props;
+  const { clients, setClients, clientsConfigLoading } = props;
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
-   const [configs, setConfigs] = useState();
+  const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
   const [activities, setActivities] = useState();
 
@@ -62,7 +62,7 @@ function Workloads(props) {
           throw new Error(error.toString());
         });
 
-      fetch(apiHost + "/activity")
+      fetch("http://127.0.0.1:5000/activity")
         .then(response => response.json())
         .then(activity => {
           setActivities(activity);
@@ -121,14 +121,13 @@ function Workloads(props) {
         expRatios[index].PSR_EXP_RATIO = changedRatio;
       }
     };
-
-    // Organize activities by POD
-    const PODmap = new Map();
+    
+    // Fetch activities
     const table = [];
     activities.map(activity => (
       <div>
         {table.push([
-          activity.POD,
+          activity.INITIAL_POD,
           activity.Group_Name,
           activity.GroupID,
           activity.Month,
@@ -149,30 +148,30 @@ function Workloads(props) {
         ])}
       </div>
     ));
-
-    return Object.keys(workloads).map(key => {
-      // Store data in a map and set POD ID as a key and its clients as value
-      let element;
-      for (element in table) {
-        let pod_id = parseInt(key); //set pod id as key
-        if (PODmap.has(pod_id)) {
-          let stored = PODmap.get(pod_id);
-          let addon = table[element];
-          let temp = [];
-          if (Array.isArray(stored[0])) {
-            for (let ele = 0; ele < stored.length; ele++) {
-              temp[temp.length] = stored[ele];
-            }
-          } else {
-            temp[temp.length] = stored;
+   
+    const PODmap = new Map();
+    for (let element in table) {
+        let pod_id = table[element][0]; //set pod id as key
+      if (PODmap.has(pod_id)) {
+        let stored = PODmap.get(pod_id);
+        let addon = table[element];
+        let temp = [];
+        if (Array.isArray(stored[0])) {
+          for (let ele = 0; ele < stored.length; ele++) {
+            temp[temp.length] = stored[ele];
           }
-          temp[temp.length] = addon;
-          PODmap.set(pod_id, temp);
         } else {
-          PODmap.set(pod_id, table[element]);
+          temp[temp.length] = stored;
         }
+        temp[temp.length] = addon;
+        PODmap.set(pod_id, temp);
+      } else {
+        PODmap.set(pod_id, table[element]);
       }
-      let gpsOfClients = PODmap.get(parseInt(key));
+    }
+
+    return Object.keys(workloads).map(key => {     
+      let gpsOfClients=PODmap.get(parseInt(key));
       let pcgWk = workloads[key];
       let psrWK = psrWorks[key];
 
@@ -201,14 +200,14 @@ function Workloads(props) {
           {/* Predicted PSR FTE with its experience ratio */}
           <PredictPsrFTEwithExpRatio
             index={parseInt(key)}
-            psrTime={(psrWorks[key].PRED_PHONE_VOLUME * psrWorks[key].SUCC_TIME_PSR_PHONE / 60).toFixed(2)}
+            psrTime={(psrWorks[key].PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
             initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
-          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} />
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} gpsOfClients={gpsOfClients} podId={parseInt(key)} />
 
           {/* List the POD's clients */}
           <Clients
@@ -244,6 +243,7 @@ function Workloads(props) {
           updateExpRatios={setExpRatios}
           updateConfigsList={setConfigs}
           updatePSRWork={setPsrWorks}
+          updateActivities={setActivities}
         />
         <div>
           <CardColumns>{updateCards()}</CardColumns>
