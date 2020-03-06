@@ -10,8 +10,8 @@ function DropdownButton(props) {
     const gpsOfClients=props.gpsOfClients;
     const podId=props.podId;
     const PCGActy = [];
-    const PCGcmp = ["PDC Time", "PAC Time", "Follow Up Time", "New Alert Time",
-        "Reference Time", "Term Time", "EMPGRP"];
+    const PCGcmp = ["PDC", "PAC", "Follow Up", "New Alert",
+        "Reference", "Term", "EMPGRP"];
 
     let dropdownButtonStyle = {
         width: "100%",

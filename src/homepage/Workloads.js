@@ -62,7 +62,7 @@ function Workloads(props) {
           throw new Error(error.toString());
         });
 
-      fetch("http://127.0.0.1:5000/activity")
+      fetch("http://127.0.0.1:5000/activity")     ///////////TODO
         .then(response => response.json())
         .then(activity => {
           setActivities(activity);
@@ -83,8 +83,7 @@ function Workloads(props) {
           throw new Error(error.toString());
         });
 
-      // fetch psr data
-      fetch(apiHost + "/psr")
+      fetch("http://127.0.0.1:5000/psr")          ///////////TODO
         .then(response => response.json())
         .then(psr => {
           setPsrWorks(psr);
