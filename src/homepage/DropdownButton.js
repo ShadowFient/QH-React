@@ -70,8 +70,10 @@ function DropdownButton(props) {
           id="total_time_dropdown"
           style={dropdownButtonStyle}
         >
+        <label id={"total_psr_"+pod_key.toString()}>
           {"PSR All Time Hours: " +
             (psr.PRED_PHONE_VOLUME * psr.SUCC_TIME_PSR_PHONE / 60).toFixed(2)}
+        </label>
         </Dropdown.Toggle>
         <Dropdown.Menu style={{ width: "100%" }}>
           <DropdownItem>

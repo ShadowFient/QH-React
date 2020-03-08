@@ -15,6 +15,7 @@ function Workloads(props) {
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
+  const [clientPSR,setClientPSR] = useState();
    const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
   const [activities, setActivities] = useState();
@@ -24,6 +25,7 @@ function Workloads(props) {
   const [clientsConfigLoading, setClientsConfigLoading] = useState(true);
   const [psrLoading, setPSRLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
+  const [clientPSRLoading,setClientPSRLoading] = useState(true);
   const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
 
   const cards = Array(24).fill("Loading...");
@@ -37,6 +39,7 @@ function Workloads(props) {
     setClientsConfigLoading(status);
     setExpRatioLoading(status);
     setPSRLoading(status);
+    setClientPSRLoading(status);
     setCurrentConfigLoading(status);
   }
 
@@ -65,6 +68,18 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
+        //local host, switch to remote host when api updated==========
+        fetch("http://127.0.0.1:5000/client_psr")
+        .then(response => response.json())
+        .then(config => {
+          setClientPSR(config);
+          setClientPSRLoading(false);
+          console.log("clientPSR done");
+        })
+        .catch(error => {
+          throw new Error(error.toString());
+        });
+        //===========================================================
         fetch(apiHost + "/pod_to_clients")
         .then(response => response.json())
         .then(config => {
@@ -115,13 +130,27 @@ function Workloads(props) {
     fetchWorkload();
   }, []);
 
-  //for drag event
+  //math could still be more precise==================================================================================
+  const changePcgLbl = (sourceDroppable,destDroppable,draggableId) =>{    
+    let sourcePodPcg = document.getElementById("total_pcg_"+sourceDroppable).innerText;
+    let destinationPodPcg =  document.getElementById("total_pcg_" + destDroppable).innerText;
+    let text = sourcePodPcg.slice(0,20);
+    let hours_source = Number(sourcePodPcg.slice(20,sourcePodPcg.length));
+    //subtract from sourcepod
+    let sourcePcgTotal  = clientLevelWork[draggableId][7];
+    hours_source -= sourcePcgTotal;
+    //reset values
+    document.getElementById("total_pcg_" + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
+    //add to destinationpod
+    let hours_dest = Number(destinationPodPcg.slice(20,destinationPodPcg.length));
+    hours_dest += sourcePcgTotal;
+    document.getElementById("total_pcg_" + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
 
+  }
+  //for drag event=====================================================================================================
   const onDragEnd = result =>{   
-    //console.log(clientLevelWork);
-    
+    //saving state
     const {destination,source,draggableId} = result;
-    //saving state=======================================
     if(!destination){
       return;
     }
@@ -142,22 +171,11 @@ function Workloads(props) {
     setClients(JSON.parse(JSON.stringify(clients))); 
     return;  
     }
-    //for updating the hours=============================
+    //update psr and pcg labels
+    //psr
+    changePcgLbl(source.droppableId,destination.droppableId,draggableId);
     
-    let sourcePodPcg = document.getElementById("total_pcg_"+source.droppableId).innerText;
-    let destinationPodPcg =  document.getElementById("total_pcg_" + destination.droppableId).innerText;
-    let text = sourcePodPcg.slice(0,20);
-    let hours_source = Number(sourcePodPcg.slice(20,sourcePodPcg.length));
-    //subtract from sourcepod
-    let sourcePcgTotal  = clientLevelWork[draggableId][7];
-    hours_source -= sourcePcgTotal;
-    //reset values
-    document.getElementById("total_pcg_" + source.droppableId).innerText = text + hours_source.toFixed(2).toString();
-    //add to destinationpod
-    let hours_dest = Number(destinationPodPcg.slice(20,destinationPodPcg.length));
-    hours_dest += sourcePcgTotal;
-    document.getElementById("total_pcg_" + destination.droppableId).innerText = text + hours_dest.toFixed(2).toString();
-    //save state when client is dragged across pods
+    //save state when client is dragged across pods============================
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
     const finishPod = Array.from(finish);
