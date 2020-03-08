@@ -7,9 +7,10 @@ import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
-import DropdownButton from "./DropdownButton";
+import DropdownButton,{POD_PSR} from "./DropdownButton";
 import {DragDropContext} from 'react-beautiful-dnd'
 import {clientLevelWork} from "./ClientActivity";
+
 
 function Workloads(props) {
   const [expRatios, setExpRatios] = useState();
@@ -147,6 +148,19 @@ function Workloads(props) {
     document.getElementById("total_pcg_" + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
 
   }
+  //math needs to be checked
+  const changPsrLbl = (sourceDroppable,destDroppable,draggableId) => {
+    let sourcePodPsr = document.getElementById("total_psr_"+sourceDroppable).innerText;
+    let destinationPodPsr =  document.getElementById("total_psr_" + destDroppable).innerText;
+    let text = sourcePodPsr.slice(0,20);
+    let hours_source = Number(sourcePodPsr.slice(20,sourcePodPsr.length));
+    let sourcePsrTotal = POD_PSR[sourceDroppable] * clientPSR[draggableId];
+    hours_source -= sourcePsrTotal;
+    document.getElementById("total_psr_" + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
+    let hours_dest = Number(destinationPodPsr.slice(20,destinationPodPsr.length));
+    hours_dest += hours_source;
+    document.getElementById("total_psr_" + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
+  }
   //for drag event=====================================================================================================
   const onDragEnd = result =>{   
     //saving state
@@ -172,9 +186,10 @@ function Workloads(props) {
     return;  
     }
     //update psr and pcg labels
-    //psr
+    //pcg
     changePcgLbl(source.droppableId,destination.droppableId,draggableId);
-    
+    //psr
+    changPsrLbl(source.droppableId,destination.droppableId,draggableId);
     //save state when client is dragged across pods============================
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);

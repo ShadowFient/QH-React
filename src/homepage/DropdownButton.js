@@ -3,6 +3,8 @@ import DropdownItem from "react-bootstrap/DropdownItem";
 import Dropdown from "react-bootstrap/Dropdown";
 import GraphForPCG from "./GraphForPCG";
 
+const POD_PSR = {};
+
 function DropdownButton(props) {
     const pcg = props.pcgWK;
     const psr=props.psrWK;
@@ -18,8 +20,10 @@ function DropdownButton(props) {
         border: "0px"
         };
 
-        
+    POD_PSR[pod_key] = (psr.PRED_PHONE_VOLUME * psr.SUCC_TIME_PSR_PHONE / 60).toFixed(2);
+
     return (
+        
         <>
         {/* Dropdown button for PCG */}
         
@@ -93,3 +97,4 @@ function DropdownButton(props) {
 }
 
 export default DropdownButton;
+export {POD_PSR};
