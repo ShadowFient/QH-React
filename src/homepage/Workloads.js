@@ -12,7 +12,10 @@ import {DragDropContext} from 'react-beautiful-dnd'
 import {clientLevelWork} from "./ClientActivity";
 
 
-function Workloads(props) {
+function Workloads(props) 
+  {
+  //clientPSR * pod -- remains constant
+  const clientPSRContribution = {};
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
@@ -150,15 +153,17 @@ function Workloads(props) {
   }
   //math needs to be checked
   const changPsrLbl = (sourceDroppable,destDroppable,draggableId) => {
+    //clientpsr - {clientName:[perc psr, pod num]} -- always use initial pod psr for calculations in pod_psr
     let sourcePodPsr = document.getElementById("total_psr_"+sourceDroppable).innerText;
     let destinationPodPsr =  document.getElementById("total_psr_" + destDroppable).innerText;
     let text = sourcePodPsr.slice(0,20);
     let hours_source = Number(sourcePodPsr.slice(20,sourcePodPsr.length));
-    let sourcePsrTotal = POD_PSR[sourceDroppable] * clientPSR[draggableId];
+    let sourcePsrTotal = POD_PSR[clientPSR[draggableId][1]] * clientPSR[draggableId][0];
+    console.log(sourcePsrTotal);
     hours_source -= sourcePsrTotal;
     document.getElementById("total_psr_" + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
     let hours_dest = Number(destinationPodPsr.slice(20,destinationPodPsr.length));
-    hours_dest += hours_source;
+    hours_dest += sourcePsrTotal;
     document.getElementById("total_psr_" + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
   }
   //for drag event=====================================================================================================
@@ -188,8 +193,9 @@ function Workloads(props) {
     //update psr and pcg labels: CONDENSE INTO ONE METHOD
     //pcg
     changePcgLbl(source.droppableId,destination.droppableId,draggableId);
-    //psr
     changPsrLbl(source.droppableId,destination.droppableId,draggableId);
+    //psr
+    //changPsrLbl(source.droppableId,destination.droppableId,draggableId);
     //save state when client is dragged across pods============================
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
