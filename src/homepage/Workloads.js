@@ -134,37 +134,25 @@ function Workloads(props)
     fetchWorkload();
   }, []);
 
-  //math could still be more precise==================================================================================
-  const changePcgLbl = (sourceDroppable,destDroppable,draggableId) =>{    
-    let sourcePodPcg = document.getElementById("total_pcg_"+sourceDroppable).innerText;
-    let destinationPodPcg =  document.getElementById("total_pcg_" + destDroppable).innerText;
-    let text = sourcePodPcg.slice(0,20);
-    let hours_source = Number(sourcePodPcg.slice(20,sourcePodPcg.length));
+  
+  const changeLbl = (sourceDroppable,destDroppable,draggableId,isPsr,lbl) =>{
+    let sourcePod = document.getElementById(lbl+sourceDroppable).innerText;
+    let destinationPod =  document.getElementById(lbl + destDroppable).innerText;
+    let text = sourcePod.slice(0,20);
+    let hours_source = Number(sourcePod.slice(20,sourcePod.length));
     //subtract from sourcepod
-    let sourcePcgTotal  = clientLevelWork[draggableId][7];
-    hours_source -= sourcePcgTotal;
+    let sourceTotal  = clientLevelWork[draggableId][7];
+    if(isPsr){
+      sourceTotal = POD_PSR[clientPSR[draggableId][1]] * clientPSR[draggableId][0];
+      console.log(sourceTotal)
+    }
+    hours_source -= sourceTotal;
     //reset values
-    document.getElementById("total_pcg_" + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
+    document.getElementById(lbl + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
     //add to destinationpod
-    let hours_dest = Number(destinationPodPcg.slice(20,destinationPodPcg.length));
-    hours_dest += sourcePcgTotal;
-    document.getElementById("total_pcg_" + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
-
-  }
-  //math needs to be checked
-  const changPsrLbl = (sourceDroppable,destDroppable,draggableId) => {
-    //clientpsr - {clientName:[perc psr, pod num]} -- always use initial pod psr for calculations in pod_psr
-    let sourcePodPsr = document.getElementById("total_psr_"+sourceDroppable).innerText;
-    let destinationPodPsr =  document.getElementById("total_psr_" + destDroppable).innerText;
-    let text = sourcePodPsr.slice(0,20);
-    let hours_source = Number(sourcePodPsr.slice(20,sourcePodPsr.length));
-    let sourcePsrTotal = POD_PSR[clientPSR[draggableId][1]] * clientPSR[draggableId][0];
-    console.log(sourcePsrTotal);
-    hours_source -= sourcePsrTotal;
-    document.getElementById("total_psr_" + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
-    let hours_dest = Number(destinationPodPsr.slice(20,destinationPodPsr.length));
-    hours_dest += sourcePsrTotal;
-    document.getElementById("total_psr_" + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
+    let hours_dest = Number(destinationPod.slice(20,destinationPod.length));
+    hours_dest += sourceTotal;
+    document.getElementById(lbl + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
   }
   //for drag event=====================================================================================================
   const onDragEnd = result =>{   
@@ -192,8 +180,10 @@ function Workloads(props)
     }
     //update psr and pcg labels: CONDENSE INTO ONE METHOD
     //pcg
-    changePcgLbl(source.droppableId,destination.droppableId,draggableId);
-    changPsrLbl(source.droppableId,destination.droppableId,draggableId);
+    //changePcgLbl(source.droppableId,destination.droppableId,draggableId);
+    //changPsrLbl(source.droppableId,destination.droppableId,draggableId);
+    changeLbl(source.droppableId,destination.droppableId,draggableId,false,"total_pcg_")
+    changeLbl(source.droppableId,destination.droppableId,draggableId,true,"total_psr_")
     //psr
     //changPsrLbl(source.droppableId,destination.droppableId,draggableId);
     //save state when client is dragged across pods============================
