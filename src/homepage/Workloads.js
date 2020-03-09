@@ -185,7 +185,7 @@ function Workloads(props) {
     setClients(JSON.parse(JSON.stringify(clients))); 
     return;  
     }
-    //update psr and pcg labels
+    //update psr and pcg labels: CONDENSE INTO ONE METHOD
     //pcg
     changePcgLbl(source.droppableId,destination.droppableId,draggableId);
     //psr
