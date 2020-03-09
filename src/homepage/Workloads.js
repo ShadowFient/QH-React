@@ -178,14 +178,11 @@ function Workloads(props)
     setClients(JSON.parse(JSON.stringify(clients))); 
     return;  
     }
-    //update psr and pcg labels: CONDENSE INTO ONE METHOD
+    //update psr and pcg labels:
     //pcg
-    //changePcgLbl(source.droppableId,destination.droppableId,draggableId);
-    //changPsrLbl(source.droppableId,destination.droppableId,draggableId);
     changeLbl(source.droppableId,destination.droppableId,draggableId,false,"total_pcg_")
-    changeLbl(source.droppableId,destination.droppableId,draggableId,true,"total_psr_")
     //psr
-    //changPsrLbl(source.droppableId,destination.droppableId,draggableId);
+    changeLbl(source.droppableId,destination.droppableId,draggableId,true,"total_psr_")
     //save state when client is dragged across pods============================
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
