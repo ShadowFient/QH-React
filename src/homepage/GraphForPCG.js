@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal } from "react-bootstrap";
 import {
-  ResponsiveContainer,Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart
+  ResponsiveContainer, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart
 } from 'recharts';
 
 function GraphForPCG(props) {
@@ -47,12 +47,12 @@ function GraphForPCG(props) {
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" padding={{ left: 30, right: 30 }}/>
+              <XAxis dataKey="name" padding={{ left: 30, right: 30 }} />
               <YAxis dataKey="WorkingHours" ticks={[0, 1000, 2000, 3000, 4000, 5000, 6000, 7000]} domain={[0, 7000]} />
               <Tooltip />
               <Legend />
               <Bar dataKey="WorkingHours" barSize={40} fill="#82ca9d" />
-              <Line type="monotone" dataKey="WorkingHours" stroke="#8884d8" fill="#8884d8"/>
+              <Line type="monotone" dataKey="WorkingHours" stroke="#8884d8" fill="#8884d8" />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
