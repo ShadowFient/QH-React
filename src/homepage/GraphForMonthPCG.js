@@ -9,7 +9,8 @@ function GraphForMonthPCG(props) {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const rowData = props.gpsOfClients;
+    const rowData1 = props.gpsOfClients;
+    const rowData=[];
     const podId = props.podId;
     const month = ["January", "February", "March", "April", "May", "June", "July",
         "August", "September", "October", "November", "December"];
@@ -22,6 +23,11 @@ function GraphForMonthPCG(props) {
         width: "100%"
     };
 
+    for(let i=0;i<rowData1.length;i++){
+        if(rowData1[i][0]===podId){
+            rowData[rowData.length]=rowData1[i];
+        }
+    }
     // Create data for graph
     if (rowData !== null && typeof rowData !== "undefined") {
         for (let i in month) {

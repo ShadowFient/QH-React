@@ -195,29 +195,7 @@ function Workloads(props) {
       </div>
     ));
 
-    const PODmap = new Map();
-    for (let element in table) {
-        let pod_id = table[element][0]; //set pod id as key
-      if (PODmap.has(pod_id)) {
-        let stored = PODmap.get(pod_id);
-        let addon = table[element];
-        let temp = [];
-        if (Array.isArray(stored[0])) {
-          for (let ele = 0; ele < stored.length; ele++) {
-            temp[temp.length] = stored[ele];
-          }
-        } else {
-          temp[temp.length] = stored;
-        }
-        temp[temp.length] = addon;
-        PODmap.set(pod_id, temp);
-      } else {
-        PODmap.set(pod_id, table[element]);
-      }
-    }
-
     return Object.keys(workloads).map(key => {
-      let gpsOfClients=PODmap.get(parseInt(key));
       let pcgWk = workloads[key];
       let psrWK = psrWorks[key];
 
@@ -253,13 +231,13 @@ function Workloads(props) {
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
-          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} gpsOfClients={gpsOfClients} podId={parseInt(key)} />
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} gpsOfClients={table} podId={parseInt(key)} />
 
           {/* List the POD's clients */}
           <Clients
             clientsPerPOD={clients[parseInt(key)]}
             podId={parseInt(key)}
-            gpsOfClients={gpsOfClients}
+            gpsOfClients={table}
           />
         </Card>
       );

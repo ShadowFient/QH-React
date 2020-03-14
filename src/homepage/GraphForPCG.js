@@ -48,7 +48,7 @@ function GraphForPCG(props) {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" padding={{ left: 30, right: 30 }}/>
-              <YAxis dataKey="WorkingHours" ticks={[500, 1000, 1500, 2000, 2500, 3000, 3500]} domain={[0, 4500]} />
+              <YAxis dataKey="WorkingHours" ticks={[0, 1000, 2000, 3000, 4000, 5000, 6000, 7000]} domain={[0, 7000]} />
               <Tooltip />
               <Legend />
               <Bar dataKey="WorkingHours" barSize={40} fill="#82ca9d" />
