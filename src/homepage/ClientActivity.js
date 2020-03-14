@@ -67,6 +67,6 @@ function ClientActivity(props) {
 
 const areEqual = (prevProps, nextProps) => {
   return true;
-}
+};
 
 export default React.memo(ClientActivity, areEqual);

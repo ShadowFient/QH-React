@@ -46,7 +46,6 @@ function GraphForMonthActivity(props) {
                 for (let x in map) {
                     map[x] = rowData[j][pos];
                     pos++;
-                    // console.log(x+": "+map.x)
                 }
 
             }
@@ -54,16 +53,6 @@ function GraphForMonthActivity(props) {
         }
 
     }
-
-    let all = 0;
-    for (let x in data) {
-        for (let y in data[x]) {
-            if (typeof data[x][y] === 'number') {
-                all += data[x][y]
-            }
-        }
-    }
-    console.log("current client: " + all)    // check if data matches
 
     return (
         <>

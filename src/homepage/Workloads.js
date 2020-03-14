@@ -48,7 +48,6 @@ function Workloads(props) {
         .then(workload => {
           setWorkloads(workload);
           setWorkloadLoading(false);
-          console.log("workload done; status: " + workloadLoading);
         })
         .catch(error => {
           throw new Error(error.toString());
@@ -59,7 +58,6 @@ function Workloads(props) {
         .then(expRatios => {
           setExpRatios(expRatios);
           setExpRatioLoading(false);
-          console.log("exp_ratio done; status: " + expRatioLoading);
         })
         .catch(error => {
           throw new Error(error.toString());
@@ -69,7 +67,6 @@ function Workloads(props) {
         .then(config => {
           setClients(config);
           setClientsConfigLoading(false);
-          console.log("clients done")
         })
         .catch(error => {
           throw new Error(error.toString());
@@ -80,7 +77,6 @@ function Workloads(props) {
         .then(activity => {
           setActivities(activity);
           setActivityLoading(false);
-          console.log("activity done")
         })
         .catch(error => {
           throw new Error(error.toString());
@@ -117,19 +113,16 @@ function Workloads(props) {
   //for drag event
 
   const onDragEnd = result =>{
-    //const stateCopy = [...pcgPodTotal];
+
     const {destination,source,draggableId} = result;
-    //stateCopy[0] -=1000;
-    //setPcgPodTotal(stateCopy);
-    //for updating the hours=============================
-    //saving state=======================================
+
     if(!destination){
       return;
     }
     if(destination.droppableId === source.droppableId
       && destination.index === source.index){
         return;
-      }
+    }
     const start = clients[parseInt(source.droppableId)];
     const finish = clients[parseInt(destination.droppableId)];
     if(start === finish){
@@ -152,7 +145,7 @@ function Workloads(props) {
     clients[parseInt(destination.droppableId)] = finishPod;
     setClients(JSON.parse(JSON.stringify(clients)));
 
-}
+  };
 
   const initializeCards = () => {
     return cards.map((card, index) => {

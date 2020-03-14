@@ -35,8 +35,7 @@ return <Droppable droppableId={podId.toString()}>{(provided)=><div ref={provided
 };
 
 const areEqual = (prevProps, nextProps) => {
-  // console.log("Pod " + _.isEqual(prevProps.clientsPerPOD, nextProps.clientsPerPOD));
   return _.isEqual(prevProps.clientsPerPOD, nextProps.clientsPerPOD);
-}
+};
 
 export default React.memo(Clients, areEqual);

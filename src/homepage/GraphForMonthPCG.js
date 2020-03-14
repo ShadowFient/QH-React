@@ -52,15 +52,6 @@ function GraphForMonthPCG(props) {
         }
     }
 
-    let all = 0;
-    for (let x in data) {
-        for (let y in data[x]) {
-            if (typeof data[x][y] === 'number') {
-                all += data[x][y]
-            }
-        }
-    }
-    console.log(podId + ": " + all)    // check if data matches
     return (
         <>
             <Button onClick={handleShow} style={btnPadding}>POD {podId} Monthly Chart</Button>
