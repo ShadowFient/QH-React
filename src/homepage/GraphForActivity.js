@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {Button, Modal} from "react-bootstrap";
 import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
 
 
@@ -33,23 +33,24 @@ function GraphForActivity(props) {
 
   return (
     <>
-      <Button onClick={handleShow} style={btnPadding}>Annual Bar Chart</Button>
+      <Button onClick={handleShow} style={btnPadding}>Annual Chart</Button>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Annual Predicted Working Hours: </Modal.Title>
         </Modal.Header>
         <div style={{ width: '100%', height: 300 }}>
           <ResponsiveContainer>
-            <BarChart
+            <ComposedChart
               data={data}
               margin={{top: 5, right: 20, left: 0, bottom: 5,}}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <XAxis dataKey="name" padding={{ left: 20, right: 20 }}/>
               <YAxis dataKey="WorkingHours" />
               <Tooltip />
               <Legend />
-              <Bar dataKey="WorkingHours" fill="#8884d8" />
-            </BarChart>
+              <Bar dataKey="WorkingHours" barSize={30} fill="#82ca9d" />
+              <Line type="monotone" dataKey="WorkingHours" stroke="#8884d8" fill="#8884d8"/>
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
         <Modal.Footer>

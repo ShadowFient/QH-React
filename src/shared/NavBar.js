@@ -13,7 +13,7 @@ function QHNavBar(props) {
 
 	const {clientsConfig, loading, updateConfig, currentConfigs,
 		setIsLoading, updateWorkloads, expRatios, updateExpRatios,
-		updateConfigsList, updatePSRWork} = props;
+		updateConfigsList, updatePSRWork, updateActivities} = props;
 
 	const [showSaveStatus, setShowSaveStatus] = useState(false);
 	const [showConfigNamePop, setShowConfigNamePop] = useState(false);
@@ -77,13 +77,19 @@ function QHNavBar(props) {
 								fetch(apiHost+ "/psr?name=" + selectedName)
 									.then(response => response.json())
 									.then(psr => {
-										updateConfig(config);
-										updateWorkloads(workloads);
-										updateExpRatios(ratios);
-										updatePSRWork(psr);
-										setIsLoading(false);
-										setLoadMessage(loadSucceedMessage);
-										setShowLoadStatus(true);})
+										fetch("http://127.0.0.1:5000/activity?name=" + selectedName)
+											.then(response => response.json())
+											.then(activities => {
+												updateConfig(config);
+												updateWorkloads(workloads);
+												updateExpRatios(ratios);
+												updatePSRWork(psr);
+												updateActivities(activities);
+												setIsLoading(false);
+												setLoadMessage(loadSucceedMessage);
+												setShowLoadStatus(true);})
+											})
+							
 									})
 							})
 					.catch(error => {

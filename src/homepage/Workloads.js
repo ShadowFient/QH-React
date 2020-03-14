@@ -13,8 +13,8 @@ import {DragDropContext} from 'react-beautiful-dnd'
 function Workloads(props) {
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
+  const [configs, setConfigs] = useState();
   const [clients, setClients] = useState();
-   const [configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
   const [activities, setActivities] = useState();
 
@@ -73,7 +73,7 @@ function Workloads(props) {
         })
         .catch(error => {
           throw new Error(error.toString());
-        });  
+        });
 
       fetch(apiHost + "/activity")
         .then(response => response.json())
@@ -116,17 +116,17 @@ function Workloads(props) {
 
   //for drag event
 
-  const onDragEnd = result =>{   
+  const onDragEnd = result =>{
     //const stateCopy = [...pcgPodTotal];
     const {destination,source,draggableId} = result;
-    //stateCopy[0] -=1000; 
+    //stateCopy[0] -=1000;
     //setPcgPodTotal(stateCopy);
     //for updating the hours=============================
     //saving state=======================================
     if(!destination){
       return;
     }
-    if(destination.droppableId === source.droppableId 
+    if(destination.droppableId === source.droppableId
       && destination.index === source.index){
         return;
       }
@@ -138,19 +138,12 @@ function Workloads(props) {
     let removed = newClients.splice(source.index,1);
     //replace with removed element instead
     newClients.splice(destination.index,0,removed[0]);
-    //replace 
+    //replace
     clients[parseInt(source.droppableId)] = newClients;
-    setClients(JSON.parse(JSON.stringify(clients))); 
-    return;  
+    setClients(JSON.parse(JSON.stringify(clients)));
+    return;
     }
-//    let sourcePodPcg = document.getElementById("total_hours_" + source.droppableId).innerText;
-  //  let destinationPodPcg =  document.getElementById("total_hours_" + destination.droppableId).innerText;
-    //let text = sourcePodPcg.slice(0,20);
-    //let hours = sourcePodPcg.slice(20,sourcePodPcg.length);
-    //subtract from sourcepod, add to destinationpod
-    //console.log(clientLevelWork[draggableId][7].toFixed(2));
-    //reset values
-    //document.getElementById("total_hours_" + source.droppableId).innerText = text + hours.toString();
+
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
     const finishPod = Array.from(finish);
@@ -182,13 +175,12 @@ function Workloads(props) {
       }
     };
 
-    // Organize activities by POD
-    const PODmap = new Map();
+    // Fetch activities
     const table = [];
     activities.map(activity => (
       <div>
         {table.push([
-          activity.POD,
+          activity.INITIAL_POD,
           activity.Group_Name,
           activity.GroupID,
           activity.Month,
@@ -210,29 +202,29 @@ function Workloads(props) {
       </div>
     ));
 
-    return Object.keys(workloads).map(key => {
-      // Store data in a map and set POD ID as a key and its clients as value
-      let element;
-      for (element in table) {
-        let pod_id = parseInt(key); //set pod id as key
-        if (PODmap.has(pod_id)) {
-          let stored = PODmap.get(pod_id);
-          let addon = table[element];
-          let temp = [];
-          if (Array.isArray(stored[0])) {
-            for (let ele = 0; ele < stored.length; ele++) {
-              temp[temp.length] = stored[ele];
-            }
-          } else {
-            temp[temp.length] = stored;
+    const PODmap = new Map();
+    for (let element in table) {
+        let pod_id = table[element][0]; //set pod id as key
+      if (PODmap.has(pod_id)) {
+        let stored = PODmap.get(pod_id);
+        let addon = table[element];
+        let temp = [];
+        if (Array.isArray(stored[0])) {
+          for (let ele = 0; ele < stored.length; ele++) {
+            temp[temp.length] = stored[ele];
           }
-          temp[temp.length] = addon;
-          PODmap.set(pod_id, temp);
         } else {
-          PODmap.set(pod_id, table[element]);
+          temp[temp.length] = stored;
         }
+        temp[temp.length] = addon;
+        PODmap.set(pod_id, temp);
+      } else {
+        PODmap.set(pod_id, table[element]);
       }
-      let gpsOfClients = PODmap.get(parseInt(key));
+    }
+
+    return Object.keys(workloads).map(key => {
+      let gpsOfClients=PODmap.get(parseInt(key));
       let pcgWk = workloads[key];
       let psrWK = psrWorks[key];
 
@@ -261,14 +253,14 @@ function Workloads(props) {
           {/* Predicted PSR FTE with its experience ratio */}
           <PredictPsrFTEwithExpRatio
             index={parseInt(key)}
-            psrTime={(psrWorks[key].PRED_PHONE_VOLUME * psrWorks[key].SUCC_TIME_PSR_PHONE / 60).toFixed(2)}
+            psrTime={(psrWorks[key].PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
             initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
-          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} />
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} gpsOfClients={gpsOfClients} podId={parseInt(key)} />
 
           {/* List the POD's clients */}
           <Clients
@@ -305,6 +297,7 @@ function Workloads(props) {
           updateExpRatios={setExpRatios}
           updateConfigsList={setConfigs}
           updatePSRWork={setPsrWorks}
+          updateActivities={setActivities}
         />
         <div>
           <CardColumns>{updateCards()}</CardColumns>

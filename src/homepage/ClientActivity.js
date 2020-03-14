@@ -13,20 +13,20 @@ function ClientActivity(props) {
   const data = Array(14).fill(0);
   const monthdt = [];
   const cmp = [
-    "PDC Success Hours",
-    "PDC Unsuccess Hours",
-    "PAC Success Hours",
-    "PAC Unsuccess Hours",
-    "Followup Success Hours",
-    "Followup Unsuccess Hours",
-    "New Alert Success Hours",
-    "New Alert Unsuccess Hours",
-    "Ref Success Hours",
-    "Ref Unsuccess Hours",
-    "Term Success Hours",
-    "Term Unsuccess Hours",
-    "EMPGRP Success Hours",
-    "EMPGRP Unsuccess Hours"
+    "PDC Success",
+    "PDC Unsuccess",
+    "PAC Success",
+    "PAC Unsuccess",
+    "Followup Success",
+    "Followup Unsuccess",
+    "New Alert Success",
+    "New Alert Unsuccess",
+    "Ref Success",
+    "Ref Unsuccess",
+    "Term Success",
+    "Term Unsuccess",
+    "EMPGRP Success",
+    "EMPGRP Unsuccess"
   ];
 
   // Calculate annual hours for each activity
