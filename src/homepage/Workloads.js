@@ -206,13 +206,13 @@ function Workloads(props) {
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
-          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} gpsOfClients={gpsOfClients} podId={parseInt(key)} />
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} gpsOfClients={table} podId={parseInt(key)} />
 
           {/* List the POD's clients */}
           <Clients
             clientsPerPOD={clients[parseInt(key)]}
             podId={parseInt(key)}
-            gpsOfClients={gpsOfClients}
+            gpsOfClients={table}
           />
         </Card>
       );
