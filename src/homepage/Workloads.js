@@ -254,7 +254,6 @@ function Workloads(props) {
         </div>
       </div>
     ) : (
-      <DragDropContext onDragEnd={onDragEnd}>
       <div>
         <QHNavBar
           loading={(workloadLoading || expRatioLoading || clientsConfigLoading
@@ -270,11 +269,12 @@ function Workloads(props) {
           updatePSRWork={setPsrWorks}
           updateActivities={setActivities}
         />
-        <div>
-          <CardColumns>{updateCards()}</CardColumns>
-        </div>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div>
+            <CardColumns>{updateCards()}</CardColumns>
+          </div>
+        </DragDropContext>
       </div>
-      </DragDropContext>
     );
 }
 
