@@ -31,7 +31,6 @@ const PredictPcgFTEwithExpRatio = props => {
   const MonthCap5 = 0.92;
   const MonthCap6 = 0.96;
   const [predictedFTE, setPredictedFTE] = useState();
-  let actualFTE;
   const [ratio, setRatio] = useState(initExperienceRatio);
   const FTE_per_month = (capacity || 1570) / 12;
 
@@ -82,7 +81,7 @@ const PredictPcgFTEwithExpRatio = props => {
         <p>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
-          defaultValue={initExperienceRatio * 100}
+          defaultValue={20}
           onChangeCommitted={sliderHandler}
           min={0}
           step={1}
