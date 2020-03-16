@@ -13,9 +13,12 @@ const Clients = props => {
     clients = clientsPerPOD.map((client, index) => {
       return (
         <Draggable draggableId={client[1]} index={index} key={client[1]}>
-          {
-            (provided)=> <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
-            <ListGroup.Item key={client[1]} style={{ border: "2px solid #84BD00" }}>
+          {(provided) =>
+            <div ref={provided.innerRef}
+                   {...provided.dragHandleProps}
+                   {...provided.draggableProps}>
+              <ListGroup.Item key={client[1]}
+                              style={{ border: "2px solid #84BD00" }}>
               {
                 <ClientActivity
                   group_id={client}
@@ -23,7 +26,7 @@ const Clients = props => {
                   gpsOfClients={gpsOfClients}
                 />
               }
-            </ListGroup.Item>
+              </ListGroup.Item>
             </div>
           }        
         </Draggable>
@@ -31,7 +34,15 @@ const Clients = props => {
     });
   }
 
-return <Droppable droppableId={podId.toString()}>{(provided)=><div ref={provided.innerRef} {...provided.droppableProps}><ListGroup>{clients}</ListGroup>{provided.placeholder}</div>}</Droppable>;
+return <Droppable droppableId={podId.toString()}>
+  {
+  (provided) =>
+    <div ref={provided.innerRef}{...provided.droppableProps}>
+      <ListGroup>{clients}</ListGroup>
+      {provided.placeholder}
+    </div>
+  }
+  </Droppable>;
 };
 
 const areEqual = (prevProps, nextProps) => {
