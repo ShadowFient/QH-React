@@ -17,6 +17,7 @@ function Workloads(props) {
   const [clients, setClients] = useState();
   const [psrWorks, setPsrWorks] = useState();
   const [activities, setActivities] = useState();
+  const [capacity, setCapacity] = useState();
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
@@ -111,6 +112,7 @@ function Workloads(props) {
   }, []);
 
   //for drag event
+  // console.log("[Workload]");
 
   const onDragEnd = result =>{
 
@@ -219,6 +221,7 @@ function Workloads(props) {
             initExperienceRatio={expRatios[parseInt(key)].EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={true}
+            capacity={capacity}
           />
 
           {/* Predicted PSR FTE with its experience ratio */}
@@ -228,6 +231,7 @@ function Workloads(props) {
             initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
+            capacity={capacity}
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
@@ -269,6 +273,7 @@ function Workloads(props) {
           updateConfigsList={setConfigs}
           updatePSRWork={setPsrWorks}
           updateActivities={setActivities}
+          updateCapacity={setCapacity}
         />
         <div>
           <CardColumns>{updateCards()}</CardColumns>

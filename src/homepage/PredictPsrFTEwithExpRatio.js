@@ -21,7 +21,8 @@ const PredictPsrFTEwithExpRatio = props => {
     psrTime,
     initExperienceRatio,
     ratioChangeHandler,
-    isPcgRatio
+    isPcgRatio,
+    capacity
   } = props;
   const MonthCap1 = 0.76;
   const MonthCap2 = 0.83;
@@ -31,7 +32,7 @@ const PredictPsrFTEwithExpRatio = props => {
   const MonthCap6 = 0.96;
   const [predictedFTE, setPredictedFTE] = useState();
   const [ratio, setRatio] = useState(initExperienceRatio);
-  const FTE_per_month = 1570 / 12;
+  const FTE_per_month = (capacity || 1570) / 12;
 
   useEffect(() => {
     /**
@@ -69,6 +70,8 @@ const PredictPsrFTEwithExpRatio = props => {
     ratioChangeHandler(isPcgRatio, index, changedRatio);
   };
 
+  // console.log("[PredictPsrFTEwithExpRatio]");
+
   return (
     <Container>
       <Row>
@@ -78,7 +81,7 @@ const PredictPsrFTEwithExpRatio = props => {
         <p>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
-          defaultValue={parseInt(initExperienceRatio * 100)}
+          defaultValue={20}
           onChangeCommitted={sliderHandler}
           min={0}
           step={1}
@@ -91,5 +94,11 @@ const PredictPsrFTEwithExpRatio = props => {
     </Container>
   );
 };
+
+// const areEqual = (prevProps, nextProps) => {
+//   return prevProps.psrTime === nextProps.psrTime;
+// };
+
+// export default React.memo(PredictPsrFTEwithExpRatio, areEqual);
 
 export default PredictPsrFTEwithExpRatio;
