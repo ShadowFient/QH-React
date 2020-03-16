@@ -180,7 +180,6 @@ function QHNavBar(props) {
 
   function onChangeCapacityHanlder(event) {
     event.preventDefault();
-    console.log(event.target.value);
     updateCapacity(event.target.value);
   }
 
