@@ -8,6 +8,9 @@ import '../index.css';
 import FormControl from "react-bootstrap/FormControl";
 import Form from "react-bootstrap/Form";
 import Dropdown from "react-bootstrap/Dropdown";
+import {ButtonGroup, Col} from "react-bootstrap";
+import Row from "react-bootstrap/Row";
+import clearImage from "../images/clear-24px.svg";
 
 function QHNavBar(props) {
 
@@ -22,6 +25,11 @@ function QHNavBar(props) {
 	const [showLoadStatus, setShowLoadStatus] = useState(false);
 	const [loadStatusMessage, setLoadMessage] = useState();
 
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [showDeleteLastModal, setShowDeleteLastModal] = useState(false);
+	const [selectedDelCfg, setSelectedDelCfg]	= useState("");
+
+	const [currentDisplayConfig, setCurrentDisplayConfig] = useState();
 	const configNameRef = React.createRef();
 
 	const saveSucceedMessage = "Succeed! The clients configuration has been saved!";
@@ -29,43 +37,55 @@ function QHNavBar(props) {
 	const loadSucceedMessage = "Succeed! The clients configuration has been loaded to the application.";
 	const loadFailedMessage = "Failed! The configuration was not loaded. ";
 
-  const apiHost = "https://qhpredictiveapi.com:8000";
-  // const apiHost = "http://127.0.0.1:5000";
+	const apiHost = "https://qhpredictiveapi.com:8000";
+	// const apiHost = "http://127.0.0.1:5000";
+	// const localHost = "http://127.0.0.1:5000";
 
+	function handleConfigNameShow() { setShowConfigNamePop(true); }
 
-	let btnPadding = {
-		marginRight: "0.7rem",
-		backgroundColor: "#fcd406",
-		border: "0px"
-	};
+	function handleConfigNameHide() { setShowConfigNamePop(false); }
 
-	async function saveConfig() {
+	function handleSaveStatusHide() { setShowSaveStatus(false); }
+
+	function handleLoadStatusHide() { setShowLoadStatus(false); }
+
+	function handleDeleteShow() { setShowDeleteModal(true); }
+
+	function handleDeleteHide() { setShowDeleteModal(false); }
+
+	function handleDeleteLastShow() { setShowDeleteLastModal(true); }
+
+	function handleDeleteLastHide() { setShowDeleteLastModal(false); }
+
+	function saveConfig() {
 		const config = {
 			"name": configNameRef.current.value,
 			"config": clientsConfig,
 			"exp_ratios": expRatios,
 		};
-		fetch(apiHost+ "/save_config", {
-			method: "POST",
+
+		const isUpdate = (currentConfigs.includes(config.name));
+		fetch(apiHost+ "/config", {
+			method: isUpdate ? "PUT" : "POST",
 			headers: {"Content-Type": "application/json"},
-			body: JSON.stringify(config)
-		}).then(response => {
-			return response.json();
-		}).then((data)=>{
-			setSaveStatusMessage(saveSucceedMessage);
-			updateConfigsList([...currentConfigs, config.name]);
-			handleConfigNameHide();
-			setShowSaveStatus(true);
-		}).catch(error => {
-			setSaveStatusMessage(saveFailedMessage + error.toString());
-			handleConfigNameHide();
-			setShowSaveStatus(true);
-		});
+			body: JSON.stringify(config)})
+			.then(response => {response.json();})
+			.then((data) => {
+				setSaveStatusMessage(saveSucceedMessage);
+				if (!isUpdate) updateConfigsList([...currentConfigs, config.name]);
+				handleConfigNameHide();
+				setShowSaveStatus(true);})
+			.catch(error => {
+				setSaveStatusMessage(saveFailedMessage + error.toString());
+				handleConfigNameHide();
+				setShowSaveStatus(true);
+			});
 	}
 
-	async function loadConfig(selectedName) {
+	function loadConfig(selectedName) {
 		setIsLoading(true);
-		fetch(apiHost + "/load_config?name=" + selectedName)
+		setCurrentDisplayConfig(selectedName);
+		fetch(apiHost + "/config?name=" + selectedName)
 			.then(response => response.json())
 			.then(config => {
 				fetch(apiHost + "/workload?name=" + selectedName)
@@ -77,7 +97,7 @@ function QHNavBar(props) {
 								fetch(apiHost+ "/psr?name=" + selectedName)
 									.then(response => response.json())
 									.then(psr => {
-										fetch("http://127.0.0.1:5000/activity?name=" + selectedName)
+										fetch(apiHost + "/activity?name=" + selectedName)
 											.then(response => response.json())
 											.then(activities => {
 												updateConfig(config);
@@ -87,11 +107,12 @@ function QHNavBar(props) {
 												updateActivities(activities);
 												setIsLoading(false);
 												setLoadMessage(loadSucceedMessage);
-												setShowLoadStatus(true);})
+												setShowLoadStatus(true);
 											})
-							
 									})
+							
 							})
+					})
 					.catch(error => {
 						setSaveStatusMessage(loadFailedMessage + error.toString());
 						setShowLoadStatus(true);
@@ -102,14 +123,29 @@ function QHNavBar(props) {
 		});
 	}
 
-	function handleConfigNameShow() { setShowConfigNamePop(true); }
+	function deleteConfig(configName) {
+		setSelectedDelCfg(configName);
+		(currentConfigs.length === 1) ? handleDeleteLastShow() : handleDeleteShow();
+	}
 
-	function handleConfigNameHide() { setShowConfigNamePop(false); }
-
-	function handleSaveStatusHide() { setShowSaveStatus(false); }
-
-	function handleLoadStatusHide() { setShowLoadStatus(false); }
-
+	function confirmDeletion(configName) {
+		fetch(apiHost + "/config?name=" + configName,
+			{method: "DELETE"})
+			.then(response => response.json())
+			.then(data => {
+				updateConfigsList(prevList => {
+					prevList.splice(prevList.indexOf(configName), 1);
+					return [...prevList];
+				});
+				handleDeleteHide();
+				if (configName === currentDisplayConfig) {
+					loadConfig(currentConfigs[0]);
+				}
+			})
+			.catch(error => {
+				console.log(error.toString());
+			});
+	}
 
 	return (
 		<Navbar className='navbar' sticky="top" bg={"light"}>
@@ -121,9 +157,41 @@ function QHNavBar(props) {
 				     className="d-inline-block align-top" /> {' '}
 			</Navbar.Brand>
 			<Navbar.Collapse className="justify-content-end">
+
+				{/*Load Function*/}
+				<Dropdown >
+					<Dropdown.Toggle disabled={loading} className={"nav-button"}
+					                 id={"loadDropdown"}><b>Load</b></Dropdown.Toggle>
+					<Dropdown.Menu style={{width: "13rem"}}>
+						{ loading ?
+							<Dropdown.Item>Loading</Dropdown.Item>  :
+							currentConfigs.map(config => {return (
+									<Row style={{marginBottom: "0.4rem"}} key={config}>
+									<Col md={{span: 1, offset: 1}}
+									     onClick={() => deleteConfig(config)}>
+										<img alt={"clear_icon"} src={clearImage}
+										     className={"clear-button"}/>
+									</Col>
+									<Col>
+										<Dropdown.Item onClick={() => loadConfig(config)}>
+											{config}
+										</Dropdown.Item>
+									</Col>
+								</Row>
+							);})
+						}
+					</Dropdown.Menu>
+				</Dropdown>
+
 				{/*Save Function*/}
-				<Button style={btnPadding} disabled={loading} onClick={handleConfigNameShow}>Save</Button>
-				{/* Configuration name input popup window */}
+				<Button className={"nav-button"} disabled={loading}
+				        onClick={handleConfigNameShow}><b>Save</b></Button>
+
+				{/*Revert Function*/}
+				<Button className={"nav-button"} disabled={loading}
+				        onClick={() => loadConfig(currentDisplayConfig)}><b>Revert</b></Button>
+
+				{/*Configuration name input popup window*/}
 				<Modal show={showConfigNamePop} onHide={handleConfigNameHide}>
 					<Modal.Header><h4><small>Create New Configuration</small></h4></Modal.Header>
 					<Modal.Body>
@@ -135,10 +203,11 @@ function QHNavBar(props) {
 							/>
 							</Form.Group>
 						</Form>
-						<Button style={btnPadding} onClick={saveConfig} className={"float-right"}>Submit</Button>
+						<Button onClick={saveConfig} className={"float-right nav-confirm-button"}>Submit</Button>
 					</Modal.Body>
 				</Modal>
-				{/* Save operation status popup window */}
+
+				{/*Save operation status popup window*/}
 				<Modal show={showSaveStatus} onHide={handleSaveStatusHide}>
 					<Modal.Body>
 						<h5><small>{saveStatusMessage}</small></h5>
@@ -148,24 +217,7 @@ function QHNavBar(props) {
 					</Modal.Footer>
 				</Modal>
 
-				{/*Load Function*/}
-				<Dropdown>
-					<Dropdown.Toggle disabled={loading} style={btnPadding} id={"loadDropdown"}>Load</Dropdown.Toggle>
-					<Dropdown.Menu>
-						{ loading ?
-							<Dropdown.Item>Loading</Dropdown.Item>  :
-							currentConfigs.map(config => {
-								return (
-									<Dropdown.Item key={config}
-										onClick={() => loadConfig(config)}>
-										{config}
-									</Dropdown.Item>
-								);})
-						}
-					</Dropdown.Menu>
-				</Dropdown>
-
-				{/* load operation status popup window */}
+				{/*load operation status popup window*/}
 				<Modal show={showLoadStatus} onHide={handleLoadStatusHide}>
 					<Modal.Body>
 						<h5><small>{loadStatusMessage}</small></h5>
@@ -175,8 +227,38 @@ function QHNavBar(props) {
 					</Modal.Footer>
 				</Modal>
 
-				{/*Revert Function*/}
-				<Button style={btnPadding}>Revert</Button>
+				{/*Confirm deletion operation popup window*/}
+				<Modal show={showDeleteModal} onHide={handleDeleteHide}>
+					<Modal.Header>
+						<h4><small>Delete Saved Configuration</small></h4>
+					</Modal.Header>
+					<Modal.Body>
+						<h5><small>Are you sure you want to delete configuration
+							<b> {selectedDelCfg}?</b>
+						</small></h5>
+						</Modal.Body>
+					<Modal.Footer>
+						<ButtonGroup>
+							<Button className={"nav-confirm-button"}
+							        onClick={handleDeleteHide}>Cancel</Button>
+							<Button className={"nav-confirm-button"}
+							        onClick={() => confirmDeletion(selectedDelCfg)}>
+								Confirm
+							</Button>
+						</ButtonGroup>
+					</Modal.Footer>
+				</Modal>
+
+				{/*Forbidding delete the last one saved popup window*/}
+				<Modal show={showDeleteLastModal} onHide={handleDeleteHide}>
+					<Modal.Body>
+						<h5><small><b>{selectedDelCfg}</b> is the last configuration saved.
+							You cannot delete it!</small></h5>
+					</Modal.Body>
+					<Modal.Footer>
+						<Button variant={"secondary"} onClick={handleDeleteLastHide}>Close</Button>
+					</Modal.Footer>
+				</Modal>
 
 			</Navbar.Collapse>
 		</Navbar>
