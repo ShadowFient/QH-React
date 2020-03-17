@@ -140,7 +140,7 @@ function Workloads(props)
     //subtract from sourcepod
     let sourceTotal  = clientLevelWork[draggableId][7];
     if(isPsr){
-      //math still incorrect -- what formula should be used?
+      
       sourceTotal = (clientPSR[draggableId][0] * 7.68)/60;
     }
     hours_source -= sourceTotal;
