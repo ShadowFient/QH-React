@@ -7,7 +7,7 @@ import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
-import DropdownButton,{POD_PSR} from "./DropdownButton";
+import DropdownButton from "./DropdownButton";
 import {DragDropContext} from 'react-beautiful-dnd'
 import {clientLevelWork} from "./ClientActivity";
 
@@ -141,7 +141,7 @@ function Workloads(props)
     let sourceTotal  = clientLevelWork[draggableId][7];
     if(isPsr){
       
-      sourceTotal = (clientPSR[draggableId][0] * 7.68)/60;
+      sourceTotal = (clientPSR[draggableId] * 7.68)/60;
     }
     hours_source -= sourceTotal;
     //reset values
