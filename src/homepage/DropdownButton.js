@@ -4,11 +4,14 @@ import Dropdown from "react-bootstrap/Dropdown";
 import GraphForPCG from "./GraphForPCG";
 import GraphForMonthPCG from "./GraphForMonthPCG";
 
+const POD_PSR = {};
+
 function DropdownButton(props) {
     const pcg = props.pcgWK;
     const psr=props.psrWK;
     const gpsOfClients=props.gpsOfClients;
     const podId=props.podId;
+    const pod_key = parseInt(props.pod_key);
     const PCGActy = [];
     const PCGcmp = ["PDC", "PAC", "Follow Up", "New Alert",
         "Reference", "Term", "EMPGRP"];
@@ -20,6 +23,8 @@ function DropdownButton(props) {
         border: "0px"
         };
 
+    POD_PSR[pod_key] = (psr.PRED_PHONE_VOLUME * psr.SUCC_TIME_PSR_PHONE / 60).toFixed(2);
+
     return (
         <>
         {/* Dropdown button for PCG */}
@@ -28,7 +33,9 @@ function DropdownButton(props) {
                 id="total_time_dropdown"
                 style={dropdownButtonStyle}
             >
+                <label id={"total_pcg_"+pod_key.toString()}>
                 {"PCG All Time Hours: " + parseInt(pcg.PCG_ALL_TIME_HOURS).toFixed(2)}
+                </label>
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ width: "100%" }}>
                 <DropdownItem>
@@ -71,8 +78,10 @@ function DropdownButton(props) {
           id="total_time_dropdown"
           style={dropdownButtonStyle}
         >
+        <label id={"total_psr_"+pod_key.toString()}>
           {"PSR All Time Hours: " +
             (psr.PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
+        </label>
         </Dropdown.Toggle>
         <Dropdown.Menu style={{ width: "100%" }}>
           <DropdownItem>
@@ -92,3 +101,4 @@ function DropdownButton(props) {
 }
 
 export default DropdownButton;
+export {POD_PSR};

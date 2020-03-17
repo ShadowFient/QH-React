@@ -7,14 +7,20 @@ import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
 import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
-import DropdownButton from "./DropdownButton";
+import DropdownButton,{POD_PSR} from "./DropdownButton";
 import {DragDropContext} from 'react-beautiful-dnd'
+import {clientLevelWork} from "./ClientActivity";
 
-function Workloads(props) {
+
+function Workloads(props)
+  {
+  //clientPSR * pod -- remains constant
+  const clientPSRContribution = {};
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
-  const [configs, setConfigs] = useState();
   const [clients, setClients] = useState();
+  const [clientPSR,setClientPSR] = useState();
+   const[configs, setConfigs] = useState();
   const [psrWorks, setPsrWorks] = useState();
   const [activities, setActivities] = useState();
   const [capacity, setCapacity] = useState();
@@ -24,6 +30,7 @@ function Workloads(props) {
   const [clientsConfigLoading, setClientsConfigLoading] = useState(true);
   const [psrLoading, setPSRLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
+  const [clientPSRLoading,setClientPSRLoading] = useState(true);
   const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
 
   const cards = Array(24).fill("Loading...");
@@ -37,6 +44,7 @@ function Workloads(props) {
     setClientsConfigLoading(status);
     setExpRatioLoading(status);
     setPSRLoading(status);
+    setClientPSRLoading(status);
     setCurrentConfigLoading(status);
   }
 
@@ -63,6 +71,18 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
+        //local host, switch to remote host when api updated==========
+        fetch(apiHost + "/client_psr")
+        .then(response => response.json())
+        .then(config => {
+          setClientPSR(config);
+          setClientPSRLoading(false);
+          console.log("clientPSR done");
+        })
+        .catch(error => {
+          throw new Error(error.toString());
+        });
+        //===========================================================
         fetch(apiHost + "/pod_to_clients")
         .then(response => response.json())
         .then(config => {
@@ -111,8 +131,26 @@ function Workloads(props) {
     fetchWorkload();
   }, []);
 
-  //for drag event
-  // console.log("[Workload]");
+
+  const changeLbl = (sourceDroppable,destDroppable,draggableId,isPsr,lbl) =>{
+    let sourcePod = document.getElementById(lbl+sourceDroppable).innerText;
+    let destinationPod =  document.getElementById(lbl + destDroppable).innerText;
+    let text = sourcePod.slice(0,20);
+    let hours_source = Number(sourcePod.slice(20,sourcePod.length));
+    //subtract from sourcepod
+    let sourceTotal  = clientLevelWork[draggableId][7];
+    if(isPsr){
+      sourceTotal = POD_PSR[clientPSR[draggableId][1]] * clientPSR[draggableId][0];
+      console.log(sourceTotal)
+    }
+    hours_source -= sourceTotal;
+    //reset values
+    document.getElementById(lbl + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
+    //add to destinationpod
+    let hours_dest = Number(destinationPod.slice(20,destinationPod.length));
+    hours_dest += sourceTotal;
+    document.getElementById(lbl + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
+  };
 
   const onDragEnd = result =>{
 
@@ -138,7 +176,12 @@ function Workloads(props) {
     setClients(JSON.parse(JSON.stringify(clients)));
     return;
     }
-
+    //update psr and pcg labels:
+    //pcg
+    changeLbl(source.droppableId,destination.droppableId,draggableId,false,"total_pcg_")
+    //psr
+    changeLbl(source.droppableId,destination.droppableId,draggableId,true,"total_psr_")
+    //save state when client is dragged across pods============================
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
     const finishPod = Array.from(finish);
@@ -235,7 +278,7 @@ function Workloads(props) {
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
-          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} gpsOfClients={table} podId={parseInt(key)} />
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} pod_key={key}/>
 
           {/* List the POD's clients */}
           <Clients
