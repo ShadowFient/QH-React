@@ -72,7 +72,7 @@ function Workloads(props)
           throw new Error(error.toString());
         });
         //local host, switch to remote host when api updated==========
-        fetch(apiHost + "/client_psr")
+        fetch("http://127.0.0.1:5000/client_psr")
         .then(response => response.json())
         .then(config => {
           setClientPSR(config);
@@ -140,8 +140,8 @@ function Workloads(props)
     //subtract from sourcepod
     let sourceTotal  = clientLevelWork[draggableId][7];
     if(isPsr){
-      sourceTotal = POD_PSR[clientPSR[draggableId][1]] * clientPSR[draggableId][0];
-      console.log(sourceTotal)
+      //math still incorrect
+      sourceTotal = clientPSR[draggableId][0] * 7.68;
     }
     hours_source -= sourceTotal;
     //reset values
