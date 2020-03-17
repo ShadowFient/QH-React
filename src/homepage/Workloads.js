@@ -278,7 +278,8 @@ function Workloads(props)
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
-          <DropdownButton pcgWK={pcgWk} psrWK={psrWK} pod_key={key}/>
+          <DropdownButton pcgWK={pcgWk} psrWK={psrWK}
+                          pod_key={key} gpsOfClients={table}/>
 
           {/* List the POD's clients */}
           <Clients
