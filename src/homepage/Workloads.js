@@ -163,13 +163,15 @@ function Workloads(props)
   const changeFte = (sourceDroppable,destDroppable,isPsr,srcLbl,destLbl) => {
     let sourcePod =document.getElementById("total_pcg_"+sourceDroppable).innerText;
     let destPod = document.getElementById("total_pcg_"+ destDroppable).innerText;
-    let sourcePcg = sourcePod.slice(20,sourcePod.length);
-    let destPcg = destPod.slice(20,destPod.length);
-    let sourceFte = (sourcePcg / FTE_per_month / (12 + expRatios[sourceDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
-    let destFte = (destPcg / FTE_per_month / (12 + expRatios[destDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
     if(isPsr){
       //change formula
+      sourcePod = document.getElementById("total_psr_"+sourceDroppable).innerText;
+      destPod = document.getElementById("total_psr_"+destDroppable).innerText;
     }
+    let source = sourcePod.slice(20,sourcePod.length);
+    let dest = destPod.slice(20,destPod.length);
+    let sourceFte = (source / FTE_per_month / (12 + expRatios[sourceDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
+    let destFte = (dest / FTE_per_month / (12 + expRatios[destDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
     document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
 
@@ -202,9 +204,10 @@ function Workloads(props)
     //update psr and pcg labels:
     //pcg
     changeAllTimeHours(source.droppableId,destination.droppableId,draggableId,false,"total_pcg_")
-    //psr
     changeAllTimeHours(source.droppableId,destination.droppableId,draggableId,true,"total_psr_")
     changeFte(source.droppableId,destination.droppableId,false,"pod" + source.droppableId +"PcgFte","pod" + destination.droppableId +"PcgFte")
+    changeFte(source.droppableId,destination.droppableId,true,"pod" + source.droppableId +"PsrFte","pod" + destination.droppableId +"PsrFte")
+
     //save state when client is dragged across pods============================
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
@@ -294,7 +297,7 @@ function Workloads(props)
           {/* Predicted PSR FTE with its experience ratio */}
           <PredictPsrFTEwithExpRatio
             index={parseInt(key)}
-            psrTime={(psrWorks[key].PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
+            //psrTime={(psrWorks[key].PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
             initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}

@@ -18,7 +18,6 @@ const marks = [
 const PredictPsrFTEwithExpRatio = props => {
   const {
     index,
-    psrTime,
     initExperienceRatio,
     ratioChangeHandler,
     isPcgRatio,
@@ -30,7 +29,7 @@ const PredictPsrFTEwithExpRatio = props => {
   const MonthCap4 = 0.9;
   const MonthCap5 = 0.92;
   const MonthCap6 = 0.96;
-  const [predictedFTE, setPredictedFTE] = useState();
+
   const [ratio, setRatio] = useState(initExperienceRatio);
   const FTE_per_month = (capacity || 1570) / 12;
 
@@ -44,8 +43,10 @@ const PredictPsrFTEwithExpRatio = props => {
      * Sum of (FTE_per_month * predictedFTE) = psrTime
      *
      */
+    let source = document.getElementById("total_psr_"+index).innerText;
+    let sourcePsr = source.slice(20,source.length);
     const predictedFTE =
-      psrTime /
+      sourcePsr /
       FTE_per_month /
       (12 +
         ratio *
@@ -56,8 +57,9 @@ const PredictPsrFTEwithExpRatio = props => {
             MonthCap5 +
             MonthCap6 -
             6));
-    setPredictedFTE(predictedFTE);
-  }, [psrTime, ratio, FTE_per_month]);
+            document.getElementById("pod"+index+"PsrFte").innerText = "Predicted FTEs: " + predictedFTE.toFixed(2).toString();
+
+  }, [ratio, FTE_per_month, index]);
 
   const formatValueText = value => {
     return `${value}%`;
@@ -78,7 +80,7 @@ const PredictPsrFTEwithExpRatio = props => {
         <b>PSR</b>
       </Row>
       <Row>
-        <p>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
+        <p id={"pod"+index+"PsrFte"}></p>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
           defaultValue={20}
