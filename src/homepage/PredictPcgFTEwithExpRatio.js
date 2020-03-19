@@ -18,7 +18,6 @@ const marks = [
 const PredictPcgFTEwithExpRatio = props => {
   const {
     index,
-    pcgTime,
     initExperienceRatio,
     ratioChangeHandler,
     isPcgRatio,
@@ -30,7 +29,6 @@ const PredictPcgFTEwithExpRatio = props => {
   const MonthCap4 = 0.9;
   const MonthCap5 = 0.92;
   const MonthCap6 = 0.96;
-  const [predictedFTE, setPredictedFTE] = useState();
   const [ratio, setRatio] = useState(initExperienceRatio);
   const FTE_per_month = (capacity || 1570) / 12;
 
@@ -44,8 +42,10 @@ const PredictPcgFTEwithExpRatio = props => {
      * Sum of (FTE_per_month * predictedFTE) = pcgTime
      *
      */
+    let source = document.getElementById("total_pcg_"+index).innerText;
+    let sourcePcg = source.slice(20,source.length);
     const predictedFTE =
-      pcgTime /
+      sourcePcg /
       FTE_per_month /
       (12 +
         ratio *
@@ -56,8 +56,8 @@ const PredictPcgFTEwithExpRatio = props => {
             MonthCap5 +
             MonthCap6 -
             6));
-    setPredictedFTE(predictedFTE);
-  }, [pcgTime, ratio, FTE_per_month]);
+    document.getElementById("pod"+index+"PcgFte").innerText = "Predicted FTEs: " + predictedFTE.toFixed(2).toString();
+  }, [ratio, FTE_per_month,index]);
 
   const formatValueText = value => {
     return `${value}%`;
@@ -78,7 +78,7 @@ const PredictPcgFTEwithExpRatio = props => {
         <b>PCG</b>
       </Row>
       <Row>
-        <p id={"pod"+index+"PcgFte"}>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
+        <p id={"pod"+index+"PcgFte"}></p>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
           defaultValue={20}

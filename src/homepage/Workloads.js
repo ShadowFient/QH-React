@@ -148,8 +148,7 @@ function Workloads(props)
     let hours_source = Number(sourcePod.slice(20,sourcePod.length));
     //subtract from sourcepod
     let sourceTotal  = clientLevelWork[draggableId][7];
-    if(isPsr){
-      
+    if(isPsr){   
       sourceTotal = (clientPSR[draggableId] * 7.68)/60;
     }
     hours_source -= sourceTotal;
@@ -161,8 +160,6 @@ function Workloads(props)
     document.getElementById(lbl + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
   };
 
-  // document.getElementById("pod"+ sourceDroppable + "PcgFte").innerText ="Predicted FTEs: " + (hours_source / FTE_per_month / (12 + expRatios[sourceDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
-  // document.getElementById("pod"+ destDroppable + "PcgFte").innerText = "Predicted FTEs: " + (hours_dest / FTE_per_month / (12 + expRatios[destDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
   const changeFte = (sourceDroppable,destDroppable,isPsr,srcLbl,destLbl) => {
     let sourcePod =document.getElementById("total_pcg_"+sourceDroppable).innerText;
     let destPod = document.getElementById("total_pcg_"+ destDroppable).innerText;
@@ -175,9 +172,6 @@ function Workloads(props)
     }
     document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
-
-
-
 
   }
 
@@ -290,7 +284,7 @@ function Workloads(props)
           {/* Predicted PCG FTE with its experience ratio */}
           <PredictPcgFTEwithExpRatio
             index={parseInt(key)}
-            pcgTime={workloads[key].PCG_ALL_TIME_HOURS}
+            //pcgTime={workloads[key].PCG_ALL_TIME_HOURS}
             initExperienceRatio={expRatios[parseInt(key)].EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={true}
