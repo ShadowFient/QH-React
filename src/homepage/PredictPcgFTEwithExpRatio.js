@@ -78,7 +78,7 @@ const PredictPcgFTEwithExpRatio = props => {
         <b>PCG</b>
       </Row>
       <Row>
-        <p>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
+        <p id={"pod"+index+"PcgFte"}>Predicted FTEs: {predictedFTE && predictedFTE.toFixed(2)}</p>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
           defaultValue={20}

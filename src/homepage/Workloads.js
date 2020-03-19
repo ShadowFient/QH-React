@@ -33,6 +33,15 @@ function Workloads(props)
   const [clientPSRLoading,setClientPSRLoading] = useState(true);
   const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
 
+  //info for ftes
+  const MonthCap1 = 0.76;
+  const MonthCap2 = 0.83;
+  const MonthCap3 = 0.88;
+  const MonthCap4 = 0.9;
+  const MonthCap5 = 0.92;
+  const MonthCap6 = 0.96;
+  const FTE_per_month = (capacity || 1570) / 12;
+
   const cards = Array(24).fill("Loading...");
 
   const apiHost = "https://qhpredictiveapi.com:8000";
@@ -132,7 +141,7 @@ function Workloads(props)
   }, []);
 
 
-  const changeLbl = (sourceDroppable,destDroppable,draggableId,isPsr,lbl) =>{
+  const changeAllTimeHours = (sourceDroppable,destDroppable,draggableId,isPsr,lbl) =>{
     let sourcePod = document.getElementById(lbl+sourceDroppable).innerText;
     let destinationPod =  document.getElementById(lbl + destDroppable).innerText;
     let text = sourcePod.slice(0,20);
@@ -151,6 +160,26 @@ function Workloads(props)
     hours_dest += sourceTotal;
     document.getElementById(lbl + destDroppable).innerText = text + hours_dest.toFixed(2).toString();
   };
+
+  // document.getElementById("pod"+ sourceDroppable + "PcgFte").innerText ="Predicted FTEs: " + (hours_source / FTE_per_month / (12 + expRatios[sourceDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
+  // document.getElementById("pod"+ destDroppable + "PcgFte").innerText = "Predicted FTEs: " + (hours_dest / FTE_per_month / (12 + expRatios[destDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
+  const changeFte = (sourceDroppable,destDroppable,isPsr,srcLbl,destLbl) => {
+    let sourcePod =document.getElementById("total_pcg_"+sourceDroppable).innerText;
+    let destPod = document.getElementById("total_pcg_"+ destDroppable).innerText;
+    let sourcePcg = sourcePod.slice(20,sourcePod.length);
+    let destPcg = destPod.slice(20,destPod.length);
+    let sourceFte = (sourcePcg / FTE_per_month / (12 + expRatios[sourceDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
+    let destFte = (destPcg / FTE_per_month / (12 + expRatios[destDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
+    if(isPsr){
+      //change formula
+    }
+    document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
+    document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
+
+
+
+
+  }
 
   const onDragEnd = result =>{
 
@@ -178,9 +207,10 @@ function Workloads(props)
     }
     //update psr and pcg labels:
     //pcg
-    changeLbl(source.droppableId,destination.droppableId,draggableId,false,"total_pcg_")
+    changeAllTimeHours(source.droppableId,destination.droppableId,draggableId,false,"total_pcg_")
     //psr
-    changeLbl(source.droppableId,destination.droppableId,draggableId,true,"total_psr_")
+    changeAllTimeHours(source.droppableId,destination.droppableId,draggableId,true,"total_psr_")
+    changeFte(source.droppableId,destination.droppableId,false,"pod" + source.droppableId +"PcgFte","pod" + destination.droppableId +"PcgFte")
     //save state when client is dragged across pods============================
     const startPod = Array.from(start);
     let removed = startPod.splice(source.index,1);
