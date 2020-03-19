@@ -9,7 +9,6 @@ function DropdownButton(props) {
     const pcg = props.pcgWK;
     const psr=props.psrWK;
     const gpsOfClients=props.gpsOfClients;
-    const podId=props.podId;
     const pod_key = parseInt(props.pod_key);
     const PCGActy = [];
     const PCGcmp = ["PDC", "PAC", "Follow Up", "New Alert",
@@ -61,10 +60,10 @@ function DropdownButton(props) {
                     EMPGRP Time: {PCGActy[PCGActy.length] = pcg.PCGEMPGRP_TIME_HOURS.toFixed(2)}
                 </DropdownItem>
                 <DropdownItem>
-                    <GraphForPCG cmp={PCGcmp} data={PCGActy} podId={podId}/>
+                    <GraphForPCG cmp={PCGcmp} data={PCGActy} podId={pod_key}/>
                 </DropdownItem>
                 <DropdownItem>
-                    <GraphForMonthPCG gpsOfClients={gpsOfClients} podId={podId}/>
+                    <GraphForMonthPCG gpsOfClients={gpsOfClients} podId={pod_key}/>
                 </DropdownItem>
             </Dropdown.Menu>
         </Dropdown>
