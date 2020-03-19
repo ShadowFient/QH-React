@@ -152,6 +152,9 @@ function Workloads(props)
       sourceTotal = (clientPSR[draggableId] * 7.68)/60;
     }
     hours_source -= sourceTotal;
+    if(hours_source<=0.1){
+      hours_source=0.00;
+    }
     //reset values
     document.getElementById(lbl + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
     //add to destinationpod

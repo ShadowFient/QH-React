@@ -31,7 +31,7 @@ function DropdownButton(props) {
                 style={dropdownButtonStyle}
             >
                 <label id={"total_pcg_"+pod_key.toString()}>
-                {"PCG All Time Hours: " + parseInt(pcg.PCG_ALL_TIME_HOURS).toFixed(2)}
+                {"PCG All Time Hours: " + parseFloat(pcg.PCG_ALL_TIME_HOURS).toFixed(2)}
                 </label>
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ width: "100%" }}>
