@@ -81,7 +81,7 @@ function Workloads(props)
           throw new Error(error.toString());
         });
         //local host, switch to remote host when api updated==========
-        fetch("http://127.0.0.1:5000/client_psr")
+        fetch(apiHost + "/client_psr")
         .then(response => response.json())
         .then(config => {
           setClientPSR(config);
