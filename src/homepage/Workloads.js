@@ -140,9 +140,6 @@ function Workloads(props)
     fetchWorkload();
   }, []);
 
-  const PCGwkhr=0;
-  const PSRwhkr=0;
-
   const changeAllTimeHours = (sourceDroppable,destDroppable,draggableId,isPsr,lbl) =>{
     let sourcePod = document.getElementById(lbl+sourceDroppable).innerText;
     let destinationPod =  document.getElementById(lbl + destDroppable).innerText;
@@ -152,18 +149,11 @@ function Workloads(props)
     let sourceTotal  = clientLevelWork[draggableId][7];
     if(isPsr){   
       sourceTotal = (clientPSR[draggableId] * 7.68)/60;
-      hours_source -= sourceTotal;
-      if(hours_source<=0.1){
-        hours_source=0.00;
-      }
-      PSRwhkr=hours_source;
-    }else{
-      hours_source -= sourceTotal;
-      if(hours_source<=0.1){
-        hours_source=0.00;
-      }
-      PSRwhkr=hours_source;
     }
+    hours_source -= sourceTotal;
+      if(hours_source<=0.1){
+        hours_source=0.00;
+      }
     //reset values
     document.getElementById(lbl + sourceDroppable).innerText = text + hours_source.toFixed(2).toString();
     //add to destinationpod
@@ -282,8 +272,6 @@ function Workloads(props)
     return Object.keys(workloads).map(key => {
       let pcgWk = workloads[key];
       let psrWK = psrWorks[key];
-      // let pcgWk=PCGwkhr;
-      // let psrWK=PSRwhkr;
 
       return (
         <Card key={key} className="p-3" container="container-sm">
