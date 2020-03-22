@@ -85,3 +85,6 @@ code {
   border-radius: 18px;
   border: 1px solid #cfcece;
 }
+.membertext {
+  text-align: right;
+}

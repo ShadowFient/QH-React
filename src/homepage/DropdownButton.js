@@ -87,9 +87,6 @@ function DropdownButton(props) {
             Percentage of predicted total PSR phone calls:
             {" " + psr.PERC_TOTAL_PSR_PHONE.toFixed(2) * 100 + "%"}
           </DropdownItem>
-          <DropdownItem>
-            PSR Act-Like Members: {psr.PSR_PHONE_ACTS_LIKE_MEM.toFixed(2)}
-          </DropdownItem>
         </Dropdown.Menu>
       </Dropdown>
       </>
