@@ -83,7 +83,7 @@ function Workloads(props) {
           throw new Error(error.toString());
         });
       //local host, switch to remote host when api updated==========
-      fetch("http://127.0.0.1:5000/client_psr")
+      fetch(apiHost + "/client_psr")
         .then(response => response.json())
         .then(config => {
           setClientPSR(config);
@@ -105,7 +105,7 @@ function Workloads(props) {
         });
 
       // fetch(apiHost + "/activity")
-      fetch("http://127.0.0.1:5000/activity") ////////////////////TO DO
+      fetch(apiHost + "/activity") ////////////////////TO DO
         .then(response => response.json())
         .then(activity => {
           setActivities(activity);
@@ -135,7 +135,7 @@ function Workloads(props) {
           throw new Error(error.toString());
         });
 
-      fetch("http://127.0.0.1:5000/members") ////////////////////TO DO
+      fetch(apiHost + "/members") ////////////////////TO DO
         .then(response => response.json())
         .then(member => {
           setMembers(member);
@@ -189,8 +189,7 @@ function Workloads(props) {
     let destFte = (dest / FTE_per_month / (12 + expRatios[destDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
     document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
-
-  }
+  };
 
   const onDragEnd = result => {
 
@@ -329,15 +328,12 @@ function Workloads(props) {
               className="d-inline-block align-top"
             />
             POD {parseInt(key)}
+            <span className={"float-right"} style={{fontSize: "15px"}}>Total Members: {podMem}</span>
           </Card.Title>
-          <Card.Text className="membertext">Total Members: {
-            <ins>{podMem}</ins>}
-          </Card.Text>
 
           {/* Predicted PCG FTE with its experience ratio */}
           <PredictPcgFTEwithExpRatio
             index={parseInt(key)}
-            //pcgTime={workloads[key].PCG_ALL_TIME_HOURS}
             initExperienceRatio={expRatios[parseInt(key)].EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={true}
@@ -347,7 +343,6 @@ function Workloads(props) {
           {/* Predicted PSR FTE with its experience ratio */}
           <PredictPsrFTEwithExpRatio
             index={parseInt(key)}
-            //psrTime={(psrWorks[key].PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
             initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
