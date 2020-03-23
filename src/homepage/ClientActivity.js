@@ -12,6 +12,7 @@ function ClientActivity(props) {
   const handleShow = () => setShow(true);
   const gpsOfClients = props.gpsOfClients;
   const groupid = props.group_id;
+  const clientMem = props.clientMem;
   const data = Array(14).fill(0);
   const client_data = Array(8).fill(0);
   const monthdt = [];
@@ -57,7 +58,7 @@ function ClientActivity(props) {
   clientLevelWork[groupid[1]] = client_data;
   return (
     <>
-      <button className="button" onClick={handleShow}>{groupid[1]}</button>
+      <button className="button" onClick={handleShow}>{groupid[1]} <small className="membertext"> (Members: {clientMem.get(groupid[0].toString())})</small></button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Clients: {groupid[1]}</Modal.Title>

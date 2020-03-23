@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 
 const Clients = props => {
-  const { clientsPerPOD, podId, gpsOfClients } = props;
+  const { clientsPerPOD, podId, gpsOfClients, clientMem } = props;
   let clients;
 
   if (clientsPerPOD && clientsPerPOD.length > 0) {
@@ -24,6 +24,7 @@ const Clients = props => {
                   group_id={client}
                   pod_id={podId}
                   gpsOfClients={gpsOfClients}
+                  clientMem={clientMem}
                 />
               }
               </ListGroup.Item>

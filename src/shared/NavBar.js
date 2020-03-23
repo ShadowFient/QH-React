@@ -25,7 +25,8 @@ function QHNavBar(props) {
     updateConfigsList,
     updatePSRWork,
     updateActivities,
-    updateCapacity
+    updateCapacity,
+    updateMembers
   } = props;
 
   const [showSaveStatus, setShowSaveStatus] = useState(false);
@@ -132,14 +133,19 @@ function QHNavBar(props) {
                     fetch(apiHost + "/activity?name=" + selectedName)
                       .then(response => response.json())
                       .then(activities => {
-                        updateConfig(config);
-                        updateWorkloads(workloads);
-                        updateExpRatios(ratios);
-                        updatePSRWork(psr);
-                        updateActivities(activities);
-                        setIsLoading(false);
-                        setLoadMessage(loadSucceedMessage);
-                        setShowLoadStatus(true);
+                        fetch("http://127.0.0.1:5000/members?name=" + selectedName) //////////TO DO
+                          .then(response => response.json())
+                          .then(members => {
+                            updateConfig(config);
+                            updateWorkloads(workloads);
+                            updateExpRatios(ratios);
+                            updatePSRWork(psr);
+                            updateActivities(activities);
+                            updateMembers(members);
+                            setIsLoading(false);
+                            setLoadMessage(loadSucceedMessage);
+                            setShowLoadStatus(true);
+                          });
                       });
                   });
               });
