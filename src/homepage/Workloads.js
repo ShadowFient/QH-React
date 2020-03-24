@@ -43,6 +43,9 @@ function Workloads(props) {
   const MonthCap6 = 0.96;
   const FTE_per_month = (capacity || 1570) / 12;
 
+  const memMap = new Map(); //key is GroupId and value is members
+  const podMemMap = new Map(); //key is podId and value is pod's total members
+
   const cards = Array(24).fill("Loading...");
 
   const apiHost = "https://qhpredictiveapi.com:8000";
@@ -105,7 +108,7 @@ function Workloads(props) {
         });
 
       // fetch(apiHost + "/activity")
-      fetch(apiHost + "/activity") ////////////////////TO DO
+      fetch("http://127.0.0.1:5000/activity") ////////////////////TO DO
         .then(response => response.json())
         .then(activity => {
           setActivities(activity);
@@ -134,8 +137,7 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
-
-      fetch(apiHost + "/members") ////////////////////TO DO
+        fetch("http://127.0.0.1:5000/members") ////////////////////TO DO
         .then(response => response.json())
         .then(member => {
           setMembers(member);
@@ -144,6 +146,8 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
+
+
 
     } catch (err) {
       console.log(err);
@@ -190,10 +194,20 @@ function Workloads(props) {
     document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
   };
+  const changeMembNum = (sourceDroppable,destDroppable, draggableId)=>{
+    let clientMembers = memMap.get(draggableId)
+    let sourcePod = Number(document.getElementById("podMembNum" + sourceDroppable).innerText.slice(15)) - clientMembers;
+    let destPod = Number(document.getElementById("podMembNum" + destDroppable).innerText.slice(15)) + clientMembers;
+    document.getElementById("podMembNum" + sourceDroppable).innerText = "Total Members: " + sourcePod.toString();
+    document.getElementById("podMembNum" + destDroppable).innerText = "Total Members: " + destPod.toString();
+  
+
+  }
 
   const onDragEnd = result => {
 
     const { destination, source, draggableId } = result;
+    
 
     if (!destination) {
       return;
@@ -217,10 +231,12 @@ function Workloads(props) {
     }
     //update psr and pcg labels:
     //pcg
-    changeAllTimeHours(source.droppableId, destination.droppableId, draggableId, false, "total_pcg_")
-    changeAllTimeHours(source.droppableId, destination.droppableId, draggableId, true, "total_psr_")
-    changeFte(source.droppableId, destination.droppableId, false, "pod" + source.droppableId + "PcgFte", "pod" + destination.droppableId + "PcgFte")
-    changeFte(source.droppableId, destination.droppableId, true, "pod" + source.droppableId + "PsrFte", "pod" + destination.droppableId + "PsrFte")
+    changeAllTimeHours(source.droppableId, destination.droppableId, draggableId, false, "total_pcg_");
+    changeAllTimeHours(source.droppableId, destination.droppableId, draggableId, true, "total_psr_");
+    changeFte(source.droppableId, destination.droppableId, false, "pod" + source.droppableId + "PcgFte", "pod" + destination.droppableId + "PcgFte");
+    changeFte(source.droppableId, destination.droppableId, true, "pod" + source.droppableId + "PsrFte", "pod" + destination.droppableId + "PsrFte");
+    changeMembNum(source.droppableId,destination.droppableId,draggableId);
+
 
     //save state when client is dragged across pods============================
     const startPod = Array.from(start);
@@ -296,8 +312,7 @@ function Workloads(props) {
     ));
 
     // Extract number of members and store in the map
-    const memMap = new Map(); //key is GroupId and value is members
-    const podMemMap = new Map(); //key is podId and value is pod's total members
+   
     Object.keys(members).map(key => {
       let clients = members[key];
       Object.keys(clients).map(key1 => {
@@ -328,7 +343,7 @@ function Workloads(props) {
               className="d-inline-block align-top"
             />
             POD {parseInt(key)}
-            <span className={"float-right"} style={{fontSize: "15px"}}>Total Members: {podMem}</span>
+            <span id={"podMembNum"+parseInt(key)} className={"float-right"} style={{fontSize: "15px"}}>Total Members: {podMem}</span>
           </Card.Title>
 
           {/* Predicted PCG FTE with its experience ratio */}

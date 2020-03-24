@@ -58,7 +58,7 @@ function ClientActivity(props) {
   clientLevelWork[groupid[1]] = client_data;
   return (
     <>
-      <button className="button" onClick={handleShow}>{groupid[1]} <small className="membertext"> (Members: {clientMem.get(groupid[0].toString())})</small></button>
+      <button className="button" onClick={handleShow}>{groupid[1]} <small className="membertext"> (Members: {clientMem.get(groupid[1].toString())})</small></button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Clients: {groupid[1]}</Modal.Title>
