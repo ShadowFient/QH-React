@@ -87,7 +87,7 @@ function Workloads(props) {
           throw new Error(error.toString());
         });
       //local host, switch to remote host when api updated==========
-      fetch(apiHost + "/client_psr")
+      fetch("http://127.0.0.1:5000/client_psr")
         .then(response => response.json())
         .then(config => {
           setClientPSR(config);
@@ -166,7 +166,8 @@ function Workloads(props) {
     //subtract from sourcepod
     let sourceTotal = clientLevelWork[draggableId][7];
     if (isPsr) {
-      sourceTotal = (clientPSR[draggableId] * 7.68) / 60;
+      
+      sourceTotal = (clientPSR[draggableId][0] * 7.68) / 60;
     }
     hours_source -= sourceTotal;
     if (hours_source <= 0.1) {
@@ -219,6 +220,11 @@ function Workloads(props) {
     workloads[destDroppable].PCGTERM_TIME_HOURS += clientLevelWork[draggableId][5];
     workloads[sourceDroppable].PCGEMPGRP_TIME_HOURS -= clientLevelWork[draggableId][6];
     workloads[destDroppable].PCGEMPGRP_TIME_HOURS += clientLevelWork[draggableId][6];
+
+    //psr
+    psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
+    psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
+
   }
 
   const onDragEnd = result => {
