@@ -6,7 +6,7 @@ import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
-import PredictPsrFTEwithExpRatio from "./PredictPsrFTEwithExpRatio";
+import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
 import { DragDropContext } from 'react-beautiful-dnd'
 import { clientLevelWork } from "./ClientActivity";
@@ -35,7 +35,7 @@ function Workloads(props) {
   const [memberLoading, setMemberLoading] = useState(true);
   const [DnDFired, setDnDFired] = useState(true);
 
-  //info for ftes
+  //info for FTEs
   const MonthCap1 = 0.76;
   const MonthCap2 = 0.83;
   const MonthCap3 = 0.88;
@@ -86,8 +86,8 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
-      //local host, switch to remote host when api updated==========
-      fetch("http://127.0.0.1:5000/client_psr")
+
+      fetch(apiHost + "/client_psr")
         .then(response => response.json())
         .then(config => {
           setClientPSR(config);
@@ -97,7 +97,7 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
-      //===========================================================
+
       fetch(apiHost + "/pod_to_clients")
         .then(response => response.json())
         .then(config => {
@@ -108,8 +108,7 @@ function Workloads(props) {
           throw new Error(error.toString());
         });
 
-      // fetch(apiHost + "/activity")
-      fetch("http://127.0.0.1:5000/activity") ////////////////////TO DO
+      fetch(apiHost + "/activity")
         .then(response => response.json())
         .then(activity => {
           setActivities(activity);
@@ -138,7 +137,7 @@ function Workloads(props) {
         .catch(error => {
           throw new Error(error.toString());
         });
-        fetch("http://127.0.0.1:5000/members") ////////////////////TO DO
+        fetch(apiHost + "/members")
         .then(response => response.json())
         .then(member => {
           setMembers(member);
@@ -197,12 +196,13 @@ function Workloads(props) {
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
   };
   const changeMembNum = (sourceDroppable,destDroppable, draggableId)=>{
-    let clientMembers = memMap.get(draggableId)
+    let clientMembers = memMap.get(draggableId);
     let sourcePod = Number(document.getElementById("podMembNum" + sourceDroppable).innerText.slice(15)) - clientMembers;
     let destPod = Number(document.getElementById("podMembNum" + destDroppable).innerText.slice(15)) + clientMembers;
     document.getElementById("podMembNum" + sourceDroppable).innerText = "Total Members: " + sourcePod.toString();
     document.getElementById("podMembNum" + destDroppable).innerText = "Total Members: " + destPod.toString();
-  }
+  };
+
   //source/dest - indexing into workloads, draggableId - client dragged
   const changeDropDown = (sourceDroppable,destDroppable,draggableId) => {
     //pcg
@@ -225,7 +225,7 @@ function Workloads(props) {
     psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
     psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
 
-  }
+  };
 
   const onDragEnd = result => {
     const { destination, source, draggableId } = result;
@@ -291,7 +291,7 @@ function Workloads(props) {
 
     // Fetch activities
     const table = [];
-    const actlikemem = [];
+    const actLikeMem = [];
     activities.map(activity => (
       <div>
         {table.push([
@@ -315,7 +315,7 @@ function Workloads(props) {
           activity.PCGEMPGRP_TIME_HOURS_UNSUCC
         ])}
 
-        {actlikemem.push([
+        {actLikeMem.push([
           activity.INITIAL_POD,
           activity.GroupID,
           activity.PSR_PHONE_ACTS_LIKE_MEM,
@@ -341,7 +341,7 @@ function Workloads(props) {
           memMap.set(key1, clients[key1]);
         }
       })
-    })
+    });
 
     return Object.keys(workloads).map(key => {
       let pcgWk = workloads[key];
@@ -375,7 +375,7 @@ function Workloads(props) {
           />
 
           {/* Predicted PSR FTE with its experience ratio */}
-          <PredictPsrFTEwithExpRatio
+          <PredictPsrFTEWithExpRatio
             index={parseInt(key)}
             initExperienceRatio={expRatios[parseInt(key)].PSR_EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
@@ -400,10 +400,12 @@ function Workloads(props) {
   };
 
   return (workloadLoading || expRatioLoading || clientsConfigLoading
-    || psrLoading || activityLoading || currentConfigsLoading) ? (
+    || psrLoading || activityLoading || currentConfigsLoading || memberLoading
+    || clientPSRLoading) ? (
       <div>
         <QHNavBar loading={(workloadLoading || expRatioLoading || clientsConfigLoading
-          || psrLoading || activityLoading || currentConfigsLoading)} />
+          || psrLoading || activityLoading || currentConfigsLoading
+          || memberLoading || clientPSRLoading)} />
         <div>
           <CardColumns>{initializeCards()}</CardColumns>
         </div>
@@ -412,7 +414,8 @@ function Workloads(props) {
       <div>
         <QHNavBar
           loading={(workloadLoading || expRatioLoading || clientsConfigLoading
-            || psrLoading || activityLoading || currentConfigsLoading)}
+            || psrLoading || activityLoading || currentConfigsLoading
+            || memberLoading || clientPSRLoading)}
           clientsConfig={clients}
           updateConfig={setClients}
           currentConfigs={configs}

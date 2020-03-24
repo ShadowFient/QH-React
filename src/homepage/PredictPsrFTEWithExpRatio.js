@@ -15,7 +15,7 @@ const marks = [
   }
 ];
 
-const PredictPsrFTEwithExpRatio = props => {
+const PredictPsrFTEWithExpRatio = props => {
   const {
     index,
     initExperienceRatio,
@@ -72,8 +72,6 @@ const PredictPsrFTEwithExpRatio = props => {
     ratioChangeHandler(isPcgRatio, index, changedRatio);
   };
 
-  // console.log("[PredictPsrFTEwithExpRatio]");
-
   return (
     <Container>
       <Row>
@@ -97,10 +95,5 @@ const PredictPsrFTEwithExpRatio = props => {
   );
 };
 
-// const areEqual = (prevProps, nextProps) => {
-//   return prevProps.psrTime === nextProps.psrTime;
-// };
 
-// export default React.memo(PredictPsrFTEwithExpRatio, areEqual);
-
-export default PredictPsrFTEwithExpRatio;
+export default PredictPsrFTEWithExpRatio;

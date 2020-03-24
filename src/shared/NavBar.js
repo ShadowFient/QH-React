@@ -133,7 +133,7 @@ function QHNavBar(props) {
                     fetch(apiHost + "/activity?name=" + selectedName)
                       .then(response => response.json())
                       .then(activities => {
-                        fetch("http://127.0.0.1:5000/members?name=" + selectedName) //////////TO DO
+                        fetch(apiHost + "/members?name=" + selectedName)
                           .then(response => response.json())
                           .then(members => {
                             updateConfig(config);

@@ -70,8 +70,6 @@ const PredictPcgFTEwithExpRatio = props => {
     ratioChangeHandler(isPcgRatio, index, changedRatio);
   };
 
-  // console.log("[PredictPcgFTEwithExpRatio]");
-
   return (
     <Container>
       <Row>
@@ -94,11 +92,5 @@ const PredictPcgFTEwithExpRatio = props => {
     </Container>
   );
 };
-
-// const areEqual = (prevProps, nextProps) => {
-//   return prevProps.pcgTime === nextProps.pcgTime;
-// };
-
-// export default React.memo(PredictFTEwithExpRatio, areEqual);
 
 export default PredictPcgFTEwithExpRatio;
