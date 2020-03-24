@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import Clients from "./Clients";
@@ -33,6 +33,7 @@ function Workloads(props) {
   const [clientPSRLoading, setClientPSRLoading] = useState(true);
   const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
   const [memberLoading, setMemberLoading] = useState(true);
+  const [DnDFired, setDnDFired] = useState(true);
 
   //info for ftes
   const MonthCap1 = 0.76;
@@ -200,15 +201,28 @@ function Workloads(props) {
     let destPod = Number(document.getElementById("podMembNum" + destDroppable).innerText.slice(15)) + clientMembers;
     document.getElementById("podMembNum" + sourceDroppable).innerText = "Total Members: " + sourcePod.toString();
     document.getElementById("podMembNum" + destDroppable).innerText = "Total Members: " + destPod.toString();
-  
-
+  }
+  //source/dest - indexing into workloads, draggableId - client dragged
+  const changeDropDown = (sourceDroppable,destDroppable,draggableId) => {
+    //pcg
+    workloads[sourceDroppable].PCGPDC_TIME_HOURS -= clientLevelWork[draggableId][0];
+    workloads[destDroppable].PCGPDC_TIME_HOURS += clientLevelWork[draggableId][0];
+    workloads[sourceDroppable].PCGPAC_TIME_HOURS -= clientLevelWork[draggableId][1];
+    workloads[destDroppable].PCGPAC_TIME_HOURS += clientLevelWork[draggableId][1];
+    workloads[sourceDroppable].PCGFLLUP_TIME_HOURS -= clientLevelWork[draggableId][2];
+    workloads[destDroppable].PCGFLLUP_TIME_HOURS += clientLevelWork[draggableId][2];
+    workloads[sourceDroppable].PCGNEWALERT_TIME_HOURS -= clientLevelWork[draggableId][3];
+    workloads[destDroppable].PCGNEWALERT_TIME_HOURS += clientLevelWork[draggableId][3];
+    workloads[sourceDroppable].PCGREF_TIME_HOURS -= clientLevelWork[draggableId][4];
+    workloads[destDroppable].PCGREF_TIME_HOURS += clientLevelWork[draggableId][4];
+    workloads[sourceDroppable].PCGTERM_TIME_HOURS -= clientLevelWork[draggableId][5];
+    workloads[destDroppable].PCGTERM_TIME_HOURS += clientLevelWork[draggableId][5];
+    workloads[sourceDroppable].PCGEMPGRP_TIME_HOURS -= clientLevelWork[draggableId][6];
+    workloads[destDroppable].PCGEMPGRP_TIME_HOURS += clientLevelWork[draggableId][6];
   }
 
   const onDragEnd = result => {
-
     const { destination, source, draggableId } = result;
-    
-
     if (!destination) {
       return;
     }
@@ -229,14 +243,13 @@ function Workloads(props) {
       setClients(JSON.parse(JSON.stringify(clients)));
       return;
     }
-    //update psr and pcg labels:
-    //pcg
+    //update labels - is there a more elegant way?
+    changeDropDown(Number(source.droppableId).toFixed(1).toString(),Number(destination.droppableId).toFixed(1).toString(),draggableId);
     changeAllTimeHours(source.droppableId, destination.droppableId, draggableId, false, "total_pcg_");
     changeAllTimeHours(source.droppableId, destination.droppableId, draggableId, true, "total_psr_");
     changeFte(source.droppableId, destination.droppableId, false, "pod" + source.droppableId + "PcgFte", "pod" + destination.droppableId + "PcgFte");
     changeFte(source.droppableId, destination.droppableId, true, "pod" + source.droppableId + "PsrFte", "pod" + destination.droppableId + "PsrFte");
     changeMembNum(source.droppableId,destination.droppableId,draggableId);
-
 
     //save state when client is dragged across pods============================
     const startPod = Array.from(start);
