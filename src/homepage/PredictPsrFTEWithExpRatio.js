@@ -24,9 +24,9 @@ const PredictPsrFTEWithExpRatio = props => {
     isPcgRatio,
     capacity,
     allInputFTE,
-    updateInputFTE,
+    updateTotalInputFTE,
     allPredictFTE,
-    updatePredictFTE,
+    updateTotalPredictFTE,
     psrTime
   } = props;
   const MonthCap1 = 0.76;
@@ -36,8 +36,9 @@ const PredictPsrFTEWithExpRatio = props => {
   const MonthCap5 = 0.92;
   const MonthCap6 = 0.96;
 
+  const [defaultVal, setDefaultVal] = useState(initExperienceRatio);
   const [ratio, setRatio] = useState(initExperienceRatio);
-  const [curFTE, setCurFTE] = useState(0);
+  const [inputFTE, setInputFTE] = useState(0);
   const [predictFTE, setPredictFTE] = useState(0);
   const FTE_per_month = (capacity || 1570) / 12;
 
@@ -70,12 +71,12 @@ const PredictPsrFTEWithExpRatio = props => {
       "Predicted FTEs: " + predictedFTE.toFixed(2).toString();
     setPredictFTE(preFTE => {
       const newFTE = parseFloat(predictedFTE.toFixed(2));
-      updatePredictFTE(prev => {
+      updateTotalPredictFTE(prev => {
         return parseFloat((prev - preFTE + newFTE).toFixed(2));
       });
       return newFTE;
     });
-  }, [ratio, FTE_per_month, index, allPredictFTE, psrTime, updatePredictFTE]);
+  }, [ratio, FTE_per_month, index, allPredictFTE, psrTime, updateTotalPredictFTE]);
 
   const formatValueText = value => {
     return `${value}%`;
@@ -88,13 +89,15 @@ const PredictPsrFTEWithExpRatio = props => {
     ratioChangeHandler(isPcgRatio, index, changedRatio);
   };
 
+  // console.log("psr rerender");
+
   const changeFTE = event => {
     event.preventDefault();
     let newFTE = event.target.value === "" ? 0 : parseFloat(event.target.value);
     let updatedTotalFTE = allInputFTE;
-    setCurFTE(preFTE => {
+    setInputFTE(preFTE => {
       updatedTotalFTE = allInputFTE - preFTE + newFTE;
-      updateInputFTE(updatedTotalFTE);
+      updateTotalInputFTE(updatedTotalFTE);
       return newFTE;
     });
   };
@@ -122,7 +125,7 @@ const PredictPsrFTEWithExpRatio = props => {
         </Col>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
-          value={ratio * 100}
+          defaultValue={defaultVal * 100}
           onChangeCommitted={sliderHandler}
           min={0}
           step={1}
@@ -136,4 +139,8 @@ const PredictPsrFTEWithExpRatio = props => {
   );
 };
 
-export default PredictPsrFTEWithExpRatio;
+const areEqual = (prevProp, nextProp) => {
+  return prevProp.psrTime === nextProp.psrTime;
+};
+
+export default React.memo(PredictPsrFTEWithExpRatio, areEqual);

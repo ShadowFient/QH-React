@@ -25,9 +25,9 @@ const PredictPcgFTEWithExpRatio = props => {
     isPcgRatio,
     capacity,
     allInputFTE,
-    updateInputFTE,
+    updateTotalInputFTE,
     allPredictFTE,
-    updatePredictFTE,
+    updateTotalPredictFTE,
     pcgTime
   } = props;
   const MonthCap1 = 0.76;
@@ -36,8 +36,10 @@ const PredictPcgFTEWithExpRatio = props => {
   const MonthCap4 = 0.9;
   const MonthCap5 = 0.92;
   const MonthCap6 = 0.96;
+
+  const [defaultVal, setDefaultVal] = useState(initExperienceRatio);
   const [ratio, setRatio] = useState(initExperienceRatio);
-  const [curFTE, setCurFTE] = useState(0);
+  const [inputFTE, setInputFTE] = useState(0);
   const [predictFTE, setPredictFTE] = useState(0);
   const FTE_per_month = (capacity || 1570) / 12;
 
@@ -52,7 +54,8 @@ const PredictPcgFTEWithExpRatio = props => {
      *
      */
     // let source = document.getElementById("total_pcg_" + index).innerText;
-    let source = pcgTime || document.getElementById("total_pcg_" + index).innerText;
+    let source =
+      pcgTime || document.getElementById("total_pcg_" + index).innerText;
     let sourcePcg = source.slice(20, source.length);
     const predictedFTE =
       sourcePcg /
@@ -70,12 +73,19 @@ const PredictPcgFTEWithExpRatio = props => {
       "Predicted FTEs: " + predictedFTE.toFixed(2).toString();
     setPredictFTE(preFTE => {
       const newFTE = parseFloat(predictedFTE.toFixed(2));
-      updatePredictFTE(prev => {
+      updateTotalPredictFTE(prev => {
         return parseFloat((prev - preFTE + newFTE).toFixed(2));
       });
       return newFTE;
     });
-  }, [ratio, FTE_per_month, index, allPredictFTE, pcgTime, updatePredictFTE]);
+  }, [
+    ratio,
+    FTE_per_month,
+    index,
+    allPredictFTE,
+    pcgTime,
+    updateTotalPredictFTE
+  ]);
 
   const formatValueText = value => {
     return `${value}%`;
@@ -88,15 +98,14 @@ const PredictPcgFTEWithExpRatio = props => {
     ratioChangeHandler(isPcgRatio, index, changedRatio);
   };
 
-  // console.log("[PredictPcgFTEwithExpRatio]");
-
   const changeFTE = event => {
     event.preventDefault();
     let newFTE = event.target.value === "" ? 0 : parseFloat(event.target.value);
     let updatedTotalFTE = allInputFTE;
-    setCurFTE(preFTE => {
+    setInputFTE(preFTE => {
       updatedTotalFTE = allInputFTE - preFTE + newFTE;
-      updateInputFTE(updatedTotalFTE);
+      // console.log(updatedTotalFTE);
+      updateTotalInputFTE(updatedTotalFTE);
       return newFTE;
     });
   };
@@ -124,7 +133,7 @@ const PredictPcgFTEWithExpRatio = props => {
         </Col>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
-          value={ratio * 100}
+          defaultValue={defaultVal * 100}
           onChangeCommitted={sliderHandler}
           min={0}
           step={1}
@@ -138,4 +147,8 @@ const PredictPcgFTEWithExpRatio = props => {
   );
 };
 
-export default PredictPcgFTEWithExpRatio;
+const areEqual = (prevProp, nextProp) => {
+  return prevProp.pcgTime === nextProp.pcgTime;
+};
+
+export default React.memo(PredictPcgFTEWithExpRatio, areEqual);
