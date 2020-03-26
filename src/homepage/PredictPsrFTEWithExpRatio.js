@@ -122,7 +122,7 @@ const PredictPsrFTEWithExpRatio = props => {
         </Col>
         <Slider
           style={{ color: "#fcd406", marginBottom: "25px" }}
-          defaultValue={20}
+          value={ratio * 100}
           onChangeCommitted={sliderHandler}
           min={0}
           step={1}
