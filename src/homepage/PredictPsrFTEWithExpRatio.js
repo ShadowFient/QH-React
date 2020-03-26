@@ -147,11 +147,4 @@ const PredictPsrFTEWithExpRatio = props => {
   );
 };
 
-const areEqual = (prevProp, nextProp) => {
-  return (
-    prevProp.psrTime === nextProp.psrTime &&
-    prevProp.capacity === nextProp.capacity
-  );
-};
-
-export default React.memo(PredictPsrFTEWithExpRatio, areEqual);
+export default PredictPsrFTEWithExpRatio;
