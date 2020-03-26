@@ -53,7 +53,8 @@ const PredictPsrFTEWithExpRatio = props => {
      *
      */
     // let source = document.getElementById("total_psr_" + index).innerText;
-    let source = psrTime || document.getElementById("total_psr_" + index).innerText;
+    let source =
+      psrTime || document.getElementById("total_psr_" + index).innerText;
     let sourcePsr = source.slice(20, source.length);
     const predictedFTE =
       sourcePsr /
@@ -76,7 +77,14 @@ const PredictPsrFTEWithExpRatio = props => {
       });
       return newFTE;
     });
-  }, [ratio, FTE_per_month, index, allPredictFTE, psrTime, updateTotalPredictFTE]);
+  }, [
+    ratio,
+    FTE_per_month,
+    index,
+    allPredictFTE,
+    psrTime,
+    updateTotalPredictFTE
+  ]);
 
   const formatValueText = value => {
     return `${value}%`;
@@ -140,7 +148,11 @@ const PredictPsrFTEWithExpRatio = props => {
 };
 
 const areEqual = (prevProp, nextProp) => {
-  return prevProp.psrTime === nextProp.psrTime;
+  console.log(prevProp.capacity === nextProp.capacity);
+  return (
+    prevProp.psrTime === nextProp.psrTime &&
+    prevProp.capacity === nextProp.capacity
+  );
 };
 
 export default React.memo(PredictPsrFTEWithExpRatio, areEqual);

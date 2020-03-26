@@ -44,7 +44,7 @@ function QHNavBar(props) {
 	const [showDeleteLastModal, setShowDeleteLastModal] = useState(false);
 	const [selectedDelCfg, setSelectedDelCfg] = useState("");
 
-	const [currentDisplayConfig, setCurrentDisplayConfig] = useState("initial Config");
+	const [currentDisplayConfig, setCurrentDisplayConfig] = useState("Initial Config");
 	const configNameRef = React.createRef();
 
 	const [showFilterModal, setShowFilterModal] = useState(false);

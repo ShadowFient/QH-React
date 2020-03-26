@@ -148,7 +148,10 @@ const PredictPcgFTEWithExpRatio = props => {
 };
 
 const areEqual = (prevProp, nextProp) => {
-  return prevProp.pcgTime === nextProp.pcgTime;
+  return (
+    prevProp.pcgTime === nextProp.pcgTime &&
+    prevProp.capacity === nextProp.capacity
+  );
 };
 
 export default React.memo(PredictPcgFTEWithExpRatio, areEqual);
