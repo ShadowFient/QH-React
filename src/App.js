@@ -4,9 +4,9 @@ import './App.css';
 import Workloads from "./homepage/Workloads";
 
 function App() {
-  return (
-    <Workloads />
-  );
+	return (
+		<Workloads/>
+	);
 }
 
 export default App;
