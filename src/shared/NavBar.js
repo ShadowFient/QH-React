@@ -26,7 +26,9 @@ function QHNavBar(props) {
     updatePSRWork,
     updateActivities,
     updateCapacity,
-    updateMembers
+    updateMembers,
+    allInputFTE,
+    allPredictFTE
   } = props;
 
   const [showSaveStatus, setShowSaveStatus] = useState(false);
@@ -201,29 +203,26 @@ function QHNavBar(props) {
         />{" "}
       </Navbar.Brand>
 
-      {/* padding */}
-      <Col></Col>
-      <Col></Col>
-      <Col></Col>
-      <Col></Col>
-      <Col></Col>
-      <Col></Col>
-      <Col></Col>
+      <Col md={{ span: 2}}>Total Input FTEs: {allInputFTE && allInputFTE.toFixed(2)}</Col>
+      <Col md={{ span: 2}}>Total Predicted FTEs: {allPredictFTE && allPredictFTE.toFixed(2)}</Col>
+      <Col md={{ span: 2}}>Total Input Compared to Predicted: {allPredictFTE && allInputFTE && ((allInputFTE / allPredictFTE) * 100).toFixed(2) + "%"}</Col>
+
+      <Col md={{ span: 2}}>
+        <InputGroup>
+          <InputGroup.Prepend>
+            <InputGroup.Text>Annual Capacity (Hours)</InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+            type={"number"}
+            defaultValue={1570}
+            aria-label="Annual Capacity (Hours)"
+            onChange={onChangeCapacityHanlder}
+            style={{ maxWidth: "80px" }}
+          />
+        </InputGroup>
+      </Col>
 
       <Navbar.Collapse className="justify-content-end">
-        <Col>
-          <InputGroup>
-            <InputGroup.Prepend>
-              <InputGroup.Text>Annual Capacity (Hours)</InputGroup.Text>
-            </InputGroup.Prepend>
-            <FormControl
-              type={"number"}
-              defaultValue={1570}
-              aria-label="Annual Capacity (Hours)"
-              onChange={onChangeCapacityHanlder}
-            />
-          </InputGroup>
-        </Col>
 
         {/*Load Function*/}
         <Dropdown>

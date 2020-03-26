@@ -1,11 +1,11 @@
 /* eslint-disable */
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
-import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
+import PredictPcgFTEWithExpRatio from "./PredictPcgFTEWithExpRatio";
 import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
 import { DragDropContext } from 'react-beautiful-dnd'
@@ -24,6 +24,8 @@ function Workloads(props) {
   const [activities, setActivities] = useState();
   const [capacity, setCapacity] = useState();
   const [members, setMembers] = useState();
+  const [allPredictFTE, setAllPredictFTE] = useState(0);
+  const [allInputFTE, setAllInputFTE] = useState(0);
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
@@ -153,6 +155,7 @@ function Workloads(props) {
       console.log(err);
     }
   };
+
   useEffect(() => {
     fetchWorkload();
   }, []);
@@ -165,7 +168,7 @@ function Workloads(props) {
     //subtract from sourcepod
     let sourceTotal = clientLevelWork[draggableId][7];
     if (isPsr) {
-      
+
       sourceTotal = (clientPSR[draggableId][0] * 7.68) / 60;
     }
     hours_source -= sourceTotal;
@@ -188,6 +191,7 @@ function Workloads(props) {
       sourcePod = document.getElementById("total_psr_" + sourceDroppable).innerText;
       destPod = document.getElementById("total_psr_" + destDroppable).innerText;
     }
+
     let source = sourcePod.slice(20, sourcePod.length);
     let dest = destPod.slice(20, destPod.length);
     let sourceFte = (source / FTE_per_month / (12 + expRatios[sourceDroppable].EXP_RATIO * (MonthCap1 + MonthCap2 + MonthCap3 + MonthCap4 + MonthCap5 + MonthCap6 - 6))).toFixed(2).toString();
@@ -331,7 +335,7 @@ function Workloads(props) {
     ));
 
     // Extract number of members and store in the map
-   
+
     Object.keys(members).map(key => {
       let clients = members[key];
       Object.keys(clients).map(key1 => {
@@ -366,12 +370,17 @@ function Workloads(props) {
           </Card.Title>
 
           {/* Predicted PCG FTE with its experience ratio */}
-          <PredictPcgFTEwithExpRatio
+          <PredictPcgFTEWithExpRatio
             index={parseInt(key)}
             initExperienceRatio={expRatios[parseInt(key)].EXP_RATIO}
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={true}
             capacity={capacity}
+            allInputFTE={allInputFTE}
+            updateInputFTE={setAllInputFTE}
+            allPredictFTE={allPredictFTE}
+            updatePredictFTE={setAllPredictFTE}
+            pcgTime={document.getElementById("total_pcg_" + parseInt(key)) && document.getElementById("total_pcg_" + parseInt(key)).innerText}
           />
 
           {/* Predicted PSR FTE with its experience ratio */}
@@ -381,6 +390,11 @@ function Workloads(props) {
             ratioChangeHandler={ratioChangeHandler}
             isPcgRatio={false}
             capacity={capacity}
+            allInputFTE={allInputFTE}
+            updateInputFTE={setAllInputFTE}
+            allPredictFTE={allPredictFTE}
+            updatePredictFTE={setAllPredictFTE}
+            psrTime={document.getElementById("total_psr_" + parseInt(key)) && document.getElementById("total_psr_" + parseInt(key)).innerText}
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
@@ -428,6 +442,8 @@ function Workloads(props) {
           updateActivities={setActivities}
           updateCapacity={setCapacity}
           updateMembers={setMembers}
+          allInputFTE={allInputFTE}
+          allPredictFTE={allPredictFTE}
         />
         <DragDropContext onDragEnd={onDragEnd}>
           <div>
