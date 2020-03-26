@@ -589,7 +589,9 @@ function Workloads(props) {
         updateMembers={setMembers}
         cardsRefsMap={cardsRefsMap}
         allInputFTE={allInputFTE}
+        setAllInputFTE={setAllInputFTE}
         allPredictFTE={allPredictFTE}
+        setAllPredictFTE={setAllPredictFTE}
       />
       <DragDropContext onDragEnd={onDragEnd}>
         <div>

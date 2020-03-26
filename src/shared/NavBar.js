@@ -28,8 +28,10 @@ function QHNavBar(props) {
     updateActivities,
     updateCapacity,
     updateMembers,
-    allInputFTE,
-    allPredictFTE,
+	allInputFTE,
+	setAllInputFTE,
+	allPredictFTE,
+	setAllPredictFTE,
     cardsRefsMap
   } = props;
 
@@ -124,6 +126,10 @@ function QHNavBar(props) {
 
 	function loadConfig(selectedName) {
 		setIsLoading(true);
+		// reset total input FTEs and total predicted FTEs
+		setAllInputFTE(0);
+		setAllPredictFTE(0);
+		// load configuration
 		setCurrentDisplayConfig(selectedName);
 		fetch(apiHost + "/config?name=" + selectedName)
 			.then(response => response.json())

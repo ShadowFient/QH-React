@@ -148,7 +148,6 @@ const PredictPsrFTEWithExpRatio = props => {
 };
 
 const areEqual = (prevProp, nextProp) => {
-  console.log(prevProp.capacity === nextProp.capacity);
   return (
     prevProp.psrTime === nextProp.psrTime &&
     prevProp.capacity === nextProp.capacity
