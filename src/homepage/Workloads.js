@@ -5,7 +5,7 @@ import CardColumns from "react-bootstrap/CardColumns";
 import Clients from "./Clients";
 import QHNavBar from "../shared/NavBar";
 import teamLogo from "../images/group-24px.svg";
-import PredictPcgFTEwithExpRatio from "./PredictPcgFTEwithExpRatio";
+import PredictPcgFTEWithExpRatio from "./PredictPcgFTEWithExpRatio";
 import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
 import {DragDropContext} from 'react-beautiful-dnd'

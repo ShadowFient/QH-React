@@ -223,27 +223,12 @@ function QHNavBar(props) {
 					/>{" "}
 				</Navbar.Brand>
 
-      <Col md={{ span: 2}}>Total Input FTEs: {allInputFTE && allInputFTE.toFixed(2)}</Col>
-      <Col md={{ span: 2}}>Total Predicted FTEs: {allPredictFTE && allPredictFTE.toFixed(2)}</Col>
-      <Col md={{ span: 2}}>Total Input Compared to Predicted: {allPredictFTE && allInputFTE && ((allInputFTE / allPredictFTE) * 100).toFixed(2) + "%"}</Col>
-
-      <Col md={{ span: 2}}>
-        <InputGroup>
-          <InputGroup.Prepend>
-            <InputGroup.Text>Annual Capacity (Hours)</InputGroup.Text>
-          </InputGroup.Prepend>
-          <FormControl
-            type={"number"}
-            defaultValue={1570}
-            aria-label="Annual Capacity (Hours)"
-            onChange={onChangeCapacityHanlder}
-            style={{ maxWidth: "80px" }}
-          />
-        </InputGroup>
-      </Col>
 				<Navbar.Collapse>
 					<Row style={{width: "100%"}}>
-						<Col xl={{offset: 7, span: 3}} lg={{offset: 6, span: 3}}>
+						<Col md={{ span: 2}} style={{marginTop: "0.5rem"}}><p>Total Input FTEs: {allInputFTE && allInputFTE.toFixed(2)}</p></Col>
+						<Col md={{ span: 2}} style={{marginTop: "0.5rem"}}><p>Total Predicted FTEs: {allPredictFTE && allPredictFTE.toFixed(2)}</p></Col>
+						<Col md={{ span: 3}} style={{marginTop: "0.5rem"}}><p>Total Input Compared to Predicted: {allPredictFTE && allInputFTE && ((allInputFTE / allPredictFTE) * 100).toFixed(2) + "%"}</p></Col>
+						<Col xl={{offset: 0, span: 3}} lg={{offset: 0, span: 3}}>
 							<InputGroup>
 								<InputGroup.Prepend>
 									<InputGroup.Text>Annual Capacity (Hours)</InputGroup.Text>
@@ -293,47 +278,7 @@ function QHNavBar(props) {
 											}))}
 									</Dropdown.Menu>
 								</Dropdown>
-      <Navbar.Collapse className="justify-content-end">
 
-        {/*Load Function*/}
-        <Dropdown>
-          <Dropdown.Toggle
-            disabled={loading}
-            className={"nav-button"}
-            id={"loadDropdown"}
-          >
-            <b>Load</b>
-          </Dropdown.Toggle>
-          <Dropdown.Menu style={{ width: "13rem" }}>
-            {loading ? (
-              <Dropdown.Item>Loading</Dropdown.Item>
-            ) : (
-              currentConfigs.map(config => {
-                return (
-                  <Row style={{ marginBottom: "0.4rem" }} key={config}>
-                    <Col
-                      md={{ span: 1, offset: 1 }}
-                      onClick={() => deleteConfig(config)}
-                    >
-                      <img
-                        alt={"clear_icon"}
-                        src={clearImage}
-                        className={"clear-button"}
-                      />
-                    </Col>
-                    <Col>
-                      <Dropdown.Item onClick={() => loadConfig(config)}>
-                        {config}
-                      </Dropdown.Item>
-                    </Col>
-                  </Row>
-                );
-              })
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
-	      <Col>
-				<ButtonGroup>
 								{/*Save Function*/}
 								<Button
 									className={"nav-button"}
