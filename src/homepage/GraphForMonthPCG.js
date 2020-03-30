@@ -71,7 +71,7 @@ function GraphForMonthPCG(props) {
 		<>
 			<Button onClick={handleShow} style={btnPadding}>POD {podId} Monthly
 				Chart</Button>
-			<Modal show={show} onHide={handleClose} size="lg">
+			<Modal show={show} onHide={handleClose} dialogClassName="modal-90w">>
 				<Modal.Header closeButton>
 					<Modal.Title>Montly Predicted Working Hours: </Modal.Title>
 				</Modal.Header>

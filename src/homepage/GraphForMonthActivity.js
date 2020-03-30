@@ -66,7 +66,7 @@ function GraphForMonthActivity(props) {
 	return (
 		<>
 			<Button onClick={handleShow} style={btnPadding}>Monthly Chart</Button>
-			<Modal show={show} onHide={handleClose} size="lg">
+			<Modal show={show} onHide={handleClose} dialogClassName="modal-90w">>
 				<Modal.Header closeButton>
 					<Modal.Title>Montly Predicted Working Hours: </Modal.Title>
 				</Modal.Header>
@@ -115,19 +115,12 @@ function GraphForMonthActivity(props) {
 							<Tooltip/>
 							<Legend/>
 							<Line dataKey="PDC_Success" stackId="a" stroke="#8884d8"/>
-							{/* <Line dataKey="PDC_Unsuccess" stackId="a" stroke="#82ca9d" /> */}
-							<Line dataKey="PAC_Success" stackId="b" stroke="#8884d8"/>
-							{/* <Line dataKey="PAC_Unsuccess" stackId="b" stroke="#82ca9d" /> */}
-							<Line dataKey="Followup_Success" stackId="c" stroke="#8884d8"/>
-							{/* <Line dataKey="Followup_Unsuccess" stackId="c" stroke="#82ca9d" /> */}
-							<Line dataKey="New_Alert_Success" stackId="d" stroke="#8884d8"/>
-							{/* <Line dataKey="New_Alert_Unsuccess" stackId="d" stroke="#82ca9d" /> */}
-							<Line dataKey="Ref_Success" stackId="e" stroke="#8884d8"/>
-							{/* <Line dataKey="Ref_Unsuccess" stackId="e" stroke="#82ca9d" /> */}
-							<Line dataKey="Term_Success" stackId="f" stroke="#8884d8"/>
-							{/* <Line dataKey="Term_Unsuccess" stackId="f" stroke="#82ca9d" /> */}
-							<Line dataKey="EMPGRP_Success" stackId="g" stroke="#8884d8"/>
-							{/* <Line dataKey="EMPGRP_Unsuccess" stackId="g" stroke="#82ca9d" /> */}
+							<Line dataKey="PAC_Success" stackId="b" stroke="#0088FE"/>
+							<Line dataKey="Followup_Success" stackId="c" stroke="#00C49F"/>
+							<Line dataKey="New_Alert_Success" stackId="d" stroke="#0884d8"/>
+							<Line dataKey="Ref_Success" stackId="e" stroke="#FFBB28"/>
+							<Line dataKey="Term_Success" stackId="f" stroke="#FF8042"/>
+							<Line dataKey="EMPGRP_Success" stackId="g" stroke="#82ca9d"/>
 
 						</LineChart>
 					</ResponsiveContainer>
@@ -146,19 +139,12 @@ function GraphForMonthActivity(props) {
 							<YAxis/>
 							<Tooltip/>
 							<Legend/>
-							{/* <Line dataKey="PDC_Success" stackId="a" stroke="#8884d8" /> */}
-							<Line dataKey="PDC_Unsuccess" stackId="a" stroke="#82ca9d"/>
-							{/* <Line dataKey="PAC_Success" stackId="b" stroke="#8884d8" /> */}
-							<Line dataKey="PAC_Unsuccess" stackId="b" stroke="#82ca9d"/>
-							{/* <Line dataKey="Followup_Success" stackId="c" stroke="#8884d8" /> */}
-							<Line dataKey="Followup_Unsuccess" stackId="c" stroke="#82ca9d"/>
-							{/* <Line dataKey="New_Alert_Success" stackId="d" stroke="#8884d8" /> */}
-							<Line dataKey="New_Alert_Unsuccess" stackId="d" stroke="#82ca9d"/>
-							{/* <Line dataKey="Ref_Success" stackId="e" stroke="#8884d8" /> */}
-							<Line dataKey="Ref_Unsuccess" stackId="e" stroke="#82ca9d"/>
-							{/* <Line dataKey="Term_Success" stackId="f" stroke="#8884d8" /> */}
-							<Line dataKey="Term_Unsuccess" stackId="f" stroke="#82ca9d"/>
-							{/* <Line dataKey="EMPGRP_Success" stackId="g" stroke="#8884d8" /> */}
+							<Line dataKey="PDC_Unsuccess" stackId="a" stroke="#8884d8"/>
+							<Line dataKey="PAC_Unsuccess" stackId="b" stroke="#0088FE"/>
+							<Line dataKey="Followup_Unsuccess" stackId="c" stroke="#00C49F"/>
+							<Line dataKey="New_Alert_Unsuccess" stackId="d" stroke="#0884d8"/>
+							<Line dataKey="Ref_Unsuccess" stackId="e" stroke="#FFBB28"/>
+							<Line dataKey="Term_Unsuccess" stackId="f" stroke="#FF8042"/>
 							<Line dataKey="EMPGRP_Unsuccess" stackId="g" stroke="#82ca9d"/>
 						</LineChart>
 					</ResponsiveContainer>

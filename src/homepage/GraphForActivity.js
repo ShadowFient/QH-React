@@ -42,7 +42,7 @@ function GraphForActivity(props) {
 	return (
 		<>
 			<Button onClick={handleShow} style={btnPadding}>Annual Chart</Button>
-			<Modal show={show} onHide={handleClose} size="lg">
+			<Modal show={show} onHide={handleClose} dialogClassName="modal-90w">
 				<Modal.Header closeButton>
 					<Modal.Title>Annual Predicted Working Hours: </Modal.Title>
 				</Modal.Header>

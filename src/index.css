@@ -96,3 +96,7 @@ code {
 .membertext {
     text-align: right;
 }
+
+.modal-90w{
+    max-width: 90% !important;
+}
