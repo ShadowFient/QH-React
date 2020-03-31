@@ -553,24 +553,7 @@ function Workloads(props) {
     });
   };
 
-  const newWorkload = new Map();
-  newWorkload.set(
-    cards.length + 1,
-    {
-      PCGEMPGRP_TIME_HOURS: 0,
-      PCGFLLUP_TIME_HOURS: 0,
-      PCGNEWALERT_TIME_HOURS: 0,
-      PCGPAC_TIME_HOURS: 0,
-      PCGPDC_TIME_HOURS: 0,
-      PCGREF_TIME_HOURS: 0,
-      PCGTERM_TIME_HOURS: 0,
-      PCG_ALL_TIME_HOURS: 0
-    }
-  );
-
   // Create new POD
-  console.log(workloads)
-  var obj=JSON.parse(workloads)
   const [add, setAdd] = useState("")
   const [show, setShow] = useState(false);
 
