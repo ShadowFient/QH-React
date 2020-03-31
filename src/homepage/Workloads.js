@@ -10,6 +10,9 @@ import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
 import { DragDropContext } from "react-beautiful-dnd";
 import { clientLevelWork } from "./ClientActivity";
+import { CardTitle } from "reactstrap";
+import { Container, Row, Button } from "react-bootstrap";
+import { resetPath } from "hookrouter";
 
 function Workloads(props) {
   //clientPSR * pod -- remains constant
@@ -214,13 +217,13 @@ function Workloads(props) {
       FTE_per_month /
       (12 +
         expRatios[sourceDroppable].EXP_RATIO *
-          (MonthCap1 +
-            MonthCap2 +
-            MonthCap3 +
-            MonthCap4 +
-            MonthCap5 +
-            MonthCap6 -
-            6))
+        (MonthCap1 +
+          MonthCap2 +
+          MonthCap3 +
+          MonthCap4 +
+          MonthCap5 +
+          MonthCap6 -
+          6))
     )
       .toFixed(2)
       .toString();
@@ -229,13 +232,13 @@ function Workloads(props) {
       FTE_per_month /
       (12 +
         expRatios[destDroppable].EXP_RATIO *
-          (MonthCap1 +
-            MonthCap2 +
-            MonthCap3 +
-            MonthCap4 +
-            MonthCap5 +
-            MonthCap6 -
-            6))
+        (MonthCap1 +
+          MonthCap2 +
+          MonthCap3 +
+          MonthCap4 +
+          MonthCap5 +
+          MonthCap6 -
+          6))
     )
       .toFixed(2)
       .toString();
@@ -265,38 +268,52 @@ function Workloads(props) {
   //source/dest - indexing into workloads, draggableId - client dragged
   const changeDropDown = (sourceDroppable, destDroppable, draggableId) => {
     //pcg
-    workloads[sourceDroppable].PCGPDC_TIME_HOURS -=
-      clientLevelWork[draggableId][0];
-    workloads[destDroppable].PCGPDC_TIME_HOURS +=
-      clientLevelWork[draggableId][0];
-    workloads[sourceDroppable].PCGPAC_TIME_HOURS -=
-      clientLevelWork[draggableId][1];
-    workloads[destDroppable].PCGPAC_TIME_HOURS +=
-      clientLevelWork[draggableId][1];
-    workloads[sourceDroppable].PCGFLLUP_TIME_HOURS -=
-      clientLevelWork[draggableId][2];
-    workloads[destDroppable].PCGFLLUP_TIME_HOURS +=
-      clientLevelWork[draggableId][2];
-    workloads[sourceDroppable].PCGNEWALERT_TIME_HOURS -=
-      clientLevelWork[draggableId][3];
-    workloads[destDroppable].PCGNEWALERT_TIME_HOURS +=
-      clientLevelWork[draggableId][3];
-    workloads[sourceDroppable].PCGREF_TIME_HOURS -=
-      clientLevelWork[draggableId][4];
-    workloads[destDroppable].PCGREF_TIME_HOURS +=
-      clientLevelWork[draggableId][4];
-    workloads[sourceDroppable].PCGTERM_TIME_HOURS -=
-      clientLevelWork[draggableId][5];
-    workloads[destDroppable].PCGTERM_TIME_HOURS +=
-      clientLevelWork[draggableId][5];
-    workloads[sourceDroppable].PCGEMPGRP_TIME_HOURS -=
-      clientLevelWork[draggableId][6];
-    workloads[destDroppable].PCGEMPGRP_TIME_HOURS +=
-      clientLevelWork[draggableId][6];
+    if (!sourceDroppable in workloads) {
+      console.log("Nope")
+    }
+    if (!(destDroppable in workloads)) {
+      console.log("nope")
+    } else {
+      workloads[sourceDroppable].PCGPDC_TIME_HOURS -=
+        clientLevelWork[draggableId][0];
+      workloads[destDroppable].PCGPDC_TIME_HOURS +=
+        clientLevelWork[draggableId][0];
+      workloads[sourceDroppable].PCGPAC_TIME_HOURS -=
+        clientLevelWork[draggableId][1];
+      workloads[destDroppable].PCGPAC_TIME_HOURS +=
+        clientLevelWork[draggableId][1];
+      workloads[sourceDroppable].PCGFLLUP_TIME_HOURS -=
+        clientLevelWork[draggableId][2];
+      workloads[destDroppable].PCGFLLUP_TIME_HOURS +=
+        clientLevelWork[draggableId][2];
+      workloads[sourceDroppable].PCGNEWALERT_TIME_HOURS -=
+        clientLevelWork[draggableId][3];
+      workloads[destDroppable].PCGNEWALERT_TIME_HOURS +=
+        clientLevelWork[draggableId][3];
+      workloads[sourceDroppable].PCGREF_TIME_HOURS -=
+        clientLevelWork[draggableId][4];
+      workloads[destDroppable].PCGREF_TIME_HOURS +=
+        clientLevelWork[draggableId][4];
+      workloads[sourceDroppable].PCGTERM_TIME_HOURS -=
+        clientLevelWork[draggableId][5];
+      workloads[destDroppable].PCGTERM_TIME_HOURS +=
+        clientLevelWork[draggableId][5];
+      workloads[sourceDroppable].PCGEMPGRP_TIME_HOURS -=
+        clientLevelWork[draggableId][6];
+      workloads[destDroppable].PCGEMPGRP_TIME_HOURS +=
+        clientLevelWork[draggableId][6];
+    }
+
 
     //psr
-    psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
-    psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
+    if (!(sourceDroppable in psrWorks)) {
+      console.log("in workloads 308 need to be fixed")
+    } else if (!(destDroppable in psrWorks)) {
+      console.log("psrWork dnd")
+    } else {
+      psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
+      psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
+    }
   };
 
   const onDragEnd = result => {
@@ -536,6 +553,89 @@ function Workloads(props) {
     });
   };
 
+  const newWorkload = new Map();
+  newWorkload.set(
+    cards.length + 1,
+    {
+      PCGEMPGRP_TIME_HOURS: 0,
+      PCGFLLUP_TIME_HOURS: 0,
+      PCGNEWALERT_TIME_HOURS: 0,
+      PCGPAC_TIME_HOURS: 0,
+      PCGPDC_TIME_HOURS: 0,
+      PCGREF_TIME_HOURS: 0,
+      PCGTERM_TIME_HOURS: 0,
+      PCG_ALL_TIME_HOURS: 0
+    }
+  );
+
+  // Create new POD
+  console.log(workloads)
+  var obj=JSON.parse(workloads)
+  const [add, setAdd] = useState("")
+  const [show, setShow] = useState(false);
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    if (parseInt(add) > 10) {
+      setShow(false);
+      alert("The maximun number of new POD is 10");
+    } else {
+      setShow(true);
+    }
+  }
+  const DisplayPod = props => {
+    let len = cards.length;
+    const result = [];
+    for (let i = 1; i <= parseInt(props.count); i++) {
+      result[result.length] = len + i;
+    }
+    const res = result.map((num) =>
+        <Card
+          key={num}
+          className="p-3"
+          container="container-sm"
+        >
+          <Card.Img variant="top" />
+          <Card.Title>
+            <img
+              alt={"team_icon"}
+              src={teamLogo}
+              style={{ marginRight: "0.5rem" }}
+              className="d-inline-block align-top"
+            />POD {num}
+            <span
+              id={"podMembNum" + parseInt(num)}
+              className={"float-right"}
+              style={{ fontSize: "15px" }}
+            >Total Members: {0}
+            </span>
+          </Card.Title>
+        </Card>
+      )
+    return (<CardColumns>{res}</CardColumns>)
+  }
+  const addPOD = () => {
+    return (
+      <>
+      <div style={{width:"100%"}}>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Add numbers of POD (Max. 10): 
+          <input
+                type="text"
+                pattern="[0-9]*"
+                value={add}
+                onChange={e => setAdd(e.target.value.replace(/\D/, ''))}
+              />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+          </div>
+        {show && <DisplayPod count={add} />}
+      </>
+    );
+  }
+
   return workloadLoading ||
     expRatioLoading ||
     clientsConfigLoading ||
@@ -544,62 +644,67 @@ function Workloads(props) {
     currentConfigsLoading ||
     memberLoading ||
     clientPSRLoading ? (
-    <div>
-      <QHNavBar
-        loading={
-          workloadLoading ||
-          expRatioLoading ||
-          clientsConfigLoading ||
-          psrLoading ||
-          activityLoading ||
-          currentConfigsLoading ||
-          memberLoading ||
-          clientPSRLoading
-        }
-        cardsRefsMap={cardsRefsMap}
-      />
       <div>
-        <CardColumns>{initializeCards()}</CardColumns>
-      </div>
-    </div>
-  ) : (
-    <div>
-      <QHNavBar
-        loading={
-          workloadLoading ||
-          expRatioLoading ||
-          clientsConfigLoading ||
-          psrLoading ||
-          activityLoading ||
-          currentConfigsLoading ||
-          memberLoading ||
-          clientPSRLoading
-        }
-        clientsConfig={clients}
-        updateConfig={setClients}
-        currentConfigs={configs}
-        setIsLoading={setAllLoading}
-        updateWorkloads={setWorkloads}
-        expRatios={expRatios}
-        updateExpRatios={setExpRatios}
-        updateConfigsList={setConfigs}
-        updatePSRWork={setPsrWorks}
-        updateActivities={setActivities}
-        updateCapacity={setCapacity}
-        updateMembers={setMembers}
-        cardsRefsMap={cardsRefsMap}
-        allInputFTE={allInputFTE}
-        setAllInputFTE={setAllInputFTE}
-        allPredictFTE={allPredictFTE}
-        setAllPredictFTE={setAllPredictFTE}
-      />
-      <DragDropContext onDragEnd={onDragEnd}>
+        <QHNavBar
+          loading={
+            workloadLoading ||
+            expRatioLoading ||
+            clientsConfigLoading ||
+            psrLoading ||
+            activityLoading ||
+            currentConfigsLoading ||
+            memberLoading ||
+            clientPSRLoading
+          }
+          cardsRefsMap={cardsRefsMap}
+        />
         <div>
-          <CardColumns>{updateCards()}</CardColumns>
+          <CardColumns>{initializeCards()}</CardColumns>
         </div>
-      </DragDropContext>
-    </div>
-  );
+      </div>
+    ) : (
+      <div>
+        <QHNavBar
+          loading={
+            workloadLoading ||
+            expRatioLoading ||
+            clientsConfigLoading ||
+            psrLoading ||
+            activityLoading ||
+            currentConfigsLoading ||
+            memberLoading ||
+            clientPSRLoading
+          }
+          clientsConfig={clients}
+          updateConfig={setClients}
+          currentConfigs={configs}
+          setIsLoading={setAllLoading}
+          updateWorkloads={setWorkloads}
+          expRatios={expRatios}
+          updateExpRatios={setExpRatios}
+          updateConfigsList={setConfigs}
+          updatePSRWork={setPsrWorks}
+          updateActivities={setActivities}
+          updateCapacity={setCapacity}
+          updateMembers={setMembers}
+          cardsRefsMap={cardsRefsMap}
+          allInputFTE={allInputFTE}
+          setAllInputFTE={setAllInputFTE}
+          allPredictFTE={allPredictFTE}
+          setAllPredictFTE={setAllPredictFTE}
+        />
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div>
+            <Container fluid>
+              <Row>{addPOD()}</Row>
+              <Row>
+                <CardColumns>{updateCards()}</CardColumns>
+              </Row>
+            </Container>
+          </div>
+        </DragDropContext>
+      </div>
+    );
 }
 
 export default Workloads;
