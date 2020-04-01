@@ -10,9 +10,18 @@ import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
 import { DragDropContext } from "react-beautiful-dnd";
 import { clientLevelWork } from "./ClientActivity";
-import { CardTitle } from "reactstrap";
-import { Container, Row, Button } from "react-bootstrap";
-import { resetPath } from "hookrouter";
+import { Container, Row } from "react-bootstrap";
+
+//Declare variable for new POD
+const wkld = new Map();    //workloads
+const exp = new Map();     //expRatios
+const clt = new Map();     //clients
+const cltpsr = new Map();  //clientPSR
+const psrw = new Map();    //psrWorks
+const pcgw = new Map();    //pcgworks
+const podmmb = new Map();  //podMemMap
+const cltmmb = new Map();  //memMap
+let init = true;
 
 function Workloads(props) {
   //clientPSR * pod -- remains constant
@@ -99,7 +108,6 @@ function Workloads(props) {
         .then(config => {
           setClientPSR(config);
           setClientPSRLoading(false);
-          console.log("clientPSR done");
         })
         .catch(error => {
           throw new Error(error.toString());
@@ -173,7 +181,8 @@ function Workloads(props) {
     let destinationPod = document.getElementById(lbl + destDroppable).innerText;
     let text = sourcePod.slice(0, 20);
     let hours_source = Number(sourcePod.slice(20, sourcePod.length));
-    //subtract from sourcepod
+    let hours_dest = Number(destinationPod.slice(20, destinationPod.length));
+
     let sourceTotal = clientLevelWork[draggableId][7];
     if (isPsr) {
       sourceTotal = (clientPSR[draggableId][0] * 7.68) / 60;
@@ -182,16 +191,32 @@ function Workloads(props) {
     if (hours_source <= 0.1) {
       hours_source = 0.0;
     }
+    hours_dest += sourceTotal;
+
+    // // for new pod; doesn't work for unknown reason; infinite loop when tried to dnd second box================================
+    // if (exp.has(parseInt(sourceDroppable))) {
+    //   console.log(pcgw.get(parseInt(sourceDroppable)).PCG_ALL_TIME_HOURS)
+    //   pcgw.get(parseInt(sourceDroppable)).PCG_ALL_TIME_HOURS = hours_source;
+    //   if (isPsr) {
+    //     psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME = hours_source;
+    //   }
+    // }
+    // if (exp.has(parseInt(destDroppable))) {
+    //   console.log(pcgw.get(parseInt(destDroppable)).PCG_ALL_TIME_HOURS)
+    //   pcgw.get(parseInt(destDroppable)).PCG_ALL_TIME_HOURS = 11;
+    //   if (isPsr) {
+    //     psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME = hours_dest;
+    //   }
+    // }
+
     //reset values
     document.getElementById(lbl + sourceDroppable).innerText =
       text + hours_source.toFixed(2).toString();
-    //add to destinationpod
-    let hours_dest = Number(destinationPod.slice(20, destinationPod.length));
-    hours_dest += sourceTotal;
     document.getElementById(lbl + destDroppable).innerText =
       text + hours_dest.toFixed(2).toString();
   };
 
+  ////////////////////////////////half way done; somehow can't save fte
   const changeFte = (
     sourceDroppable,
     destDroppable,
@@ -212,39 +237,79 @@ function Workloads(props) {
 
     let source = sourcePod.slice(20, sourcePod.length);
     let dest = destPod.slice(20, destPod.length);
-    let sourceFte = (
-      source /
-      FTE_per_month /
-      (12 +
-        expRatios[sourceDroppable].EXP_RATIO *
-        (MonthCap1 +
-          MonthCap2 +
-          MonthCap3 +
-          MonthCap4 +
-          MonthCap5 +
-          MonthCap6 -
-          6))
-    )
-      .toFixed(2)
-      .toString();
-    let destFte = (
-      dest /
-      FTE_per_month /
-      (12 +
-        expRatios[destDroppable].EXP_RATIO *
-        (MonthCap1 +
-          MonthCap2 +
-          MonthCap3 +
-          MonthCap4 +
-          MonthCap5 +
-          MonthCap6 -
-          6))
-    )
-      .toFixed(2)
-      .toString();
+    let sourceFte;
+    let destFte;
+    if (sourceDroppable in expRatios) {
+      sourceFte = (
+        source /
+        FTE_per_month /
+        (12 +
+          expRatios[sourceDroppable].EXP_RATIO *
+          (MonthCap1 +
+            MonthCap2 +
+            MonthCap3 +
+            MonthCap4 +
+            MonthCap5 +
+            MonthCap6 -
+            6))
+      )
+        .toFixed(2)
+        .toString();
+    } else {  //source is new pod
+      sourceFte = (
+        source /
+        FTE_per_month /
+        (12 +
+          (exp.get(parseInt(sourceDroppable))).EXP_RATIO *
+          (MonthCap1 +
+            MonthCap2 +
+            MonthCap3 +
+            MonthCap4 +
+            MonthCap5 +
+            MonthCap6 -
+            6))
+      )
+        .toFixed(2)
+        .toString();
+    }
+    if (destDroppable in expRatios) {
+      destFte = (
+        dest /
+        FTE_per_month /
+        (12 +
+          expRatios[destDroppable].EXP_RATIO *
+          (MonthCap1 +
+            MonthCap2 +
+            MonthCap3 +
+            MonthCap4 +
+            MonthCap5 +
+            MonthCap6 -
+            6))
+      )
+        .toFixed(2)
+        .toString();
+    } else {  // destination is new pod
+      destFte = (
+        dest /
+        FTE_per_month /
+        (12 +
+          (exp.get(parseInt(destDroppable))).EXP_RATIO *
+          (MonthCap1 +
+            MonthCap2 +
+            MonthCap3 +
+            MonthCap4 +
+            MonthCap5 +
+            MonthCap6 -
+            6))
+      )
+        .toFixed(2)
+        .toString();
+    }
     document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
   };
+
+  //=========================================================DONE=======================================================================
   const changeMembNum = (sourceDroppable, destDroppable, draggableId) => {
     let clientMembers = memMap.get(draggableId);
     let sourcePod =
@@ -259,62 +324,90 @@ function Workloads(props) {
           .getElementById("podMembNum" + destDroppable)
           .innerText.slice(15)
       ) + clientMembers;
+
+    if (exp.has(parseInt(sourceDroppable))) {
+      cltmmb.set(draggableId, sourcePod)
+      let temp = podmmb.get(parseInt(sourceDroppable)) - clientMembers;
+      podmmb.set(parseInt(sourceDroppable), temp);
+    }
+    if (exp.has(parseInt(destDroppable))) {
+      cltmmb.set(draggableId, destPod)
+      let temp = podmmb.get(parseInt(destDroppable)) + clientMembers;
+      podmmb.set(parseInt(destDroppable), temp);
+    }
     document.getElementById("podMembNum" + sourceDroppable).innerText =
       "Total Members: " + sourcePod.toString();
     document.getElementById("podMembNum" + destDroppable).innerText =
       "Total Members: " + destPod.toString();
   };
+  //=========================================================DONE=======================================================================
 
+  //=========================================================DONE=======================================================================
   //source/dest - indexing into workloads, draggableId - client dragged
   const changeDropDown = (sourceDroppable, destDroppable, draggableId) => {
     //pcg
-    if (!sourceDroppable in workloads) {
-      console.log("Nope")
-    }
-    if (!(destDroppable in workloads)) {
-      console.log("nope")
+    if (!(sourceDroppable in workloads)) {  //source is new pod
+      pcgw.get(parseInt(sourceDroppable)).PCGPDC_TIME_HOURS -= clientLevelWork[draggableId][0];
+      pcgw.get(parseInt(sourceDroppable)).PCGPAC_TIME_HOURS -= clientLevelWork[draggableId][1];
+      pcgw.get(parseInt(sourceDroppable)).PCGFLLUP_TIME_HOURS -= clientLevelWork[draggableId][2];
+      pcgw.get(parseInt(sourceDroppable)).PCGNEWALERT_TIME_HOURS -= clientLevelWork[draggableId][3];
+      pcgw.get(parseInt(sourceDroppable)).PCGREF_TIME_HOURS -= clientLevelWork[draggableId][4];
+      pcgw.get(parseInt(sourceDroppable)).PCGTERM_TIME_HOURS -= clientLevelWork[draggableId][5];
+      pcgw.get(parseInt(sourceDroppable)).PCGEMPGRP_TIME_HOURS -= clientLevelWork[draggableId][6];
     } else {
       workloads[sourceDroppable].PCGPDC_TIME_HOURS -=
         clientLevelWork[draggableId][0];
-      workloads[destDroppable].PCGPDC_TIME_HOURS +=
-        clientLevelWork[draggableId][0];
       workloads[sourceDroppable].PCGPAC_TIME_HOURS -=
-        clientLevelWork[draggableId][1];
-      workloads[destDroppable].PCGPAC_TIME_HOURS +=
         clientLevelWork[draggableId][1];
       workloads[sourceDroppable].PCGFLLUP_TIME_HOURS -=
         clientLevelWork[draggableId][2];
-      workloads[destDroppable].PCGFLLUP_TIME_HOURS +=
-        clientLevelWork[draggableId][2];
       workloads[sourceDroppable].PCGNEWALERT_TIME_HOURS -=
-        clientLevelWork[draggableId][3];
-      workloads[destDroppable].PCGNEWALERT_TIME_HOURS +=
         clientLevelWork[draggableId][3];
       workloads[sourceDroppable].PCGREF_TIME_HOURS -=
         clientLevelWork[draggableId][4];
-      workloads[destDroppable].PCGREF_TIME_HOURS +=
-        clientLevelWork[draggableId][4];
       workloads[sourceDroppable].PCGTERM_TIME_HOURS -=
-        clientLevelWork[draggableId][5];
-      workloads[destDroppable].PCGTERM_TIME_HOURS +=
         clientLevelWork[draggableId][5];
       workloads[sourceDroppable].PCGEMPGRP_TIME_HOURS -=
         clientLevelWork[draggableId][6];
+    }
+    if (!(destDroppable in workloads)) {  //destination is new pod
+      pcgw.get(parseInt(destDroppable)).PCGPDC_TIME_HOURS += clientLevelWork[draggableId][0];
+      pcgw.get(parseInt(destDroppable)).PCGPAC_TIME_HOURS += clientLevelWork[draggableId][1];
+      pcgw.get(parseInt(destDroppable)).PCGFLLUP_TIME_HOURS += clientLevelWork[draggableId][2];
+      pcgw.get(parseInt(destDroppable)).PCGNEWALERT_TIME_HOURS += clientLevelWork[draggableId][3];
+      pcgw.get(parseInt(destDroppable)).PCGREF_TIME_HOURS += clientLevelWork[draggableId][4];
+      pcgw.get(parseInt(destDroppable)).PCGTERM_TIME_HOURS += clientLevelWork[draggableId][5];
+      pcgw.get(parseInt(destDroppable)).PCGEMPGRP_TIME_HOURS += clientLevelWork[draggableId][6];
+    } else {
+      workloads[destDroppable].PCGPDC_TIME_HOURS +=
+        clientLevelWork[draggableId][0];
+      workloads[destDroppable].PCGPAC_TIME_HOURS +=
+        clientLevelWork[draggableId][1];
+      workloads[destDroppable].PCGFLLUP_TIME_HOURS +=
+        clientLevelWork[draggableId][2];
+      workloads[destDroppable].PCGNEWALERT_TIME_HOURS +=
+        clientLevelWork[draggableId][3];
+      workloads[destDroppable].PCGREF_TIME_HOURS +=
+        clientLevelWork[draggableId][4];
+      workloads[destDroppable].PCGTERM_TIME_HOURS +=
+        clientLevelWork[draggableId][5];
       workloads[destDroppable].PCGEMPGRP_TIME_HOURS +=
         clientLevelWork[draggableId][6];
     }
 
-
     //psr
     if (!(sourceDroppable in psrWorks)) {
-      console.log("in workloads 308 need to be fixed")
-    } else if (!(destDroppable in psrWorks)) {
-      console.log("psrWork dnd")
+      psrw.get(parseInt(sourceDroppable)).PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
     } else {
       psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
+    }
+    if (!(destDroppable in psrWorks)) {
+      psrw.get(parseInt(destDroppable)).PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
+    } else {
       psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
     }
   };
+  //=========================================================DONE=======================================================================
 
   const onDragEnd = result => {
     const { destination, source, draggableId } = result;
@@ -327,8 +420,28 @@ function Workloads(props) {
     ) {
       return;
     }
-    const start = clients[parseInt(source.droppableId)];
-    const finish = clients[parseInt(destination.droppableId)];
+
+    let st;
+    let fh;
+    let inSrc = false;
+    let inDest = false;
+
+    // check if source and destination in new pod
+    if (parseInt(source.droppableId) in clients) {
+      st = clients[parseInt(source.droppableId)];
+    } else {
+      st = clt.get(parseInt(source.droppableId));
+      inSrc = true;
+    }
+    if (parseInt(destination.droppableId) in clients) {
+      fh = clients[parseInt(destination.droppableId)];
+    } else {
+      fh = clt.get(parseInt(destination.droppableId));
+      inDest = true;
+    }
+    const start = st;
+    const finish = fh;
+
     if (start === finish) {
       //replica of the pod's clients
       const newClients = Array.from(start);
@@ -385,8 +498,17 @@ function Workloads(props) {
     let removed = startPod.splice(source.index, 1);
     const finishPod = Array.from(finish);
     finishPod.splice(destination.index, 0, removed[0]);
-    clients[parseInt(source.droppableId)] = startPod;
-    clients[parseInt(destination.droppableId)] = finishPod;
+
+    if (!inSrc) {
+      clients[parseInt(source.droppableId)] = startPod;
+    } else {
+      clt.set(parseInt(source.droppableId), startPod);
+    }
+    if (!inDest) {
+      clients[parseInt(destination.droppableId)] = finishPod;
+    } else {
+      clt.set(parseInt(destination.droppableId), finishPod);
+    }
     setClients(JSON.parse(JSON.stringify(clients)));
   };
 
@@ -402,6 +524,8 @@ function Workloads(props) {
     });
   };
 
+  const table = [];
+
   const updateCards = () => {
     const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
       if (isPcgRatio) {
@@ -412,8 +536,6 @@ function Workloads(props) {
     };
 
     // Fetch activities
-    const table = [];
-    const actLikeMem = [];
     activities.map(activity => (
       <div>
         {table.push([
@@ -435,19 +557,6 @@ function Workloads(props) {
           activity.PCGTERM_TIME_HOURS_UNSUCC,
           activity.PCGEMPGRP_TIME_HOURS_SUCC,
           activity.PCGEMPGRP_TIME_HOURS_UNSUCC
-        ])}
-
-        {actLikeMem.push([
-          activity.INITIAL_POD,
-          activity.GroupID,
-          activity.PSR_PHONE_ACTS_LIKE_MEM,
-          activity.PCG_FOLLOWUP_ACTS_LIKE,
-          activity.PCG_NEWALERT_ACTS_LIKE,
-          activity.PCG_PAC_ACTS_LIKE,
-          activity.PCG_PDC_ACTS_LIKE,
-          activity.PCG_REF_ACTS_LIKE,
-          activity.PCG_TERM_ACTS_LIKE,
-          activity.PCG_EMPGRP_ACTS_LIKE
         ])}
       </div>
     ));
@@ -554,66 +663,198 @@ function Workloads(props) {
   };
 
   // Create new POD
-  const [add, setAdd] = useState("")
+  const [add, setAdd] = useState("");
+  const [submit, setSubmit] = useState("");
   const [show, setShow] = useState(false);
+  // const [init, setInit] = useState(false);
+
+  // const podToclt=new Map(); //key is new pod's id and value is client's id
+  // const tlb=new Array(); // vs. table; collect
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
     if (parseInt(add) > 10) {
       setShow(false);
-      alert("The maximun number of new POD is 10");
+      alert("The maximun number of new POD is 9");
     } else {
+      init = true;
+      setAdd(submit);
       setShow(true);
     }
   }
+
+  const handleChange = (evt) => {
+    let temp = evt.target.value.replace(/\D/, '');
+    if (temp.length >= 2) {
+      setAdd("");
+      setShow(false);
+    } else {
+      setShow(false);
+      setSubmit(temp);
+    }
+  }
+
+  const InitNewPodValue = props => {
+    if (init) {
+      let ct = props.value;
+      let len = cards.length;
+      const result = [];
+      for (let i = 1; i <= parseInt(ct); i++) {
+        result[result.length] = len + i;
+      }
+      for (let i of result) {
+        wkld.set(i, {
+          PCGEMPGRP_TIME_HOURS: 0,
+          PCGFLLUP_TIME_HOURS: 0,
+          PCGNEWALERT_TIME_HOURS: 0,
+          PCGPAC_TIME_HOURS: 0,
+          PCGPDC_TIME_HOURS: 0,
+          PCGREF_TIME_HOURS: 0,
+          PCGTERM_TIME_HOURS: 0,
+          PCG_ALL_TIME_HOURS: 0
+        });
+        exp.set(i, { EXP_RATIO: 0.2, PSR_EXP_RATIO: 0.2 });
+        clt.set(i, [[0, ""]]);
+        cltpsr.set(i, [0, 0]);
+        pcgw.set(i, {
+          PCGEMPGRP_TIME_HOURS: 0,
+          PCGFLLUP_TIME_HOURS: 0,
+          PCGNEWALERT_TIME_HOURS: 0,
+          PCGPAC_TIME_HOURS: 0,
+          PCGPDC_TIME_HOURS: 0,
+          PCGREF_TIME_HOURS: 0,
+          PCGTERM_TIME_HOURS: 0,
+          PCG_ALL_TIME_HOURS: 0
+        });
+        psrw.set(i, {
+          PERC_TOTAL_PSR_PHONE: 0,
+          PRED_PHONE_VOLUME: 0,
+          SUCC_TIME_PSR_PHONE: 0
+        })
+        podmmb.set(i, 0);
+        // podToclt.set(i,0)
+      }
+      init = false;
+    }
+
+    return (<></>)
+  }
+
+
   const DisplayPod = props => {
+    console.log("displaypod")
+    const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
+      if (isPcgRatio) {
+        (exp.get(index)).EXP_RATIO = changedRatio;
+      } else {
+        (exp.get(index)).PSR_EXP_RATIO = changedRatio;
+      }
+    };
+
     let len = cards.length;
     const result = [];
     for (let i = 1; i <= parseInt(props.count); i++) {
       result[result.length] = len + i;
     }
-    const res = result.map((num) =>
-        <Card
-          key={num}
-          className="p-3"
-          container="container-sm"
-        >
-          <Card.Img variant="top" />
-          <Card.Title>
-            <img
-              alt={"team_icon"}
-              src={teamLogo}
-              style={{ marginRight: "0.5rem" }}
-              className="d-inline-block align-top"
-            />POD {num}
-            <span
-              id={"podMembNum" + parseInt(num)}
-              className={"float-right"}
-              style={{ fontSize: "15px" }}
-            >Total Members: {0}
-            </span>
-          </Card.Title>
-        </Card>
-      )
-    return (<CardColumns>{res}</CardColumns>)
+
+    const res = result.map((key) =>
+      <Card
+        key={key}
+        className="p-3"
+        container="container-sm"
+      >
+        <Card.Img variant="top" />
+        <Card.Title>
+          <img
+            alt={"team_icon"}
+            src={teamLogo}
+            style={{ marginRight: "0.5rem" }}
+            className="d-inline-block align-top"
+          />POD {key}
+          <span
+            id={"podMembNum" + parseInt(key)}
+            className={"float-right"}
+            style={{ fontSize: "15px" }}
+          >Total Members: {podmmb.get(key)}
+          </span>
+        </Card.Title>
+
+        {/* Predicted PCG FTE with its experience ratio */}
+        <PredictPcgFTEWithExpRatio
+          index={parseInt(key)}
+          initExperienceRatio={(exp.get(key)).EXP_RATIO}
+          ratioChangeHandler={ratioChangeHandler}
+          isPcgRatio={true}
+          capacity={capacity}
+          allInputFTE={allInputFTE}
+          updateTotalInputFTE={setAllInputFTE}
+          allPredictFTE={allPredictFTE}
+          updateTotalPredictFTE={setAllPredictFTE}
+          pcgTime={
+            document.getElementById("total_pcg_" + parseInt(key)) &&
+            document.getElementById("total_pcg_" + parseInt(key)).innerText
+          }
+        />
+
+        {/* Predicted PSR FTE with its experience ratio */}
+        <PredictPsrFTEWithExpRatio
+          index={parseInt(key)}
+          initExperienceRatio={(exp.get(key)).PSR_EXP_RATIO}
+          ratioChangeHandler={ratioChangeHandler}
+          isPcgRatio={false}
+          capacity={capacity}
+          allInputFTE={allInputFTE}
+          updateTotalInputFTE={setAllInputFTE}
+          allPredictFTE={allPredictFTE}
+          updateTotalPredictFTE={setAllPredictFTE}
+          psrTime={
+            document.getElementById("total_psr_" + parseInt(key)) &&
+            document.getElementById("total_psr_" + parseInt(key)).innerText
+          }
+        />
+
+        {/* Dropdown buttons for both PCG and PSR */}
+        <DropdownButton
+          pcgWK={pcgw.get(parseInt(key))}
+          psrWK={psrw.get(parseInt(key))}
+          pod_key={key}
+          gpsOfClients={table}
+        />
+
+        {/* List the POD's clients */}
+        <Clients
+          clientsPerPOD={clt.get(parseInt(key))}
+          podId={parseInt(key)}
+          gpsOfClients={table}
+          clientMem={memMap}
+        />
+      </Card>
+    )
+    return (
+      <>
+        <CardColumns>{res}</CardColumns>
+      </>
+    )
   }
+
   const addPOD = () => {
     return (
       <>
-      <div style={{width:"100%"}}>
+        <div style={{ width: "100%" }}>
           <form onSubmit={handleSubmit}>
             <label>
-              Add numbers of POD (Max. 10): 
-          <input
+              Add numbers of POD (Max. 9):
+              <input
                 type="text"
                 pattern="[0-9]*"
-                value={add}
-                onChange={e => setAdd(e.target.value.replace(/\D/, ''))}
+                value={submit}
+                onChange={handleChange}
               />
             </label>
             <input type="submit" value="Submit" />
           </form>
-          </div>
+        </div>
+        {show && <InitNewPodValue value={add} />}
         {show && <DisplayPod count={add} />}
       </>
     );

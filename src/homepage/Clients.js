@@ -11,7 +11,9 @@ const Clients = props => {
 
 	if (clientsPerPOD && clientsPerPOD.length > 0) {
 		clients = clientsPerPOD.map((client, index) => {
+			
 			return (
+				client[0]===0? (null):(
 				<Draggable draggableId={client[1]} index={index} key={client[1]}>
 					{(provided) =>
 						<div ref={provided.innerRef}
@@ -30,7 +32,7 @@ const Clients = props => {
 							</ListGroup.Item>
 						</div>
 					}
-				</Draggable>
+				</Draggable>)
 			);
 		});
 	}
