@@ -10,7 +10,7 @@ import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
 import { DragDropContext } from "react-beautiful-dnd";
 import { clientLevelWork } from "./ClientActivity";
-import { Container, Row } from "react-bootstrap";
+import { Container, Row, Col, CardGroup, CardDeck } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 
 //Declare variable for new POD
@@ -179,12 +179,13 @@ function Workloads() {
   ) => {
     let sourcePod = document.getElementById(lbl + sourceDroppable).innerText;
     let destinationPod = document.getElementById(lbl + destDroppable).innerText;
-    let text = sourcePod.slice(0, 20);
+    let text = "PCG All Time Hours: ";
     let hours_source = Number(sourcePod.slice(20, sourcePod.length));
     let hours_dest = Number(destinationPod.slice(20, destinationPod.length));
 
     let sourceTotal = clientLevelWork[draggableId][7];
     if (isPsr) {
+      text = "PSR All Time Hours: "
       sourceTotal = (clientPSR[draggableId][0] * 7.68) / 60;
     }
     hours_source -= sourceTotal;
@@ -398,6 +399,7 @@ function Workloads() {
     //psr
     if (!(sourceDroppable in psrWorks)) {
       psrw.get(parseInt(sourceDroppable)).PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
+      psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME -= clientPSR[draggableId][0];
     } else {
       psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
     }
@@ -823,7 +825,7 @@ function Workloads() {
     )
     return (
       <>
-        <CardColumns>{res}</CardColumns>
+        <div>{res}</div>
       </>
     )
   }
@@ -911,10 +913,16 @@ function Workloads() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div>
             <Container fluid>
-              <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row>
+              {/* For development use */}
+              <Row>
+                <Col sm="3">{addPOD()}</Col>
+                <Col><CardColumns>{updateCards()}</CardColumns></Col>
+              </Row>
+              
+              {/* <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row>
               <Row>
                 <CardColumns>{updateCards()}</CardColumns>
-              </Row>
+              </Row> */}
             </Container>
           </div>
         </DragDropContext>

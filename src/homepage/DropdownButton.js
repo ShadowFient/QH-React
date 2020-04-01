@@ -26,6 +26,8 @@ function DropdownButton(props) {
 		total += pcg[key]
 	)
 	total-=pcg.PCG_ALL_TIME_HOURS;
+	pcg.PCG_ALL_TIME_HOURS=total;
+	
 	return (
 		(typeof isnew == 'undefined')?(
 		<>
@@ -113,7 +115,7 @@ function DropdownButton(props) {
 					<label id={"total_pcg_" + pod_key.toString()}>
 						{}
 					</label>
-					{"PCG All Time Hours: " + total.toFixed(2)}
+					{"PCG All Time Hours: " + pcg.PCG_ALL_TIME_HOURS.toFixed(2)}
 				</Dropdown.Toggle>
 				<Dropdown.Menu style={{ width: "100%" }}>
 					<DropdownItem>
