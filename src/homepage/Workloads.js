@@ -203,7 +203,7 @@ function Workloads(props) {
     // }
     // if (exp.has(parseInt(destDroppable))) {
     //   console.log(pcgw.get(parseInt(destDroppable)).PCG_ALL_TIME_HOURS)
-    //   pcgw.get(parseInt(destDroppable)).PCG_ALL_TIME_HOURS = 11;
+    //   pcgw.get(parseInt(destDroppable)).PCG_ALL_TIME_HOURS = hours_dest;
     //   if (isPsr) {
     //     psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME = hours_dest;
     //   }
@@ -216,7 +216,7 @@ function Workloads(props) {
       text + hours_dest.toFixed(2).toString();
   };
 
-  ////////////////////////////////half way done; somehow can't save fte
+  ////////////////////////////////half way done; somehow can't save fte; document.getElementById doesn't work for new pod
   const changeFte = (
     sourceDroppable,
     destDroppable,
