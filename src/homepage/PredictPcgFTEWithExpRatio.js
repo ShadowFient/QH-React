@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, {useEffect, useState} from "react";
 import Slider from "@material-ui/core/Slider";
-import TextField from "@material-ui/core/textfield";
+import TextField from "@material-ui/core/TextField";
 import {createMuiTheme} from '@material-ui/core/styles';
 import {Container, Row} from "reactstrap";
 import "./PredictFTEwithExpRatio.css";
