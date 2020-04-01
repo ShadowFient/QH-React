@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import Clients from "./Clients";
@@ -8,12 +8,12 @@ import teamLogo from "../images/group-24px.svg";
 import PredictPcgFTEWithExpRatio from "./PredictPcgFTEWithExpRatio";
 import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
-import { DragDropContext } from "react-beautiful-dnd";
-import { clientLevelWork } from "./ClientActivity";
+import {DragDropContext} from "react-beautiful-dnd";
+import {clientLevelWork} from "./ClientActivity";
+import {Spinner} from "react-bootstrap";
 
-function Workloads(props) {
+function Workloads() {
   //clientPSR * pod -- remains constant
-  const clientPSRContribution = {};
   const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
@@ -34,7 +34,6 @@ function Workloads(props) {
   const [clientPSRLoading, setClientPSRLoading] = useState(true);
   const [currentConfigsLoading, setCurrentConfigLoading] = useState(true);
   const [memberLoading, setMemberLoading] = useState(true);
-  const [DnDFired, setDnDFired] = useState(true);
 
   //info for FTEs
   const MonthCap1 = 0.76;
@@ -378,7 +377,9 @@ function Workloads(props) {
       return (
         <Card key={index} className="p-3" container={"container-sm"}>
           <Card.Body>
-            <Card.Text>{card}</Card.Text>
+            <Spinner animation={"border"} size={"sm"} variant={"warning"}
+                     style={{marginRight: "0.5rem"}}/>
+            {card}
           </Card.Body>
         </Card>
       );
