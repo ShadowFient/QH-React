@@ -402,7 +402,8 @@ function Workloads() {
       psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
     }
     if (!(destDroppable in psrWorks)) {
-      psrw.get(parseInt(destDroppable)).PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
+      psrw.get(parseInt(destDroppable)).PERC_TOTAL_PSR_PHONE += (clientPSR[draggableId][1]);
+      psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME += clientPSR[draggableId][0];
     } else {
       psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
     }
@@ -808,6 +809,7 @@ function Workloads() {
           psrWK={psrw.get(parseInt(key))}
           pod_key={key}
           gpsOfClients={table}
+          isnew={0}
         />
 
         {/* List the POD's clients */}
