@@ -23,6 +23,7 @@ const pcgw = new Map();    //pcgworks
 const podmmb = new Map();  //podMemMap
 const cltmmb = new Map();  //memMap
 let init = true;
+let show = false;
 
 function Workloads() {
   //clientPSR * pod -- remains constant
@@ -664,33 +665,20 @@ function Workloads() {
   };
 
   // Create new POD
-  const [add, setAdd] = useState("");
+  const [add, setAdd] = useState(""); //numbers of new pod
   const [submit, setSubmit] = useState("");
-  const [show, setShow] = useState(false);
-  // const [init, setInit] = useState(false);
 
-  // const podToclt=new Map(); //key is new pod's id and value is client's id
-  // const tlb=new Array(); // vs. table; collect
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    if (parseInt(add) > 10) {
-      setShow(false);
-      alert("The maximun number of new POD is 9");
-    } else {
-      init = true;
-      setAdd(submit);
-      setShow(true);
-    }
+    init = true;
+    setAdd(submit);
+    show = true;
   }
 
   const handleChange = (evt) => {
     let temp = evt.target.value.replace(/\D/, '');
-    if (temp.length >= 2) {
-      setAdd("");
-      setShow(false);
-    } else {
-      setShow(false);
+    if (temp.length < 2 && temp !== submit) {
       setSubmit(temp);
     }
   }
@@ -921,7 +909,7 @@ function Workloads() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div>
             <Container fluid>
-              <Row>{addPOD()}</Row>
+              <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row>
               <Row>
                 <CardColumns>{updateCards()}</CardColumns>
               </Row>
