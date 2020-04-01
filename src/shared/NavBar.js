@@ -13,26 +13,26 @@ import Row from "react-bootstrap/Row";
 import clearImage from "../images/clear-24px.svg";
 
 function QHNavBar(props) {
-  const {
-	  clientsConfig,
-	  loading,
-	  updateConfig,
-	  currentConfigs,
-	  setIsLoading,
-	  updateWorkloads,
-	  expRatios,
-	  updateExpRatios,
-	  updateConfigsList,
-	  updatePSRWork,
-	  updateActivities,
-	  updateCapacity,
-	  updateMembers,
-	  allInputFTE,
-	  setAllInputFTE,
-	  allPredictFTE,
-	  setAllPredictFTE,
-	  cardsRefsMap
-  } = props;
+	const {
+		clientsConfig,
+		loading,
+		updateConfig,
+		currentConfigs,
+		setIsLoading,
+		updateWorkloads,
+		expRatios,
+		updateExpRatios,
+		updateConfigsList,
+		updatePSRWork,
+		updateActivities,
+		updateCapacity,
+		updateMembers,
+		allInputFTE,
+		setAllInputFTE,
+		allPredictFTE,
+		setAllPredictFTE,
+		cardsRefsMap
+	} = props;
 
 	const [showSaveStatus, setShowSaveStatus] = useState(false);
 	const [showConfigNamePop, setShowConfigNamePop] = useState(false);
@@ -185,7 +185,7 @@ function QHNavBar(props) {
 
 	return (
 		<>
-			<Navbar className="navbar " sticky="top" bg={"light"}>
+			<Navbar className="navbar top-navbar" sticky="top" bg={"light"}>
 				<Navbar.Brand href="#home">
 					<img
 						alt="icon"
@@ -229,24 +229,24 @@ function QHNavBar(props) {
 											<Row style={{marginBottom: "0.4rem"}} key={config}>
 												<Col
 													md={{span: 1, offset: 1}}
-															onClick={() => deleteConfig(config)}>
-															<img
-																alt={"clear_icon"}
-																src={clearImage}
-																className={"clear-button"}
-															/>
-														</Col>
-														<Col>
-															<Dropdown.Item onClick={() => loadConfig(config)}>
-																{config}
-															</Dropdown.Item>
-														</Col>
-													</Row>);
-											}))}
-									</Dropdown.Menu>
-								</Dropdown>
+													onClick={() => deleteConfig(config)}>
+													<img
+														alt={"clear_icon"}
+														src={clearImage}
+														className={"clear-button"}
+													/>
+												</Col>
+												<Col>
+													<Dropdown.Item onClick={() => loadConfig(config)}>
+														{config}
+													</Dropdown.Item>
+												</Col>
+											</Row>);
+									}))}
+							</Dropdown.Menu>
+						</Dropdown>
 
-								{/*Save Function*/}
+						{/*Save Function*/}
 						<Button
 							className={"nav-button"}
 							disabled={loading}
@@ -256,7 +256,7 @@ function QHNavBar(props) {
 								<b>Save</b>}
 						</Button>
 
-								{/*Revert Function*/}
+						{/*Revert Function*/}
 						<Button
 							className={"nav-button"}
 							disabled={loading}
@@ -266,7 +266,7 @@ function QHNavBar(props) {
 								<b>Revert</b>}
 						</Button>
 
-								{/*Filter out uninterested PODs*/}
+						{/*Filter out uninterested PODs*/}
 						<Button
 							className={"nav-button"}
 							disabled={loading}
@@ -347,25 +347,25 @@ function QHNavBar(props) {
 								<small>
 									Are you sure you want to delete configuration
 									<b> {selectedDelCfg}?</b>
-									</small>
-								</h5>
-							</Modal.Body>
-							<Modal.Footer>
-								<ButtonGroup>
-									<Button
-										className={"nav-confirm-button"}
-										onClick={() => setShowDeleteModal(false)}
-									>
-										Cancel
-									</Button>
-									<Button
-										className={"nav-confirm-button"}
-										onClick={() => confirmDeletion(selectedDelCfg)}
-									>
-										Confirm
-									</Button>
-								</ButtonGroup>
-							</Modal.Footer>
+								</small>
+							</h5>
+						</Modal.Body>
+						<Modal.Footer>
+							<ButtonGroup>
+								<Button
+									className={"nav-confirm-button"}
+									onClick={() => setShowDeleteModal(false)}
+								>
+									Cancel
+								</Button>
+								<Button
+									className={"nav-confirm-button"}
+									onClick={() => confirmDeletion(selectedDelCfg)}
+								>
+									Confirm
+								</Button>
+							</ButtonGroup>
+						</Modal.Footer>
 					</Modal>
 
 					{/*Forbidding delete the last one saved popup window*/}
@@ -385,45 +385,45 @@ function QHNavBar(props) {
 								Close
 							</Button>
 						</Modal.Footer>
-						</Modal>
+					</Modal>
 
-						<Modal show={showFilterModal}
-						       onHide={() => setShowFilterModal(false)}>
-							<Modal.Header>
-								<h4>
-									<small>PODs Filter</small>
-								</h4>
-							</Modal.Header>
-							<Modal.Body>
-								<Form>
-									{Object.keys(cardsRefsMap).map(key => {
-										let reference = React.createRef();
-										filterMultiSelectRefs[key] = reference;
-										return <Form.Check inline label={"POD" + key}
-										                   ref={reference}
-										                   key={"checkboxPOD" + key}
-										                   style={{
-											                   fontSize: "initial",
-											                   marginRight: "1rem"
-										                   }}/>;
-									})}
-								</Form>
-							</Modal.Body>
-							<Modal.Footer>
-								<ButtonGroup>
-									<Button
-										className={"nav-confirm-button"}
-										onClick={() => setShowFilterModal(false)}>
-										Cancel
-									</Button>
-									<Button
-										className={"nav-confirm-button"}
-										onClick={confirmFilter}>
-										Confirm
-									</Button>
-								</ButtonGroup>
-							</Modal.Footer>
-						</Modal>
+					<Modal show={showFilterModal}
+					       onHide={() => setShowFilterModal(false)}>
+						<Modal.Header>
+							<h4>
+								<small>PODs Filter</small>
+							</h4>
+						</Modal.Header>
+						<Modal.Body>
+							<Form>
+								{Object.keys(cardsRefsMap).map(key => {
+									let reference = React.createRef();
+									filterMultiSelectRefs[key] = reference;
+									return <Form.Check inline label={"POD" + key}
+									                   ref={reference}
+									                   key={"checkboxPOD" + key}
+									                   style={{
+										                   fontSize: "initial",
+										                   marginRight: "1rem"
+									                   }}/>;
+								})}
+							</Form>
+						</Modal.Body>
+						<Modal.Footer>
+							<ButtonGroup>
+								<Button
+									className={"nav-confirm-button"}
+									onClick={() => setShowFilterModal(false)}>
+									Cancel
+								</Button>
+								<Button
+									className={"nav-confirm-button"}
+									onClick={confirmFilter}>
+									Confirm
+								</Button>
+							</ButtonGroup>
+						</Modal.Footer>
+					</Modal>
 				</Navbar.Collapse>
 			</Navbar>
 

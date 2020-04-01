@@ -1,16 +1,16 @@
 import React, {useState} from 'react';
 import {Button, Modal} from "react-bootstrap";
 import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Legend,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Legend,
+	Line,
+	LineChart,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis,
 } from 'recharts';
 
 

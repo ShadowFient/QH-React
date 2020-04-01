@@ -2,6 +2,10 @@
     text-align: center;
 }
 
+html * {
+    font-family: 'Roboto', sans-serif;
+}
+
 .App-logo {
     height: 40vmin;
     pointer-events: none;
@@ -105,7 +109,17 @@ img.clear-button:hover {
 
 .info-bar {
     background-color: white;
-    border: 2px gray solid;
-    border-radius: 5px;
-    padding: 5px 6px;
+    border-radius: 25px;
+    padding: 5px 10px;
+    font-size: smaller;
+    box-shadow: 4px 4px 13px 0 grey;
+}
+
+.pod-card {
+    box-shadow: 4px 4px 13px 0 lightgrey;
+    border: 0;
+}
+
+.top-navbar {
+    box-shadow: 0 1px 9px 2px lightgrey;
 }

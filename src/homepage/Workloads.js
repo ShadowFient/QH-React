@@ -752,7 +752,7 @@ function Workloads() {
     const res = result.map((key) =>
       <Card
         key={key}
-        className="p-3"
+        className="p-3 pod-card"
         container="container-sm"
       >
         <Card.Img variant="top" />
@@ -876,7 +876,7 @@ function Workloads() {
           cardsRefsMap={cardsRefsMap}
         />
         <div>
-          <CardColumns>{initializeCards()}</CardColumns>
+          <CardColumns style={{ margin: "15px 15px" }}>{initializeCards()}</CardColumns>
         </div>
       </div>
     ) : (
@@ -916,9 +916,9 @@ function Workloads() {
               {/* For development use */}
               <Row>
                 <Col sm="3">{addPOD()}</Col>
-                <Col><CardColumns>{updateCards()}</CardColumns></Col>
+                <Col><CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns></Col>
               </Row>
-              
+
               {/* <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row>
               <Row>
                 <CardColumns>{updateCards()}</CardColumns>
@@ -929,5 +929,4 @@ function Workloads() {
       </div>
     );
 }
-
 export default Workloads;
