@@ -42,8 +42,13 @@ function QHNavBar(props) {
 		setAllInputFTE,
 		allPredictFTE,
 		setAllPredictFTE,
-		cardsRefsMap
+		cardsRefsMap,
+		pcgInputFTEArray,
+		psrInputFTEArray
 	} = props;
+
+	// console.log(pcgInputFTEArray);
+	// console.log(psrInputFTEArray);
 
 	const [isFetchSucceed, setIsFetchSucceed] = useState(false);
 
