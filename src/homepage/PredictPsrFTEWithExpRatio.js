@@ -1,8 +1,8 @@
 /* eslint-disable */
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "@material-ui/core/Slider";
 import TextField from "@material-ui/core/TextField";
-import {Col, Container, Row} from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 
 import "./PredictFTEwithExpRatio.css";
 
@@ -28,7 +28,8 @@ const PredictPsrFTEWithExpRatio = props => {
 		updateTotalInputFTE,
 		allPredictFTE,
 		updateTotalPredictFTE,
-		psrTime
+		psrTime,
+		newpsrTime
 	} = props;
 	const MonthCap1 = 0.76;
 	const MonthCap2 = 0.83;
@@ -53,7 +54,7 @@ const PredictPsrFTEWithExpRatio = props => {
 		 * Sum of (FTE_per_month * predictedFTE) = psrTime
 		 *
 		 */
-			// let source = document.getElementById("total_psr_" + index).innerText;
+		// let source = document.getElementById("total_psr_" + index).innerText;
 		let source =
 			psrTime || document.getElementById("total_psr_" + index).innerText;
 		let sourcePsr = source.slice(20, source.length);
@@ -73,9 +74,9 @@ const PredictPsrFTEWithExpRatio = props => {
 			"Predicted FTEs: " + predictedFTE.toFixed(2).toString();
 		setPredictFTE(preFTE => {
 			const newFTE = parseFloat(predictedFTE.toFixed(2));
-			updateTotalPredictFTE(prev => {
-				return parseFloat((prev - preFTE + newFTE).toFixed(2));
-			});
+			// updateTotalPredictFTE(prev => {              //////////////////////////////////cause infinite loop after moved clients to new pod
+			// 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
+			// });
 			return newFTE;
 		});
 	}, [
@@ -117,14 +118,14 @@ const PredictPsrFTEWithExpRatio = props => {
 				<b>PSR</b>
 			</Row>
 			<Row>
-				<Col id={"pod" + index + "PsrFte"} style={{paddingTop: "10px"}}/>
+				<Col id={"pod" + index + "PsrFte"} style={{ paddingTop: "10px" }} />
 				<Col>
 					<TextField label={"Input FTE"} min={0} onChange={changeFTE}
-					           type={"number"} style={{marginTop: "-15px"}}
-					           color={"secondary"}/>
+						type={"number"} style={{ marginTop: "-15px" }}
+						color={"secondary"} />
 				</Col>
 				<Slider
-					style={{color: "#fcd406", marginBottom: "25px"}}
+					style={{ color: "#fcd406", marginBottom: "25px" }}
 					defaultValue={defaultVal * 100}
 					onChangeCommitted={sliderHandler}
 					min={0}

@@ -24,6 +24,10 @@ const podmmb = new Map();  //podMemMap
 const cltmmb = new Map();  //memMap
 let init = true;
 let show = false;
+let displayed=0;
+let pcgalltime = [];
+let psralltime = [];
+
 
 function Workloads() {
   //clientPSR * pod -- remains constant
@@ -194,22 +198,6 @@ function Workloads() {
     }
     hours_dest += sourceTotal;
 
-    // // for new pod; doesn't work for unknown reason; infinite loop when tried to dnd second box================================
-    // if (exp.has(parseInt(sourceDroppable))) {
-    //   console.log(pcgw.get(parseInt(sourceDroppable)).PCG_ALL_TIME_HOURS)
-    //   pcgw.get(parseInt(sourceDroppable)).PCG_ALL_TIME_HOURS = hours_source;
-    //   if (isPsr) {
-    //     psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME = hours_source;
-    //   }
-    // }
-    // if (exp.has(parseInt(destDroppable))) {
-    //   console.log(pcgw.get(parseInt(destDroppable)).PCG_ALL_TIME_HOURS)
-    //   pcgw.get(parseInt(destDroppable)).PCG_ALL_TIME_HOURS = hours_dest;
-    //   if (isPsr) {
-    //     psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME = hours_dest;
-    //   }
-    // }
-
     //reset values
     document.getElementById(lbl + sourceDroppable).innerText =
       text + hours_source.toFixed(2).toString();
@@ -217,7 +205,6 @@ function Workloads() {
       text + hours_dest.toFixed(2).toString();
   };
 
-  ////////////////////////////////half way done; somehow can't save fte; document.getElementById doesn't work for new pod
   const changeFte = (
     sourceDroppable,
     destDroppable,
@@ -310,7 +297,6 @@ function Workloads() {
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
   };
 
-  //=========================================================DONE=======================================================================
   const changeMembNum = (sourceDroppable, destDroppable, draggableId) => {
     let clientMembers = memMap.get(draggableId);
     let sourcePod =
@@ -341,20 +327,28 @@ function Workloads() {
     document.getElementById("podMembNum" + destDroppable).innerText =
       "Total Members: " + destPod.toString();
   };
-  //=========================================================DONE=======================================================================
 
-  //=========================================================DONE=======================================================================
   //source/dest - indexing into workloads, draggableId - client dragged
   const changeDropDown = (sourceDroppable, destDroppable, draggableId) => {
     //pcg
     if (!(sourceDroppable in workloads)) {  //source is new pod
-      pcgw.get(parseInt(sourceDroppable)).PCGPDC_TIME_HOURS -= clientLevelWork[draggableId][0];
-      pcgw.get(parseInt(sourceDroppable)).PCGPAC_TIME_HOURS -= clientLevelWork[draggableId][1];
-      pcgw.get(parseInt(sourceDroppable)).PCGFLLUP_TIME_HOURS -= clientLevelWork[draggableId][2];
-      pcgw.get(parseInt(sourceDroppable)).PCGNEWALERT_TIME_HOURS -= clientLevelWork[draggableId][3];
-      pcgw.get(parseInt(sourceDroppable)).PCGREF_TIME_HOURS -= clientLevelWork[draggableId][4];
-      pcgw.get(parseInt(sourceDroppable)).PCGTERM_TIME_HOURS -= clientLevelWork[draggableId][5];
-      pcgw.get(parseInt(sourceDroppable)).PCGEMPGRP_TIME_HOURS -= clientLevelWork[draggableId][6];
+      let id = parseInt(sourceDroppable);
+      pcgw.get(id).PCGPDC_TIME_HOURS -= clientLevelWork[draggableId][0];
+      pcgw.get(id).PCGPAC_TIME_HOURS -= clientLevelWork[draggableId][1];
+      pcgw.get(id).PCGFLLUP_TIME_HOURS -= clientLevelWork[draggableId][2];
+      pcgw.get(id).PCGNEWALERT_TIME_HOURS -= clientLevelWork[draggableId][3];
+      pcgw.get(id).PCGREF_TIME_HOURS -= clientLevelWork[draggableId][4];
+      pcgw.get(id).PCGTERM_TIME_HOURS -= clientLevelWork[draggableId][5];
+      pcgw.get(id).PCGEMPGRP_TIME_HOURS -= clientLevelWork[draggableId][6];
+
+      pcgalltime[id - 25] =
+        pcgw.get(id).PCGPDC_TIME_HOURS +
+        pcgw.get(id).PCGPAC_TIME_HOURS +
+        pcgw.get(id).PCGFLLUP_TIME_HOURS +
+        pcgw.get(id).PCGNEWALERT_TIME_HOURS +
+        pcgw.get(id).PCGREF_TIME_HOURS +
+        pcgw.get(id).PCGTERM_TIME_HOURS +
+        pcgw.get(id).PCGEMPGRP_TIME_HOURS;
     } else {
       workloads[sourceDroppable].PCGPDC_TIME_HOURS -=
         clientLevelWork[draggableId][0];
@@ -372,13 +366,23 @@ function Workloads() {
         clientLevelWork[draggableId][6];
     }
     if (!(destDroppable in workloads)) {  //destination is new pod
-      pcgw.get(parseInt(destDroppable)).PCGPDC_TIME_HOURS += clientLevelWork[draggableId][0];
-      pcgw.get(parseInt(destDroppable)).PCGPAC_TIME_HOURS += clientLevelWork[draggableId][1];
-      pcgw.get(parseInt(destDroppable)).PCGFLLUP_TIME_HOURS += clientLevelWork[draggableId][2];
-      pcgw.get(parseInt(destDroppable)).PCGNEWALERT_TIME_HOURS += clientLevelWork[draggableId][3];
-      pcgw.get(parseInt(destDroppable)).PCGREF_TIME_HOURS += clientLevelWork[draggableId][4];
-      pcgw.get(parseInt(destDroppable)).PCGTERM_TIME_HOURS += clientLevelWork[draggableId][5];
-      pcgw.get(parseInt(destDroppable)).PCGEMPGRP_TIME_HOURS += clientLevelWork[draggableId][6];
+      let id = parseInt(destDroppable);
+      pcgw.get(id).PCGPDC_TIME_HOURS += clientLevelWork[draggableId][0];
+      pcgw.get(id).PCGPAC_TIME_HOURS += clientLevelWork[draggableId][1];
+      pcgw.get(id).PCGFLLUP_TIME_HOURS += clientLevelWork[draggableId][2];
+      pcgw.get(id).PCGNEWALERT_TIME_HOURS += clientLevelWork[draggableId][3];
+      pcgw.get(id).PCGREF_TIME_HOURS += clientLevelWork[draggableId][4];
+      pcgw.get(id).PCGTERM_TIME_HOURS += clientLevelWork[draggableId][5];
+      pcgw.get(id).PCGEMPGRP_TIME_HOURS += clientLevelWork[draggableId][6];
+
+      pcgalltime[id - 25] =
+        pcgw.get(id).PCGPDC_TIME_HOURS +
+        pcgw.get(id).PCGPAC_TIME_HOURS +
+        pcgw.get(id).PCGFLLUP_TIME_HOURS +
+        pcgw.get(id).PCGNEWALERT_TIME_HOURS +
+        pcgw.get(id).PCGREF_TIME_HOURS +
+        pcgw.get(id).PCGTERM_TIME_HOURS +
+        pcgw.get(id).PCGEMPGRP_TIME_HOURS;
     } else {
       workloads[destDroppable].PCGPDC_TIME_HOURS +=
         clientLevelWork[draggableId][0];
@@ -400,17 +404,18 @@ function Workloads() {
     if (!(sourceDroppable in psrWorks)) {
       psrw.get(parseInt(sourceDroppable)).PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
       psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME -= clientPSR[draggableId][0];
+      psralltime[parseInt(sourceDroppable) - 25] = psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME;
     } else {
       psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
     }
     if (!(destDroppable in psrWorks)) {
       psrw.get(parseInt(destDroppable)).PERC_TOTAL_PSR_PHONE += (clientPSR[draggableId][1]);
       psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME += clientPSR[draggableId][0];
+      psralltime[parseInt(destDroppable) - 25] = psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME;
     } else {
       psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
     }
   };
-  //=========================================================DONE=======================================================================
 
   const onDragEnd = result => {
     const { destination, source, draggableId } = result;
@@ -530,6 +535,7 @@ function Workloads() {
   };
 
   const table = [];
+  let totalwk=0;
 
   const updateCards = () => {
     const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
@@ -539,6 +545,11 @@ function Workloads() {
         expRatios[index].PSR_EXP_RATIO = changedRatio;
       }
     };
+
+    //calculate total working hours
+    Object.keys(workloads).map(key=>{
+      totalwk+=(psrWorks[key].Total_PSR_Phone_Call_Hours+workloads[key].PCG_ALL_TIME_HOURS)
+    })
 
     // Fetch activities
     activities.map(activity => (
@@ -591,7 +602,7 @@ function Workloads() {
       return (
         <Card
           key={key}
-          className="p-3"
+          className="p-3 pod-card"
           container="container-sm"
           ref={cardsRefsMap[parseInt(key)]}
         >
@@ -671,12 +682,14 @@ function Workloads() {
   const [add, setAdd] = useState(""); //numbers of new pod
   const [submit, setSubmit] = useState("");
 
-
   const handleSubmit = (evt) => {
     evt.preventDefault();
     init = true;
     setAdd(submit);
     show = true;
+
+    //if user reset # of new pod, re-fetch data, sp no clients will be missing if moved any
+    displayed>0? fetchWorkload() : displayed=1; 
   }
 
   const handleChange = (evt) => {
@@ -734,7 +747,7 @@ function Workloads() {
 
 
   const DisplayPod = props => {
-    console.log("displaypod")
+    console.log("DisplayPod")
     const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
       if (isPcgRatio) {
         (exp.get(index)).EXP_RATIO = changedRatio;
@@ -786,6 +799,7 @@ function Workloads() {
             document.getElementById("total_pcg_" + parseInt(key)) &&
             document.getElementById("total_pcg_" + parseInt(key)).innerText
           }
+          newpcgTime={pcgalltime}
         />
 
         {/* Predicted PSR FTE with its experience ratio */}
@@ -803,6 +817,7 @@ function Workloads() {
             document.getElementById("total_psr_" + parseInt(key)) &&
             document.getElementById("total_psr_" + parseInt(key)).innerText
           }
+          newpsrTime={psralltime}
         />
 
         {/* Dropdown buttons for both PCG and PSR */}
@@ -825,7 +840,7 @@ function Workloads() {
     )
     return (
       <>
-        <div>{res}</div>
+        <CardColumns>{res}</CardColumns>
       </>
     )
   }
@@ -914,15 +929,15 @@ function Workloads() {
           <div>
             <Container fluid>
               {/* For development use */}
-              <Row>
-                <Col sm="3">{addPOD()}</Col>
+              {/* <Row>
+                <Col md="3">{addPOD()}</Col>
                 <Col><CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns></Col>
-              </Row>
-
-              {/* <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row>
-              <Row>
-                <CardColumns>{updateCards()}</CardColumns>
               </Row> */}
+
+              <Row>
+                <CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns>
+              </Row>
+              <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row>
             </Container>
           </div>
         </DragDropContext>

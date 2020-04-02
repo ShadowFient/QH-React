@@ -37,7 +37,7 @@ function DropdownButton(props) {
 					id="total_time_dropdown"
 					style={dropdownButtonStyle}
 				>
-					<label id={"total_pcg_" + pod_key.toString()}>
+				<label id={"total_pcg_" + pod_key.toString()}>
 						{"PCG All Time Hours: " + parseFloat(pcg.PCG_ALL_TIME_HOURS).toFixed(2)}
 					</label>
 				</Dropdown.Toggle>
@@ -113,9 +113,9 @@ function DropdownButton(props) {
 					style={dropdownButtonStyle}
 				>
 					<label id={"total_pcg_" + pod_key.toString()}>
-						{}
+					{"PCG All Time Hours: " + total.toFixed(2)} 
 					</label>
-					{"PCG All Time Hours: " + pcg.PCG_ALL_TIME_HOURS.toFixed(2)}
+					{/* {"PCG All Time Hours: " + pcg.PCG_ALL_TIME_HOURS.toFixed(2)} */}
 				</Dropdown.Toggle>
 				<Dropdown.Menu style={{ width: "100%" }}>
 					<DropdownItem>
@@ -165,10 +165,11 @@ function DropdownButton(props) {
 					style={dropdownButtonStyle}
 				>
 					<label id={"total_psr_" + pod_key.toString()}>
-						{}
-					</label>
 					{"PSR All Time Hours: " +
 							(psr.PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
+					</label>
+					{/* {"PSR All Time Hours: " +
+							(psr.PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)} */}
 				</Dropdown.Toggle>
 				<Dropdown.Menu style={{ width: "100%" }}>
 					<DropdownItem>

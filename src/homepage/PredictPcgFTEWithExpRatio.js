@@ -1,11 +1,11 @@
 /* eslint-disable */
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "@material-ui/core/Slider";
 import TextField from "@material-ui/core/TextField";
-import {createMuiTheme} from '@material-ui/core/styles';
-import {Container, Row} from "reactstrap";
+import { createMuiTheme } from '@material-ui/core/styles';
+import { Container, Row } from "reactstrap";
 import "./PredictFTEwithExpRatio.css";
-import {Col} from "react-bootstrap";
+import { Col } from "react-bootstrap";
 
 const theme = createMuiTheme({
 	palette: {
@@ -40,7 +40,8 @@ const PredictPcgFTEWithExpRatio = props => {
 		updateTotalInputFTE,
 		allPredictFTE,
 		updateTotalPredictFTE,
-		pcgTime
+		pcgTime,
+		newpcgTime
 	} = props;
 	const MonthCap1 = 0.76;
 	const MonthCap2 = 0.83;
@@ -65,7 +66,7 @@ const PredictPcgFTEWithExpRatio = props => {
 		 * Sum of (FTE_per_month * predictedFTE) = pcgTime
 		 *
 		 */
-			// let source = document.getElementById("total_pcg_" + index).innerText;
+		// let source = document.getElementById("total_pcg_" + index).innerText;
 		let source =
 			pcgTime || document.getElementById("total_pcg_" + index).innerText;
 		let sourcePcg = source.slice(20, source.length);
@@ -85,9 +86,9 @@ const PredictPcgFTEWithExpRatio = props => {
 			"Predicted FTEs: " + predictedFTE.toFixed(2).toString();
 		setPredictFTE(preFTE => {
 			const newFTE = parseFloat(predictedFTE.toFixed(2));
-			updateTotalPredictFTE(prev => {
-				return parseFloat((prev - preFTE + newFTE).toFixed(2));
-			});
+			// updateTotalPredictFTE(prev => {			//////////////////////////////////cause infinite loop after moved clients to new pod
+			// 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
+			// });
 			return newFTE;
 		});
 	}, [
@@ -128,14 +129,14 @@ const PredictPcgFTEWithExpRatio = props => {
 				<b>PCG</b>
 			</Row>
 			<Row>
-				<Col id={"pod" + index + "PcgFte"} style={{paddingTop: "10px"}}/>
+				<Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} />
 				<Col>
 					<TextField label={"Input FTE"} min={0} onChange={changeFTE}
-					           type={"number"} style={{marginTop: "-15px"}}
-					           color={"secondary"}/>
+						type={"number"} style={{ marginTop: "-15px" }}
+						color={"secondary"} />
 				</Col>
 				<Slider
-					style={{color: "#fcd406", marginBottom: "25px"}}
+					style={{ color: "#fcd406", marginBottom: "25px" }}
 					defaultValue={defaultVal * 100}
 					onChangeCommitted={sliderHandler}
 					min={0}
