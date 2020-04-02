@@ -74,9 +74,9 @@ const PredictPsrFTEWithExpRatio = props => {
 			"Predicted FTEs: " + predictedFTE.toFixed(2).toString();
 		setPredictFTE(preFTE => {
 			const newFTE = parseFloat(predictedFTE.toFixed(2));
-			// updateTotalPredictFTE(prev => {              //////////////////////////////////cause infinite loop after moved clients to new pod
-			// 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
-			// });
+			updateTotalPredictFTE(prev => {
+				return parseFloat((prev - preFTE + newFTE).toFixed(2));
+			});
 			return newFTE;
 		});
 	}, [

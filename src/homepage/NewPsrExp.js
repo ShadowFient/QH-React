@@ -2,21 +2,9 @@
 import React, { useEffect, useState } from "react";
 import Slider from "@material-ui/core/Slider";
 import TextField from "@material-ui/core/TextField";
-import { createMuiTheme } from '@material-ui/core/styles';
-import { Container, Row } from "reactstrap";
-import "./PredictFTEwithExpRatio.css";
-import { Col } from "react-bootstrap";
+import { Col, Container, Row } from "reactstrap";
 
-const theme = createMuiTheme({
-	palette: {
-		primary: {
-			main: "#4CAF50"
-		},
-		secondary: {
-			main: '#fcd406',
-		},
-	},
-});
+import "./PredictFTEwithExpRatio.css";
 
 const marks = [
 	{
@@ -29,7 +17,7 @@ const marks = [
 	}
 ];
 
-const PredictPcgFTEWithExpRatio = props => {
+const NewPsrExp = props => {
 	const {
 		index,
 		initExperienceRatio,
@@ -40,8 +28,8 @@ const PredictPcgFTEWithExpRatio = props => {
 		updateTotalInputFTE,
 		allPredictFTE,
 		updateTotalPredictFTE,
-		pcgTime,
-		newpcgTime
+		psrTime,
+		newpsrTime
 	} = props;
 	const MonthCap1 = 0.76;
 	const MonthCap2 = 0.83;
@@ -60,18 +48,18 @@ const PredictPcgFTEWithExpRatio = props => {
 		/**
 		 * From month 1 to 6,
 		 * Sum of [(exp_ratio)*(predictedFTE)*(FTE_per_month)*(MonthCap)
-		 *             + (1-exp_ratio)*(predictedFTE)*(FTE_per_month)] = pcgTime
+		 *             + (1-exp_ratio)*(predictedFTE)*(FTE_per_month)] = psrTime
 		 *
 		 * After 6 months,
-		 * Sum of (FTE_per_month * predictedFTE) = pcgTime
+		 * Sum of (FTE_per_month * predictedFTE) = psrTime
 		 *
 		 */
-		// let source = document.getElementById("total_pcg_" + index).innerText;
+		// let source = document.getElementById("total_psr_" + index).innerText;
 		let source =
-			pcgTime || document.getElementById("total_pcg_" + index).innerText;
-		let sourcePcg = source.slice(20, source.length);
+			psrTime || document.getElementById("total_psr_" + index).innerText;
+		let sourcePsr = source.slice(20, source.length);
 		const predictedFTE =
-			sourcePcg /
+			sourcePsr /
 			FTE_per_month /
 			(12 +
 				ratio *
@@ -82,13 +70,13 @@ const PredictPcgFTEWithExpRatio = props => {
 					MonthCap5 +
 					MonthCap6 -
 					6));
-		document.getElementById("pod" + index + "PcgFte").innerText =
+		document.getElementById("pod" + index + "PsrFte").innerText =
 			"Predicted FTEs: " + predictedFTE.toFixed(2).toString();
 		setPredictFTE(preFTE => {
 			const newFTE = parseFloat(predictedFTE.toFixed(2));
-			updateTotalPredictFTE(prev => {
-				return parseFloat((prev - preFTE + newFTE).toFixed(2));
-			});
+			// updateTotalPredictFTE(prev => {          ////////cause infinite loop after moved clients to new pod
+			// 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
+			// });
 			return newFTE;
 		});
 	}, [
@@ -96,7 +84,7 @@ const PredictPcgFTEWithExpRatio = props => {
 		FTE_per_month,
 		index,
 		allPredictFTE,
-		pcgTime,
+		psrTime,
 		updateTotalPredictFTE
 	]);
 
@@ -111,13 +99,15 @@ const PredictPcgFTEWithExpRatio = props => {
 		ratioChangeHandler(isPcgRatio, index, changedRatio);
 	};
 
+	// console.log("psr rerender");
+
 	const changeFTE = event => {
 		event.preventDefault();
 		let newFTE = event.target.value === "" ? 0 : parseFloat(event.target.value);
 		let updatedTotalFTE = allInputFTE;
 		setInputFTE(preFTE => {
 			updatedTotalFTE = allInputFTE - preFTE + newFTE;
-			updateTotalInputFTE(updatedTotalFTE);
+			// updateTotalInputFTE(updatedTotalFTE);
 			return newFTE;
 		});
 	};
@@ -125,10 +115,10 @@ const PredictPcgFTEWithExpRatio = props => {
 	return (
 		<Container>
 			<Row>
-				<b>PCG</b>
+				<b>PSR</b>
 			</Row>
 			<Row>
-				<Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} />
+				<Col id={"pod" + index + "PsrFte"} style={{ paddingTop: "10px" }} />
 				<Col>
 					<TextField label={"Input FTE"} min={0} onChange={changeFTE}
 						type={"number"} style={{ marginTop: "-15px" }}
@@ -150,4 +140,4 @@ const PredictPcgFTEWithExpRatio = props => {
 	);
 };
 
-export default PredictPcgFTEWithExpRatio;
+export default NewPsrExp;

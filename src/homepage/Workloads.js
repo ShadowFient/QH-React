@@ -12,6 +12,8 @@ import { DragDropContext } from "react-beautiful-dnd";
 import { clientLevelWork } from "./ClientActivity";
 import { Container, Row, Col, CardGroup, CardDeck } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
+import NewPcgExp from "./NewPcgExp";
+import NewPsrExp from "./NewPsrExp";
 
 //Declare variable for new POD
 const wkld = new Map();    //workloads
@@ -24,9 +26,7 @@ const podmmb = new Map();  //podMemMap
 const cltmmb = new Map();  //memMap
 let init = true;
 let show = false;
-let displayed=0;
-let pcgalltime = [];
-let psralltime = [];
+let displayed = 0;
 
 
 function Workloads() {
@@ -341,7 +341,7 @@ function Workloads() {
       pcgw.get(id).PCGTERM_TIME_HOURS -= clientLevelWork[draggableId][5];
       pcgw.get(id).PCGEMPGRP_TIME_HOURS -= clientLevelWork[draggableId][6];
 
-      pcgalltime[id - 25] =
+      pcgw.get(id).PCG_ALL_TIME_HOURS =
         pcgw.get(id).PCGPDC_TIME_HOURS +
         pcgw.get(id).PCGPAC_TIME_HOURS +
         pcgw.get(id).PCGFLLUP_TIME_HOURS +
@@ -375,7 +375,7 @@ function Workloads() {
       pcgw.get(id).PCGTERM_TIME_HOURS += clientLevelWork[draggableId][5];
       pcgw.get(id).PCGEMPGRP_TIME_HOURS += clientLevelWork[draggableId][6];
 
-      pcgalltime[id - 25] =
+      pcgw.get(id).PCG_ALL_TIME_HOURS =
         pcgw.get(id).PCGPDC_TIME_HOURS +
         pcgw.get(id).PCGPAC_TIME_HOURS +
         pcgw.get(id).PCGFLLUP_TIME_HOURS +
@@ -404,14 +404,12 @@ function Workloads() {
     if (!(sourceDroppable in psrWorks)) {
       psrw.get(parseInt(sourceDroppable)).PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
       psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME -= clientPSR[draggableId][0];
-      psralltime[parseInt(sourceDroppable) - 25] = psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME;
     } else {
       psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
     }
     if (!(destDroppable in psrWorks)) {
       psrw.get(parseInt(destDroppable)).PERC_TOTAL_PSR_PHONE += (clientPSR[draggableId][1]);
       psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME += clientPSR[draggableId][0];
-      psralltime[parseInt(destDroppable) - 25] = psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME;
     } else {
       psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
     }
@@ -535,7 +533,6 @@ function Workloads() {
   };
 
   const table = [];
-  let totalwk=0;
 
   const updateCards = () => {
     const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
@@ -545,11 +542,6 @@ function Workloads() {
         expRatios[index].PSR_EXP_RATIO = changedRatio;
       }
     };
-
-    //calculate total working hours
-    Object.keys(workloads).map(key=>{
-      totalwk+=(psrWorks[key].Total_PSR_Phone_Call_Hours+workloads[key].PCG_ALL_TIME_HOURS)
-    })
 
     // Fetch activities
     activities.map(activity => (
@@ -684,19 +676,20 @@ function Workloads() {
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    init = true;
-    setAdd(submit);
-    show = true;
-
-    //if user reset # of new pod, re-fetch data, sp no clients will be missing if moved any
-    displayed>0? fetchWorkload() : displayed=1; 
+    if (parseInt(submit) > 10) {
+      alert("Maximum number of new POD is 10")
+    } else {
+      init = true;
+      setAdd(submit);
+      show = true;
+    }
+    //if user reset # of new pod, re-fetch data, sp no clients will be missing if moved any => total predicted FTE will double
+    // displayed > 0 ? fetchWorkload() : displayed = 1;
   }
 
   const handleChange = (evt) => {
     let temp = evt.target.value.replace(/\D/, '');
-    if (temp.length < 2 && temp !== submit) {
-      setSubmit(temp);
-    }
+    setSubmit(temp)
   }
 
   const InitNewPodValue = props => {
@@ -785,7 +778,7 @@ function Workloads() {
         </Card.Title>
 
         {/* Predicted PCG FTE with its experience ratio */}
-        <PredictPcgFTEWithExpRatio
+        <NewPcgExp
           index={parseInt(key)}
           initExperienceRatio={(exp.get(key)).EXP_RATIO}
           ratioChangeHandler={ratioChangeHandler}
@@ -799,11 +792,10 @@ function Workloads() {
             document.getElementById("total_pcg_" + parseInt(key)) &&
             document.getElementById("total_pcg_" + parseInt(key)).innerText
           }
-          newpcgTime={pcgalltime}
         />
 
         {/* Predicted PSR FTE with its experience ratio */}
-        <PredictPsrFTEWithExpRatio
+        <NewPsrExp
           index={parseInt(key)}
           initExperienceRatio={(exp.get(key)).PSR_EXP_RATIO}
           ratioChangeHandler={ratioChangeHandler}
@@ -817,7 +809,6 @@ function Workloads() {
             document.getElementById("total_psr_" + parseInt(key)) &&
             document.getElementById("total_psr_" + parseInt(key)).innerText
           }
-          newpsrTime={psralltime}
         />
 
         {/* Dropdown buttons for both PCG and PSR */}
@@ -826,7 +817,6 @@ function Workloads() {
           psrWK={psrw.get(parseInt(key))}
           pod_key={key}
           gpsOfClients={table}
-          isnew={0}
         />
 
         {/* List the POD's clients */}
@@ -840,7 +830,8 @@ function Workloads() {
     )
     return (
       <>
-        <CardColumns>{res}</CardColumns>
+        {/* <CardColumns>{res}</CardColumns> */} 
+        <div>{res}</div>
       </>
     )
   }
@@ -851,7 +842,7 @@ function Workloads() {
         <div style={{ width: "100%" }}>
           <form onSubmit={handleSubmit}>
             <label>
-              Add numbers of POD (Max. 9):
+              Add numbers of POD (Max. 10):
               <input
                 type="text"
                 pattern="[0-9]*"
@@ -929,15 +920,15 @@ function Workloads() {
           <div>
             <Container fluid>
               {/* For development use */}
-              {/* <Row>
+              <Row>
                 <Col md="3">{addPOD()}</Col>
                 <Col><CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns></Col>
-              </Row> */}
+              </Row>
 
-              <Row>
+              {/* <Row>
                 <CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns>
               </Row>
-              <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row>
+              <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row> */}
             </Container>
           </div>
         </DragDropContext>
