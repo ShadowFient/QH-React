@@ -33,7 +33,7 @@ function DropdownButton(props) {
 						{"PCG All Time Hours: " + parseFloat(pcg.PCG_ALL_TIME_HOURS).toFixed(2)}
 					</label>
 				</Dropdown.Toggle>
-				<Dropdown.Menu style={{ width: "100%" }}>
+				<Dropdown.Menu style={{width: "100%", boxShadow: "3px 3px 5px 2px lightgrey"}}>
 					<DropdownItem>
 						<b>More Information: </b>
 					</DropdownItem>
@@ -85,7 +85,7 @@ function DropdownButton(props) {
 							(psr.PRED_PHONE_VOLUME * 7.68 / 60).toFixed(2)}
 					</label>
 				</Dropdown.Toggle>
-				<Dropdown.Menu style={{ width: "100%" }}>
+				<Dropdown.Menu style={{width: "100%", boxShadow: "3px 3px 5px 2px lightgrey"}}>
 					<DropdownItem>
 						<b>More Information: </b>
 					</DropdownItem>
