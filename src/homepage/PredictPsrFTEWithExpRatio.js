@@ -29,7 +29,6 @@ const PredictPsrFTEWithExpRatio = props => {
 		allPredictFTE,
 		updateTotalPredictFTE,
 		psrTime,
-		newpsrTime
 	} = props;
 	const MonthCap1 = 0.76;
 	const MonthCap2 = 0.83;

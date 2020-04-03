@@ -42,7 +42,8 @@ function QHNavBar(props) {
 		setAllInputFTE,
 		allPredictFTE,
 		setAllPredictFTE,
-		cardsRefsMap
+		cardsRefsMap,
+		initNewPod
 	} = props;
 
 	const [isFetchSucceed, setIsFetchSucceed] = useState(false);
@@ -111,6 +112,7 @@ function QHNavBar(props) {
 		// reset total input FTEs and total predicted FTEs
 		setAllInputFTE(0);
 		setAllPredictFTE(0);
+		initNewPod();
 		// load configuration
 		setCurrentDisplayConfig(selectedName);
 		fetch(apiHost + "/config?name=" + selectedName)

@@ -5,7 +5,7 @@ import TextField from "@material-ui/core/TextField";
 import { createMuiTheme } from '@material-ui/core/styles';
 import { Container, Row } from "reactstrap";
 import "./PredictFTEwithExpRatio.css";
-import { Col } from "react-bootstrap";
+import { Col, Button } from "react-bootstrap";
 
 const theme = createMuiTheme({
     palette: {
@@ -41,7 +41,8 @@ const NewPcgExp = props => {
         allPredictFTE,
         updateTotalPredictFTE,
         pcgTime,
-        newpcgTime
+        isnew,
+        pcgfte
     } = props;
     const MonthCap1 = 0.76;
     const MonthCap2 = 0.83;
@@ -55,6 +56,7 @@ const NewPcgExp = props => {
     const [inputFTE, setInputFTE] = useState(0);
     const [predictFTE, setPredictFTE] = useState(0);
     const FTE_per_month = (capacity || 1570) / 12;
+    let predictedFTE=0;
 
     useEffect(() => {
 		/**
@@ -70,7 +72,8 @@ const NewPcgExp = props => {
         let source =
             pcgTime || document.getElementById("total_pcg_" + index).innerText;
         let sourcePcg = source.slice(20, source.length);
-        const predictedFTE =
+        if (isnew) { sourcePcg = 0 }
+        predictedFTE =
             sourcePcg /
             FTE_per_month /
             (12 +
@@ -84,13 +87,13 @@ const NewPcgExp = props => {
                     6));
         document.getElementById("pod" + index + "PcgFte").innerText =
             "Predicted FTEs: " + predictedFTE.toFixed(2).toString();
-        setPredictFTE(preFTE => {
-            const newFTE = parseFloat(predictedFTE.toFixed(2));
-            // updateTotalPredictFTE(prev => {	    /////////////cause infinite loop after moved clients to new pod
-            // 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
-            // });
-            return newFTE;
-        });
+        // setPredictFTE(preFTE => {
+        //     const newFTE = parseFloat(predictedFTE.toFixed(2));
+        //     // updateTotalPredictFTE(prev => {	    /////////////cause infinite loop after moved clients to new pod
+        //     // 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
+        //     // });
+        //     return newFTE;
+        // });
     }, [
         ratio,
         FTE_per_month,
@@ -114,6 +117,7 @@ const NewPcgExp = props => {
     const changeFTE = event => {
         event.preventDefault();
         let newFTE = event.target.value === "" ? 0 : parseFloat(event.target.value);
+        pcgfte.set(index, newFTE);
         let updatedTotalFTE = allInputFTE;
         setInputFTE(preFTE => {
             updatedTotalFTE = allInputFTE - preFTE + newFTE;
@@ -121,6 +125,27 @@ const NewPcgExp = props => {
             return newFTE;
         });
     };
+
+    ///need to create teo global variables to store new pod's pred and input fte//////////
+    // const saveTotal = () => {
+    //     setPredictFTE(preFTE => {
+    //         const newFTE = parseFloat(predictedFTE.toFixed(2));
+    //         updateTotalPredictFTE(prev => {	 
+    //             console.log(newFTE)
+    //             console.log(prev)  
+    //             console.log(parseFloat((prev - preFTE + newFTE).toFixed(2)))
+    //             return parseFloat((prev - preFTE + newFTE).toFixed(2));
+    //         });
+    //         return newFTE;
+    //     });
+    //     let updatedTotalFTE = allInputFTE;
+    //     let temp=pcgfte.get(index);
+    //     setInputFTE(preFTE => {
+    //         updatedTotalFTE = allInputFTE - preFTE + temp;
+    //         updateTotalInputFTE(updatedTotalFTE);
+    //         return temp;
+    //     });
+    // }
 
     return (
         <Container>
@@ -131,8 +156,10 @@ const NewPcgExp = props => {
                 <Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} />
                 <Col>
                     <TextField label={"Input FTE"} min={0} onChange={changeFTE}
+                        value={pcgfte.get(index) === 0 ? ("") : pcgfte.get(index)}
                         type={"number"} style={{ marginTop: "-15px" }}
-                        color={"secondary"} />
+                        color={"secondary"} id="text" />
+                    {/* <button onClick={saveTotal}>save</button> */}
                 </Col>
                 <Slider
                     style={{ color: "#fcd406", marginBottom: "25px" }}

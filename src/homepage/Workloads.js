@@ -10,13 +10,13 @@ import PredictPsrFTEWithExpRatio from "./PredictPsrFTEWithExpRatio";
 import DropdownButton from "./DropdownButton";
 import { DragDropContext } from "react-beautiful-dnd";
 import { clientLevelWork } from "./ClientActivity";
-import { Container, Row, Col, CardGroup, CardDeck } from "react-bootstrap";
+import { Container, Row, Col, CardGroup, CardDeck, Button } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 import NewPcgExp from "./NewPcgExp";
 import NewPsrExp from "./NewPsrExp";
+import TextField from "@material-ui/core/TextField";
 
 //Declare variable for new POD
-const wkld = new Map();    //workloads
 const exp = new Map();     //expRatios
 const clt = new Map();     //clients
 const cltpsr = new Map();  //clientPSR
@@ -27,6 +27,9 @@ const cltmmb = new Map();  //memMap
 let init = true;
 let show = false;
 let displayed = 0;
+let check = false;
+const pcgfte = new Map();
+const psrfte = new Map();
 
 
 function Workloads() {
@@ -678,13 +681,19 @@ function Workloads() {
     evt.preventDefault();
     if (parseInt(submit) > 10) {
       alert("Maximum number of new POD is 10")
+    } else if (submit === "") {
+      alert("Please enter a number")
+    } else if (submit === add) {
+      alert("There are already " + submit + " new POD")
     } else {
       init = true;
       setAdd(submit);
       show = true;
+      //if user reset # of new pod, re-fetch data
+      displayed > 0 ? (
+        fetchWorkload(), setAllInputFTE(0), setAllPredictFTE(0)
+      ) : displayed = 1;
     }
-    //if user reset # of new pod, re-fetch data, sp no clients will be missing if moved any => total predicted FTE will double
-    // displayed > 0 ? fetchWorkload() : displayed = 1;
   }
 
   const handleChange = (evt) => {
@@ -693,24 +702,14 @@ function Workloads() {
   }
 
   const InitNewPodValue = props => {
-    if (init) {
-      let ct = props.value;
+    if (init || typeof props === 'undefined') {
+      let ct = add;
       let len = cards.length;
       const result = [];
       for (let i = 1; i <= parseInt(ct); i++) {
         result[result.length] = len + i;
       }
       for (let i of result) {
-        wkld.set(i, {
-          PCGEMPGRP_TIME_HOURS: 0,
-          PCGFLLUP_TIME_HOURS: 0,
-          PCGNEWALERT_TIME_HOURS: 0,
-          PCGPAC_TIME_HOURS: 0,
-          PCGPDC_TIME_HOURS: 0,
-          PCGREF_TIME_HOURS: 0,
-          PCGTERM_TIME_HOURS: 0,
-          PCG_ALL_TIME_HOURS: 0
-        });
         exp.set(i, { EXP_RATIO: 0.2, PSR_EXP_RATIO: 0.2 });
         clt.set(i, [[0, ""]]);
         cltpsr.set(i, [0, 0]);
@@ -730,12 +729,14 @@ function Workloads() {
           SUCC_TIME_PSR_PHONE: 0
         })
         podmmb.set(i, 0);
-        // podToclt.set(i,0)
+        pcgfte.set(i, 0);
+        psrfte.set(i, 0);
       }
       init = false;
+      check = true;
     }
 
-    return (<></>)
+    return (<>{show && <DisplayPod count={add} />}</>)
   }
 
 
@@ -792,6 +793,8 @@ function Workloads() {
             document.getElementById("total_pcg_" + parseInt(key)) &&
             document.getElementById("total_pcg_" + parseInt(key)).innerText
           }
+          // isnew={check}
+          pcgfte={pcgfte}
         />
 
         {/* Predicted PSR FTE with its experience ratio */}
@@ -809,6 +812,8 @@ function Workloads() {
             document.getElementById("total_psr_" + parseInt(key)) &&
             document.getElementById("total_psr_" + parseInt(key)).innerText
           }
+          // isnew={check}
+          psrfte={psrfte}
         />
 
         {/* Dropdown buttons for both PCG and PSR */}
@@ -828,9 +833,10 @@ function Workloads() {
         />
       </Card>
     )
+    check = false;
     return (
       <>
-        {/* <CardColumns>{res}</CardColumns> */} 
+        {/* <CardColumns>{res}</CardColumns> */}
         <div>{res}</div>
       </>
     )
@@ -838,24 +844,24 @@ function Workloads() {
 
   const addPOD = () => {
     return (
-      <>
-        <div style={{ width: "100%" }}>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Add numbers of POD (Max. 10):
-              <input
-                type="text"
-                pattern="[0-9]*"
-                value={submit}
-                onChange={handleChange}
-              />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
-        </div>
+      <Card
+        className="p-3 pod-card"
+        container="container-sm"
+        style={{ marginTop: "15px" }}>
+        <p>Number of new POD (Max. 10):</p>
+        <TextField
+          label="What if I add... "
+          type="text"
+          pattern="[0-9]*"
+          value={submit}
+          onChange={handleChange} />
+        <Button
+          onClick={handleSubmit}
+          style={{ marginBottom: "30px", marginTop: "30px" }}>
+          Submit
+          </Button>
         {show && <InitNewPodValue value={add} />}
-        {show && <DisplayPod count={add} />}
-      </>
+      </Card>
     );
   }
 
@@ -915,6 +921,7 @@ function Workloads() {
           setAllInputFTE={setAllInputFTE}
           allPredictFTE={allPredictFTE}
           setAllPredictFTE={setAllPredictFTE}
+          initNewPod={InitNewPodValue}
         />
         <DragDropContext onDragEnd={onDragEnd}>
           <div>

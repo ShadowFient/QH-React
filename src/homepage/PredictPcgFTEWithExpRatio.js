@@ -41,7 +41,6 @@ const PredictPcgFTEWithExpRatio = props => {
 		allPredictFTE,
 		updateTotalPredictFTE,
 		pcgTime,
-		newpcgTime
 	} = props;
 	const MonthCap1 = 0.76;
 	const MonthCap2 = 0.83;
