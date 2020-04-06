@@ -56,7 +56,7 @@ const NewPcgExp = props => {
     const [inputFTE, setInputFTE] = useState(0);
     const [predictFTE, setPredictFTE] = useState(0);
     const FTE_per_month = (capacity || 1570) / 12;
-    let predictedFTE=0;
+    let predictedFTE = 0;
 
     useEffect(() => {
 		/**
@@ -87,13 +87,13 @@ const NewPcgExp = props => {
                     6));
         document.getElementById("pod" + index + "PcgFte").innerText =
             "Predicted FTEs: " + predictedFTE.toFixed(2).toString();
-        // setPredictFTE(preFTE => {
-        //     const newFTE = parseFloat(predictedFTE.toFixed(2));
-        //     // updateTotalPredictFTE(prev => {	    /////////////cause infinite loop after moved clients to new pod
-        //     // 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
-        //     // });
-        //     return newFTE;
-        // });
+        setPredictFTE(preFTE => {
+            const newFTE = parseFloat(predictedFTE.toFixed(2));
+            // updateTotalPredictFTE(prev => {	    //update=>display=>update=>display=>update
+            // 	return parseFloat((prev - preFTE + newFTE).toFixed(2));
+            // });
+            return newFTE;
+        });
     }, [
         ratio,
         FTE_per_month,
@@ -126,7 +126,7 @@ const NewPcgExp = props => {
         });
     };
 
-    ///need to create teo global variables to store new pod's pred and input fte//////////
+
     // const saveTotal = () => {
     //     setPredictFTE(preFTE => {
     //         const newFTE = parseFloat(predictedFTE.toFixed(2));
@@ -155,10 +155,10 @@ const NewPcgExp = props => {
             <Row>
                 <Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} />
                 <Col>
-                    <TextField label={"Input FTE"} min={0} onChange={changeFTE}
+                    {/* <TextField label={"Input FTE"} min={0} onChange={changeFTE}
                         value={pcgfte.get(index) === 0 ? ("") : pcgfte.get(index)}
                         type={"number"} style={{ marginTop: "-15px" }}
-                        color={"secondary"} id="text" />
+                        color={"secondary"} id="text" /> */}
                     {/* <button onClick={saveTotal}>save</button> */}
                 </Col>
                 <Slider

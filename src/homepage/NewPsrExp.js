@@ -124,10 +124,10 @@ const NewPsrExp = props => {
             <Row>
                 <Col id={"pod" + index + "PsrFte"} style={{ paddingTop: "10px" }} />
                 <Col>
-                    <TextField label={"Input FTE"} min={0} onChange={changeFTE}
+                    {/* <TextField label={"Input FTE"} min={0} onChange={changeFTE}
                         value={psrfte.get(index) === 0 ? ("") : psrfte.get(index)}
                         type={"number"} style={{ marginTop: "-15px" }}
-                        color={"secondary"} />
+                        color={"secondary"} /> */}
                 </Col>
                 <Slider
                     style={{ color: "#fcd406", marginBottom: "25px" }}
