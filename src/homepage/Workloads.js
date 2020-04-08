@@ -21,7 +21,7 @@ let show = false;
 
 function Workloads() {
   //clientPSR * pod -- remains constant
-  // console.log("rerender");const [expRatios, setExpRatios] = useState();
+  const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
   const [clientPSR, setClientPSR] = useState();
@@ -32,9 +32,7 @@ function Workloads() {
   const [members, setMembers] = useState();
   const [allPredictFTE, setAllPredictFTE] = useState(0);
   const [allInputFTE, setAllInputFTE] = useState(0);const [pcgInputFTEArray, setPcgInputFTEArray] = useState(Array(24).fill(0));
-  // const [pcgPredictFTEArray, setPcgPredictFTEArray] = useState(Array(24).fill(0));
   const [psrInputFTEArray, setPsrInputFTEArray] = useState(Array(24).fill(0));
-  // const [psrPredictFTEArray, setPsrPredictFTEArray] = useState(Array(24).fill(0));
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
@@ -502,7 +500,7 @@ function Workloads() {
               document.getElementById("total_pcg_" + parseInt(key)) &&
               document.getElementById("total_pcg_" + parseInt(key)).innerText
             }
-          pcgInputFTEArray={pcgInputFTEArray}
+            pcgInputFTEArray={pcgInputFTEArray}
             setPcgInputFTEArray={setPcgInputFTEArray}
           />
 

@@ -164,7 +164,7 @@ const PredictPcgFTEWithExpRatio = props => {
 				<b>PCG</b>
 			</Row>
 			<Row>
-				<Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} ></Col>
+				<Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} />
         <Col>
           <CustomizedTextField
             id={index + "_input_pcg_fte"}
