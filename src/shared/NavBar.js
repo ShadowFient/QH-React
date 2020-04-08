@@ -115,7 +115,7 @@ function QHNavBar(props) {
 		initNewPod();
 		// load configuration
 		setCurrentDisplayConfig(selectedName);
-		fetch(apiHost + "/config?name=" + selectedName)
+		fetch("http://127.0.0.1:5000" + "/config?name=" + selectedName)///////////////////////////////////change to apiHost
 			.then(response => response.json())
 			.then(config => {
 				fetch(apiHost + "/workload?name=" + selectedName)

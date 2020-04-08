@@ -12,24 +12,13 @@ import { DragDropContext } from "react-beautiful-dnd";
 import { clientLevelWork } from "./ClientActivity";
 import { Container, Row, Col, CardGroup, CardDeck, Button } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
-import NewPcgExp from "./NewPcgExp";
-import NewPsrExp from "./NewPsrExp";
 import TextField from "@material-ui/core/TextField";
 
 //Declare variable for new POD
-const exp = new Map();     //expRatios
-const clt = new Map();     //clients
-const cltpsr = new Map();  //clientPSR
-const psrw = new Map();    //psrWorks
-const pcgw = new Map();    //pcgworks
-const podmmb = new Map();  //podMemMap
-const cltmmb = new Map();  //memMap
 let init = true;
 let show = false;
 let displayed = 0;
 let check = false;
-const pcgfte = new Map();
-const psrfte = new Map();
 
 
 function Workloads() {
@@ -120,7 +109,7 @@ function Workloads() {
           throw new Error(error.toString());
         });
 
-      fetch(apiHost + "/pod_to_clients")
+      fetch("http://127.0.0.1:5000" + "/pod_to_clients")/////////////////////////////////////////////////change to apiHost
         .then(response => response.json())
         .then(config => {
           setClients(config);
@@ -186,24 +175,23 @@ function Workloads() {
   ) => {
     let sourcePod = document.getElementById(lbl + sourceDroppable).innerText;
     let destinationPod = document.getElementById(lbl + destDroppable).innerText;
-    let text = "PCG All Time Hours: ";
+    let text = sourcePod.slice(0, 20);
     let hours_source = Number(sourcePod.slice(20, sourcePod.length));
-    let hours_dest = Number(destinationPod.slice(20, destinationPod.length));
-
+    //subtract from sourcepod
     let sourceTotal = clientLevelWork[draggableId][7];
     if (isPsr) {
-      text = "PSR All Time Hours: "
       sourceTotal = (clientPSR[draggableId][0] * 7.68) / 60;
     }
     hours_source -= sourceTotal;
     if (hours_source <= 0.1) {
       hours_source = 0.0;
     }
-    hours_dest += sourceTotal;
-
     //reset values
     document.getElementById(lbl + sourceDroppable).innerText =
       text + hours_source.toFixed(2).toString();
+    //add to destinationpod
+    let hours_dest = Number(destinationPod.slice(20, destinationPod.length));
+    hours_dest += sourceTotal;
     document.getElementById(lbl + destDroppable).innerText =
       text + hours_dest.toFixed(2).toString();
   };
@@ -228,78 +216,39 @@ function Workloads() {
 
     let source = sourcePod.slice(20, sourcePod.length);
     let dest = destPod.slice(20, destPod.length);
-    let sourceFte;
-    let destFte;
-    if (sourceDroppable in expRatios) {
-      sourceFte = (
-        source /
-        FTE_per_month /
-        (12 +
-          expRatios[sourceDroppable].EXP_RATIO *
-          (MonthCap1 +
-            MonthCap2 +
-            MonthCap3 +
-            MonthCap4 +
-            MonthCap5 +
-            MonthCap6 -
-            6))
-      )
-        .toFixed(2)
-        .toString();
-    } else {  //source is new pod
-      sourceFte = (
-        source /
-        FTE_per_month /
-        (12 +
-          (exp.get(parseInt(sourceDroppable))).EXP_RATIO *
-          (MonthCap1 +
-            MonthCap2 +
-            MonthCap3 +
-            MonthCap4 +
-            MonthCap5 +
-            MonthCap6 -
-            6))
-      )
-        .toFixed(2)
-        .toString();
-    }
-    if (destDroppable in expRatios) {
-      destFte = (
-        dest /
-        FTE_per_month /
-        (12 +
-          expRatios[destDroppable].EXP_RATIO *
-          (MonthCap1 +
-            MonthCap2 +
-            MonthCap3 +
-            MonthCap4 +
-            MonthCap5 +
-            MonthCap6 -
-            6))
-      )
-        .toFixed(2)
-        .toString();
-    } else {  // destination is new pod
-      destFte = (
-        dest /
-        FTE_per_month /
-        (12 +
-          (exp.get(parseInt(destDroppable))).EXP_RATIO *
-          (MonthCap1 +
-            MonthCap2 +
-            MonthCap3 +
-            MonthCap4 +
-            MonthCap5 +
-            MonthCap6 -
-            6))
-      )
-        .toFixed(2)
-        .toString();
-    }
+    let sourceFte = (
+      source /
+      FTE_per_month /
+      (12 +
+        expRatios[sourceDroppable].EXP_RATIO *
+        (MonthCap1 +
+          MonthCap2 +
+          MonthCap3 +
+          MonthCap4 +
+          MonthCap5 +
+          MonthCap6 -
+          6))
+    )
+      .toFixed(2)
+      .toString();
+    let destFte = (
+      dest /
+      FTE_per_month /
+      (12 +
+        expRatios[destDroppable].EXP_RATIO *
+        (MonthCap1 +
+          MonthCap2 +
+          MonthCap3 +
+          MonthCap4 +
+          MonthCap5 +
+          MonthCap6 -
+          6))
+    )
+      .toFixed(2)
+      .toString();
     document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
   };
-
   const changeMembNum = (sourceDroppable, destDroppable, draggableId) => {
     let clientMembers = memMap.get(draggableId);
     let sourcePod =
@@ -314,17 +263,6 @@ function Workloads() {
           .getElementById("podMembNum" + destDroppable)
           .innerText.slice(15)
       ) + clientMembers;
-
-    if (exp.has(parseInt(sourceDroppable))) {
-      cltmmb.set(draggableId, sourcePod)
-      let temp = podmmb.get(parseInt(sourceDroppable)) - clientMembers;
-      podmmb.set(parseInt(sourceDroppable), temp);
-    }
-    if (exp.has(parseInt(destDroppable))) {
-      cltmmb.set(draggableId, destPod)
-      let temp = podmmb.get(parseInt(destDroppable)) + clientMembers;
-      podmmb.set(parseInt(destDroppable), temp);
-    }
     document.getElementById("podMembNum" + sourceDroppable).innerText =
       "Total Members: " + sourcePod.toString();
     document.getElementById("podMembNum" + destDroppable).innerText =
@@ -334,88 +272,38 @@ function Workloads() {
   //source/dest - indexing into workloads, draggableId - client dragged
   const changeDropDown = (sourceDroppable, destDroppable, draggableId) => {
     //pcg
-    if (!(sourceDroppable in workloads)) {  //source is new pod
-      let id = parseInt(sourceDroppable);
-      pcgw.get(id).PCGPDC_TIME_HOURS -= clientLevelWork[draggableId][0];
-      pcgw.get(id).PCGPAC_TIME_HOURS -= clientLevelWork[draggableId][1];
-      pcgw.get(id).PCGFLLUP_TIME_HOURS -= clientLevelWork[draggableId][2];
-      pcgw.get(id).PCGNEWALERT_TIME_HOURS -= clientLevelWork[draggableId][3];
-      pcgw.get(id).PCGREF_TIME_HOURS -= clientLevelWork[draggableId][4];
-      pcgw.get(id).PCGTERM_TIME_HOURS -= clientLevelWork[draggableId][5];
-      pcgw.get(id).PCGEMPGRP_TIME_HOURS -= clientLevelWork[draggableId][6];
-
-      pcgw.get(id).PCG_ALL_TIME_HOURS =
-        pcgw.get(id).PCGPDC_TIME_HOURS +
-        pcgw.get(id).PCGPAC_TIME_HOURS +
-        pcgw.get(id).PCGFLLUP_TIME_HOURS +
-        pcgw.get(id).PCGNEWALERT_TIME_HOURS +
-        pcgw.get(id).PCGREF_TIME_HOURS +
-        pcgw.get(id).PCGTERM_TIME_HOURS +
-        pcgw.get(id).PCGEMPGRP_TIME_HOURS;
-    } else {
-      workloads[sourceDroppable].PCGPDC_TIME_HOURS -=
-        clientLevelWork[draggableId][0];
-      workloads[sourceDroppable].PCGPAC_TIME_HOURS -=
-        clientLevelWork[draggableId][1];
-      workloads[sourceDroppable].PCGFLLUP_TIME_HOURS -=
-        clientLevelWork[draggableId][2];
-      workloads[sourceDroppable].PCGNEWALERT_TIME_HOURS -=
-        clientLevelWork[draggableId][3];
-      workloads[sourceDroppable].PCGREF_TIME_HOURS -=
-        clientLevelWork[draggableId][4];
-      workloads[sourceDroppable].PCGTERM_TIME_HOURS -=
-        clientLevelWork[draggableId][5];
-      workloads[sourceDroppable].PCGEMPGRP_TIME_HOURS -=
-        clientLevelWork[draggableId][6];
-    }
-    if (!(destDroppable in workloads)) {  //destination is new pod
-      let id = parseInt(destDroppable);
-      pcgw.get(id).PCGPDC_TIME_HOURS += clientLevelWork[draggableId][0];
-      pcgw.get(id).PCGPAC_TIME_HOURS += clientLevelWork[draggableId][1];
-      pcgw.get(id).PCGFLLUP_TIME_HOURS += clientLevelWork[draggableId][2];
-      pcgw.get(id).PCGNEWALERT_TIME_HOURS += clientLevelWork[draggableId][3];
-      pcgw.get(id).PCGREF_TIME_HOURS += clientLevelWork[draggableId][4];
-      pcgw.get(id).PCGTERM_TIME_HOURS += clientLevelWork[draggableId][5];
-      pcgw.get(id).PCGEMPGRP_TIME_HOURS += clientLevelWork[draggableId][6];
-
-      pcgw.get(id).PCG_ALL_TIME_HOURS =
-        pcgw.get(id).PCGPDC_TIME_HOURS +
-        pcgw.get(id).PCGPAC_TIME_HOURS +
-        pcgw.get(id).PCGFLLUP_TIME_HOURS +
-        pcgw.get(id).PCGNEWALERT_TIME_HOURS +
-        pcgw.get(id).PCGREF_TIME_HOURS +
-        pcgw.get(id).PCGTERM_TIME_HOURS +
-        pcgw.get(id).PCGEMPGRP_TIME_HOURS;
-    } else {
-      workloads[destDroppable].PCGPDC_TIME_HOURS +=
-        clientLevelWork[draggableId][0];
-      workloads[destDroppable].PCGPAC_TIME_HOURS +=
-        clientLevelWork[draggableId][1];
-      workloads[destDroppable].PCGFLLUP_TIME_HOURS +=
-        clientLevelWork[draggableId][2];
-      workloads[destDroppable].PCGNEWALERT_TIME_HOURS +=
-        clientLevelWork[draggableId][3];
-      workloads[destDroppable].PCGREF_TIME_HOURS +=
-        clientLevelWork[draggableId][4];
-      workloads[destDroppable].PCGTERM_TIME_HOURS +=
-        clientLevelWork[draggableId][5];
-      workloads[destDroppable].PCGEMPGRP_TIME_HOURS +=
-        clientLevelWork[draggableId][6];
-    }
+    workloads[sourceDroppable].PCGPDC_TIME_HOURS -=
+      clientLevelWork[draggableId][0];
+    workloads[destDroppable].PCGPDC_TIME_HOURS +=
+      clientLevelWork[draggableId][0];
+    workloads[sourceDroppable].PCGPAC_TIME_HOURS -=
+      clientLevelWork[draggableId][1];
+    workloads[destDroppable].PCGPAC_TIME_HOURS +=
+      clientLevelWork[draggableId][1];
+    workloads[sourceDroppable].PCGFLLUP_TIME_HOURS -=
+      clientLevelWork[draggableId][2];
+    workloads[destDroppable].PCGFLLUP_TIME_HOURS +=
+      clientLevelWork[draggableId][2];
+    workloads[sourceDroppable].PCGNEWALERT_TIME_HOURS -=
+      clientLevelWork[draggableId][3];
+    workloads[destDroppable].PCGNEWALERT_TIME_HOURS +=
+      clientLevelWork[draggableId][3];
+    workloads[sourceDroppable].PCGREF_TIME_HOURS -=
+      clientLevelWork[draggableId][4];
+    workloads[destDroppable].PCGREF_TIME_HOURS +=
+      clientLevelWork[draggableId][4];
+    workloads[sourceDroppable].PCGTERM_TIME_HOURS -=
+      clientLevelWork[draggableId][5];
+    workloads[destDroppable].PCGTERM_TIME_HOURS +=
+      clientLevelWork[draggableId][5];
+    workloads[sourceDroppable].PCGEMPGRP_TIME_HOURS -=
+      clientLevelWork[draggableId][6];
+    workloads[destDroppable].PCGEMPGRP_TIME_HOURS +=
+      clientLevelWork[draggableId][6];
 
     //psr
-    if (!(sourceDroppable in psrWorks)) {
-      psrw.get(parseInt(sourceDroppable)).PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
-      psrw.get(parseInt(sourceDroppable)).PRED_PHONE_VOLUME -= clientPSR[draggableId][0];
-    } else {
-      psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
-    }
-    if (!(destDroppable in psrWorks)) {
-      psrw.get(parseInt(destDroppable)).PERC_TOTAL_PSR_PHONE += (clientPSR[draggableId][1]);
-      psrw.get(parseInt(destDroppable)).PRED_PHONE_VOLUME += clientPSR[draggableId][0];
-    } else {
-      psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
-    }
+    psrWorks[sourceDroppable].PERC_TOTAL_PSR_PHONE -= clientPSR[draggableId][1];
+    psrWorks[destDroppable].PERC_TOTAL_PSR_PHONE += clientPSR[draggableId][1];
   };
 
   const onDragEnd = result => {
@@ -429,28 +317,8 @@ function Workloads() {
     ) {
       return;
     }
-
-    let st;
-    let fh;
-    let inSrc = false;
-    let inDest = false;
-
-    // check if source and destination in new pod
-    if (parseInt(source.droppableId) in clients) {
-      st = clients[parseInt(source.droppableId)];
-    } else {
-      st = clt.get(parseInt(source.droppableId));
-      inSrc = true;
-    }
-    if (parseInt(destination.droppableId) in clients) {
-      fh = clients[parseInt(destination.droppableId)];
-    } else {
-      fh = clt.get(parseInt(destination.droppableId));
-      inDest = true;
-    }
-    const start = st;
-    const finish = fh;
-
+    const start = clients[parseInt(source.droppableId)];
+    const finish = clients[parseInt(destination.droppableId)];
     if (start === finish) {
       //replica of the pod's clients
       const newClients = Array.from(start);
@@ -507,17 +375,8 @@ function Workloads() {
     let removed = startPod.splice(source.index, 1);
     const finishPod = Array.from(finish);
     finishPod.splice(destination.index, 0, removed[0]);
-
-    if (!inSrc) {
-      clients[parseInt(source.droppableId)] = startPod;
-    } else {
-      clt.set(parseInt(source.droppableId), startPod);
-    }
-    if (!inDest) {
-      clients[parseInt(destination.droppableId)] = finishPod;
-    } else {
-      clt.set(parseInt(destination.droppableId), finishPod);
-    }
+    clients[parseInt(source.droppableId)] = startPod;
+    clients[parseInt(destination.droppableId)] = finishPod;
     setClients(JSON.parse(JSON.stringify(clients)));
   };
 
@@ -678,42 +537,48 @@ function Workloads() {
   const [submit, setSubmit] = useState("");
 
   const handleSubmit = (evt) => {
+    console.log("submit")
     evt.preventDefault();
-    if (parseInt(submit) > 10) {
-      alert("Maximum number of new POD is 10")
+    if (Object.keys(workloads).length + parseInt(submit) > 50) {
+      alert("Maximum number of POD is 50")
     } else if (submit === "") {
       alert("Please enter a number")
-    } else if (submit === add) {
-      alert("There are already " + submit + " new POD")
+    }else if(submit===add){
+      alert("Already added!")
     } else {
       init = true;
       setAdd(submit);
       show = true;
+      // {InitNewPodValue(add)}
       //if user reset # of new pod, re-fetch data
-      displayed > 0 ? (
-        fetchWorkload(), setAllInputFTE(0), setAllPredictFTE(0)
-      ) : displayed = 1;
+      // displayed > 0 ? (
+      //   fetchWorkload(), setAllInputFTE(0), setAllPredictFTE(0)
+      // ) : displayed = 1;
     }
   }
 
   const handleChange = (evt) => {
+    console.log("change")
     let temp = evt.target.value.replace(/\D/, '');
     setSubmit(temp)
   }
 
   const InitNewPodValue = props => {
-    if (init || typeof props === 'undefined') {
+    if (typeof props === 'undefined') {
+      setSubmit("");
+      setAdd(0);
+      init = false;
+    }
+    if (init) {
+      console.log("init")
       let ct = add;
-      let len = cards.length;
+      let len = Object.keys(workloads).length;
       const result = [];
       for (let i = 1; i <= parseInt(ct); i++) {
         result[result.length] = len + i;
       }
       for (let i of result) {
-        exp.set(i, { EXP_RATIO: 0.2, PSR_EXP_RATIO: 0.2 });
-        clt.set(i, [[0, ""]]);
-        cltpsr.set(i, [0, 0]);
-        pcgw.set(i, {
+        workloads[i.toFixed(1).toString()] = {
           PCGEMPGRP_TIME_HOURS: 0,
           PCGFLLUP_TIME_HOURS: 0,
           PCGNEWALERT_TIME_HOURS: 0,
@@ -722,146 +587,55 @@ function Workloads() {
           PCGREF_TIME_HOURS: 0,
           PCGTERM_TIME_HOURS: 0,
           PCG_ALL_TIME_HOURS: 0
-        });
-        psrw.set(i, {
+        };
+        expRatios[i.toString()] = { EXP_RATIO: 0.2, PSR_EXP_RATIO: 0.2 };
+        psrWorks[i.toFixed(1).toString()] = {
           PERC_TOTAL_PSR_PHONE: 0,
           PRED_PHONE_VOLUME: 0,
+          PSR_PHONE_ACTS_LIKE_MEM: 0,
           SUCC_TIME_PSR_PHONE: 0
-        })
-        podmmb.set(i, 0);
-        pcgfte.set(i, 0);
-        psrfte.set(i, 0);
+        };
+        clients[i.toString()] = [];
       }
       init = false;
       check = true;
+      setSubmit("");
+      setWorkloads(JSON.parse(JSON.stringify(workloads)));
+      setExpRatios(JSON.parse(JSON.stringify(expRatios)));
+      setClients(JSON.parse(JSON.stringify(clients)));
+      setPsrWorks(JSON.parse(JSON.stringify(psrWorks)));
+      // alert("Success!");
     }
-
-    return (<>{show && <DisplayPod count={add} />}</>)
-  }
-
-
-  const DisplayPod = props => {
-    console.log("DisplayPod")
-    const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
-      if (isPcgRatio) {
-        (exp.get(index)).EXP_RATIO = changedRatio;
-      } else {
-        (exp.get(index)).PSR_EXP_RATIO = changedRatio;
-      }
-    };
-
-    let len = cards.length;
-    const result = [];
-    for (let i = 1; i <= parseInt(props.count); i++) {
-      result[result.length] = len + i;
-    }
-
-    const res = result.map((key) =>
-      <Card
-        key={key}
-        className="p-3 pod-card"
-        container="container-sm"
-      >
-        <Card.Img variant="top" />
-        <Card.Title>
-          <img
-            alt={"team_icon"}
-            src={teamLogo}
-            style={{ marginRight: "0.5rem" }}
-            className="d-inline-block align-top"
-          />POD {key}
-          <span
-            id={"podMembNum" + parseInt(key)}
-            className={"float-right"}
-            style={{ fontSize: "15px" }}
-          >Total Members: {podmmb.get(key)}
-          </span>
-        </Card.Title>
-
-        {/* Predicted PCG FTE with its experience ratio */}
-        <NewPcgExp
-          index={parseInt(key)}
-          initExperienceRatio={(exp.get(key)).EXP_RATIO}
-          ratioChangeHandler={ratioChangeHandler}
-          isPcgRatio={true}
-          capacity={capacity}
-          allInputFTE={allInputFTE}
-          updateTotalInputFTE={setAllInputFTE}
-          allPredictFTE={allPredictFTE}
-          updateTotalPredictFTE={setAllPredictFTE}
-          pcgTime={
-            document.getElementById("total_pcg_" + parseInt(key)) &&
-            document.getElementById("total_pcg_" + parseInt(key)).innerText
-          }
-          // isnew={check}
-          pcgfte={pcgfte}
-        />
-
-        {/* Predicted PSR FTE with its experience ratio */}
-        <NewPsrExp
-          index={parseInt(key)}
-          initExperienceRatio={(exp.get(key)).PSR_EXP_RATIO}
-          ratioChangeHandler={ratioChangeHandler}
-          isPcgRatio={false}
-          capacity={capacity}
-          allInputFTE={allInputFTE}
-          updateTotalInputFTE={setAllInputFTE}
-          allPredictFTE={allPredictFTE}
-          updateTotalPredictFTE={setAllPredictFTE}
-          psrTime={
-            document.getElementById("total_psr_" + parseInt(key)) &&
-            document.getElementById("total_psr_" + parseInt(key)).innerText
-          }
-          // isnew={check}
-          psrfte={psrfte}
-        />
-
-        {/* Dropdown buttons for both PCG and PSR */}
-        <DropdownButton
-          pcgWK={pcgw.get(parseInt(key))}
-          psrWK={psrw.get(parseInt(key))}
-          pod_key={key}
-          gpsOfClients={table}
-        />
-
-        {/* List the POD's clients */}
-        <Clients
-          clientsPerPOD={clt.get(parseInt(key))}
-          podId={parseInt(key)}
-          gpsOfClients={table}
-          clientMem={memMap}
-        />
-      </Card>
-    )
-    check = false;
-    return (
-      <>
-        {/* <CardColumns>{res}</CardColumns> */}
-        <div>{res}</div>
-      </>
-    )
+    show = false;
+    return (<></>)
   }
 
   const addPOD = () => {
+    console.log("add")
+    let curr = 50 - Object.keys(workloads).length;
     return (
-      <Card
-        className="p-3 pod-card"
-        container="container-sm"
-        style={{ marginTop: "15px" }}>
-        <p>Number of new POD (Max. 10):</p>
-        <TextField
-          label="What if I add... "
-          type="text"
-          pattern="[0-9]*"
-          value={submit}
-          onChange={handleChange} />
-        <Button
-          onClick={handleSubmit}
-          style={{ marginBottom: "30px", marginTop: "30px" }}>
-          Submit
+      <div className="fab">
+        <Card
+          className="p-3"
+          container="container-sm">
+          <TextField
+            label={"Add New POD (Max. " + curr + " )"}
+            type="text"
+            pattern="[0-9]*"
+            value={submit}
+            onChange={handleChange}
+            size="small" />
+          <Button
+            variant="dark"
+            className="button"
+            onClick={handleSubmit}
+            style={{ marginTop: "20px" }}
+            size="sm">
+            Submit
           </Button>
-        {show && <InitNewPodValue value={add} />}
-      </Card>
+          {show && <InitNewPodValue value={add} />}
+        </Card>
+      </div>
     );
   }
 
@@ -926,16 +700,10 @@ function Workloads() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div>
             <Container fluid>
-              {/* For development use */}
               <Row>
-                <Col md="3">{addPOD()}</Col>
-                <Col><CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns></Col>
-              </Row>
-
-              {/* <Row>
                 <CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns>
               </Row>
-              <Row style={{ marginBottom: "2em" }}>{addPOD()}</Row> */}
+              <Row>{addPOD()}</Row>
             </Container>
           </div>
         </DragDropContext>
