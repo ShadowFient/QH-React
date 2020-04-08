@@ -17,8 +17,6 @@ import TextField from "@material-ui/core/TextField";
 //Declare variable for new POD
 let init = true;
 let show = false;
-let displayed = 0;
-let check = false;
 
 
 function Workloads() {
@@ -109,7 +107,7 @@ function Workloads() {
           throw new Error(error.toString());
         });
 
-      fetch("http://127.0.0.1:5000" + "/pod_to_clients")/////////////////////////////////////////////////change to apiHost
+      fetch(apiHost + "/pod_to_clients")
         .then(response => response.json())
         .then(config => {
           setClients(config);
@@ -394,7 +392,6 @@ function Workloads() {
     });
   };
 
-  const table = [];
 
   const updateCards = () => {
     const ratioChangeHandler = (isPcgRatio, index, changedRatio) => {
@@ -406,6 +403,7 @@ function Workloads() {
     };
 
     // Fetch activities
+    const table = [];
     activities.map(activity => (
       <div>
         {table.push([
@@ -537,28 +535,21 @@ function Workloads() {
   const [submit, setSubmit] = useState("");
 
   const handleSubmit = (evt) => {
-    console.log("submit")
     evt.preventDefault();
     if (Object.keys(workloads).length + parseInt(submit) > 50) {
       alert("Maximum number of POD is 50")
     } else if (submit === "") {
       alert("Please enter a number")
-    }else if(submit===add){
+    } else if (submit === add) {
       alert("Already added!")
     } else {
       init = true;
       setAdd(submit);
       show = true;
-      // {InitNewPodValue(add)}
-      //if user reset # of new pod, re-fetch data
-      // displayed > 0 ? (
-      //   fetchWorkload(), setAllInputFTE(0), setAllPredictFTE(0)
-      // ) : displayed = 1;
     }
   }
 
   const handleChange = (evt) => {
-    console.log("change")
     let temp = evt.target.value.replace(/\D/, '');
     setSubmit(temp)
   }
@@ -570,7 +561,6 @@ function Workloads() {
       init = false;
     }
     if (init) {
-      console.log("init")
       let ct = add;
       let len = Object.keys(workloads).length;
       const result = [];
@@ -598,20 +588,17 @@ function Workloads() {
         clients[i.toString()] = [];
       }
       init = false;
-      check = true;
       setSubmit("");
       setWorkloads(JSON.parse(JSON.stringify(workloads)));
       setExpRatios(JSON.parse(JSON.stringify(expRatios)));
       setClients(JSON.parse(JSON.stringify(clients)));
       setPsrWorks(JSON.parse(JSON.stringify(psrWorks)));
-      // alert("Success!");
     }
     show = false;
     return (<></>)
   }
 
   const addPOD = () => {
-    console.log("add")
     let curr = 50 - Object.keys(workloads).length;
     return (
       <div className="fab">
