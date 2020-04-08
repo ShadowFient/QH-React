@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Slider from "@material-ui/core/Slider";
 import TextField from "@material-ui/core/TextField";
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createMuiTheme , withStyles } from "@material-ui/core/styles";
 import { Container, Row } from "reactstrap";
 import "./PredictFTEwithExpRatio.css";
 import { Col } from "react-bootstrap";
@@ -18,6 +18,17 @@ const theme = createMuiTheme({
 	},
 });
 
+const CustomizedTextField = withStyles({
+  root: {
+    "& label.Mui-focused": {
+      color: "#4CAF50"
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "#4CAF50"
+    }
+  }
+})(TextField);
+
 const marks = [
 	{
 		value: 0,
@@ -30,32 +41,35 @@ const marks = [
 ];
 
 const PredictPcgFTEWithExpRatio = props => {
-	const {
-		index,
-		initExperienceRatio,
-		ratioChangeHandler,
-		isPcgRatio,
-		capacity,
-		allInputFTE,
-		updateTotalInputFTE,
-		allPredictFTE,
-		updateTotalPredictFTE,
-		pcgTime,
-	} = props;
-	const MonthCap1 = 0.76;
-	const MonthCap2 = 0.83;
-	const MonthCap3 = 0.88;
-	const MonthCap4 = 0.9;
-	const MonthCap5 = 0.92;
-	const MonthCap6 = 0.96;
+  const {
+    index,
+    initExperienceRatio,
+    ratioChangeHandler,
+    isPcgRatio,
+    capacity,
+    allInputFTE,
+    updateTotalInputFTE,
+    allPredictFTE,
+    updateTotalPredictFTE,
+    pcgTime,
+    pcgInputFTEArray,
+    setPcgInputFTEArray
+  } = props;
+  const MonthCap1 = 0.76;
+  const MonthCap2 = 0.83;
+  const MonthCap3 = 0.88;
+  const MonthCap4 = 0.9;
+  const MonthCap5 = 0.92;
+  const MonthCap6 = 0.96;
 
-	const [defaultVal, setDefaultVal] = useState(initExperienceRatio);
-	const [ratio, setRatio] = useState(initExperienceRatio);
-	const [inputFTE, setInputFTE] = useState(0);
-	const [predictFTE, setPredictFTE] = useState(0);
-	const FTE_per_month = (capacity || 1570) / 12;
+  const [defaultVal, setDefaultVal] = useState(initExperienceRatio);
+  const [ratio, setRatio] = useState(initExperienceRatio);
+  const [inputFTE, setInputFTE] = useState(0);
+  const [predictFTE, setPredictFTE] = useState(0);
+  const [initialize, setInitialize] = useState(false);
+  const FTE_per_month = (capacity || 1570) / 12;
 
-	useEffect(() => {
+  console.log("[pcg] rerender");useEffect(() => {
 		/**
 		 * From month 1 to 6,
 		 * Sum of [(exp_ratio)*(predictedFTE)*(FTE_per_month)*(MonthCap)
@@ -83,40 +97,63 @@ const PredictPcgFTEWithExpRatio = props => {
 					6));
 		document.getElementById("pod" + index + "PcgFte").innerText =
 			"Predicted FTEs: " + predictedFTE.toFixed(2).toString();
-		setPredictFTE(preFTE => {
-			const newFTE = parseFloat(predictedFTE.toFixed(2));
-			updateTotalPredictFTE(prev => {
-				return parseFloat((prev - preFTE + newFTE).toFixed(2));
-			});
-			return newFTE;
-		});
-	}, [
-		ratio,
-		FTE_per_month,
-		index,
-		allPredictFTE,
-		pcgTime,
-		updateTotalPredictFTE
-	]);
+		// if (!document.getElementById(index + "_input_pcg_fte").defaultValue) {
+    // console.log(document.getElementById(index + "_input_pcg_fte"));
+    if (!initialize) {
+      document.getElementById(index + "_input_pcg_fte").value = parseFloat(
+        predictedFTE.toFixed(2)
+      );
+      setInitialize(true);
+      pcgInputFTEArray[index - 1] = parseFloat(predictedFTE.toFixed(2));
+      setPcgInputFTEArray(pcgInputFTEArray);
+      setInputFTE(preFTE => {
+        const newFTE = parseFloat(predictedFTE.toFixed(2));
+        updateTotalInputFTE(prev => {
+          // console.log("prevTotal: " + prev + " | prevFTE: " + preFTE + " | " + newFTE);
+          let updatedTotalFTE = parseFloat((prev - preFTE + newFTE).toFixed(2));
+          return updatedTotalFTE;
+        });
+        return newFTE;
+      });
+    }
+    // }
+    setPredictFTE(preFTE => {
+      const newFTE = parseFloat(predictedFTE.toFixed(2));
+      updateTotalPredictFTE(prev => {
+        return parseFloat((prev - preFTE + newFTE).toFixed(2));
+      });
+      return newFTE;
+    });
 
-	const formatValueText = value => {
-		return `${value}%`;
-	};
+  }, [
+    ratio,
+    FTE_per_month,
+    index,
+    allPredictFTE,
+    pcgTime,
+    updateTotalPredictFTE
+  ]);
 
-	const sliderHandler = (event, value) => {
-		event.preventDefault();
-		const changedRatio = value / 100;
-		setRatio(changedRatio);
-		ratioChangeHandler(isPcgRatio, index, changedRatio);
-	};
+  const formatValueText = value => {
+    return `${value}%`;
+  };
 
-	const changeFTE = event => {
-		event.preventDefault();
-		let newFTE = event.target.value === "" ? 0 : parseFloat(event.target.value);
-		let updatedTotalFTE = allInputFTE;
-		setInputFTE(preFTE => {
-			updatedTotalFTE = allInputFTE - preFTE + newFTE;
-			updateTotalInputFTE(updatedTotalFTE);
+  const sliderHandler = (event, value) => {
+    event.preventDefault();
+    const changedRatio = value / 100;
+    setRatio(changedRatio);
+    ratioChangeHandler(isPcgRatio, index, changedRatio);
+  };
+
+  const changeFTE = event => {
+    event.preventDefault();
+    let newFTE = event.target.value === "" ? 0 : parseFloat(event.target.value);
+    pcgInputFTEArray[index - 1] = parseFloat(newFTE.toFixed(2));
+    setPcgInputFTEArray(pcgInputFTEArray);
+    let updatedTotalFTE = allInputFTE;
+    setInputFTE(preFTE => {
+      updatedTotalFTE = allInputFTE - preFTE + newFTE;
+      updateTotalInputFTE(updatedTotalFTE);
 			return newFTE;
 		});
 	};
@@ -127,11 +164,13 @@ const PredictPcgFTEWithExpRatio = props => {
 				<b>PCG</b>
 			</Row>
 			<Row>
-				<Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} />
-				<Col>
-					<TextField label={"Input FTE"} min={0} onChange={changeFTE}
+				<Col id={"pod" + index + "PcgFte"} style={{ paddingTop: "10px" }} ></Col>
+        <Col>
+          <CustomizedTextField
+            id={index + "_input_pcg_fte"}
+            className={"input_pcg_fte"} label={"Input FTE"} min={0} onChange={changeFTE}
 						type={"number"} style={{ marginTop: "-15px" }}
-						color={"secondary"} />
+						 />
 				</Col>
 				<Slider
 					style={{ color: "#fcd406", marginBottom: "25px" }}

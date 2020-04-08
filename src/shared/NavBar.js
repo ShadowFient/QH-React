@@ -10,7 +10,6 @@ import Form from "react-bootstrap/Form";
 import Dropdown from "react-bootstrap/Dropdown";
 import {ButtonGroup, Col, Spinner} from "react-bootstrap";
 import Row from "react-bootstrap/Row";
-import clearImage from "../images/clear-24px.svg";
 import {FormGroup} from "@material-ui/core";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -43,7 +42,7 @@ function QHNavBar(props) {
 		allPredictFTE,
 		setAllPredictFTE,
 		cardsRefsMap,
-		initNewPod
+		initNewPod,
 	} = props;
 
 	const [isFetchSucceed, setIsFetchSucceed] = useState(false);

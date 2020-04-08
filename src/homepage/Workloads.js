@@ -21,7 +21,7 @@ let show = false;
 
 function Workloads() {
   //clientPSR * pod -- remains constant
-  const [expRatios, setExpRatios] = useState();
+  // console.log("rerender");const [expRatios, setExpRatios] = useState();
   const [workloads, setWorkloads] = useState();
   const [clients, setClients] = useState();
   const [clientPSR, setClientPSR] = useState();
@@ -31,7 +31,10 @@ function Workloads() {
   const [capacity, setCapacity] = useState();
   const [members, setMembers] = useState();
   const [allPredictFTE, setAllPredictFTE] = useState(0);
-  const [allInputFTE, setAllInputFTE] = useState(0);
+  const [allInputFTE, setAllInputFTE] = useState(0);const [pcgInputFTEArray, setPcgInputFTEArray] = useState(Array(24).fill(0));
+  // const [pcgPredictFTEArray, setPcgPredictFTEArray] = useState(Array(24).fill(0));
+  const [psrInputFTEArray, setPsrInputFTEArray] = useState(Array(24).fill(0));
+  // const [psrPredictFTEArray, setPsrPredictFTEArray] = useState(Array(24).fill(0));
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
@@ -392,9 +395,8 @@ function Workloads() {
       return (
         <Card key={index} className="p-3" container={"container-sm"}>
           <Card.Body>
-            <Spinner animation={"border"} size={"sm"} variant={"warning"}
-              style={{ marginRight: "0.5rem" }} />
-            {card}
+            <Card.Text>
+            {card}</Card.Text>
           </Card.Body>
         </Card>
       );
@@ -463,7 +465,7 @@ function Workloads() {
       return (
         <Card
           key={key}
-          className="p-3 pod-card"
+          className="p-3"
           container="container-sm"
           ref={cardsRefsMap[parseInt(key)]}
         >
@@ -500,6 +502,8 @@ function Workloads() {
               document.getElementById("total_pcg_" + parseInt(key)) &&
               document.getElementById("total_pcg_" + parseInt(key)).innerText
             }
+          pcgInputFTEArray={pcgInputFTEArray}
+            setPcgInputFTEArray={setPcgInputFTEArray}
           />
 
           {/* Predicted PSR FTE with its experience ratio */}
@@ -517,6 +521,8 @@ function Workloads() {
               document.getElementById("total_psr_" + parseInt(key)) &&
               document.getElementById("total_psr_" + parseInt(key)).innerText
             }
+          psrInputFTEArray={psrInputFTEArray}
+            setPsrInputFTEArray={setPsrInputFTEArray}
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
@@ -692,7 +698,8 @@ function Workloads() {
           allPredictFTE={allPredictFTE}
           setAllPredictFTE={setAllPredictFTE}
           initNewPod={InitNewPodValue}
-        />
+        pcgInputFTEArray={pcgInputFTEArray}
+        psrInputFTEArray={psrInputFTEArray}/>
         <DragDropContext onDragEnd={onDragEnd}>
           <div>
             <Container fluid>
