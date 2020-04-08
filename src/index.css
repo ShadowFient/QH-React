@@ -104,16 +104,12 @@ code {
 .fab {
     box-shadow: 0 6px 10px 0 #666;
     transition: all 0.1s ease-in-out;
-  
     font-size: 15px;
-    color: green;
-    text-align: center;
-    /* line-height: 50px; */
-  
+    /* text-align: center; */
     position: fixed;
-    left: -180px;
-    bottom: 40px;
-    opacity: 0.7;
+    left: -170px;
+    bottom: 70px;
+    opacity: 0.8;
  }
   
  .fab:hover {

@@ -589,6 +589,7 @@ function Workloads() {
       }
       init = false;
       setSubmit("");
+      setAdd(0);
       setWorkloads(JSON.parse(JSON.stringify(workloads)));
       setExpRatios(JSON.parse(JSON.stringify(expRatios)));
       setClients(JSON.parse(JSON.stringify(clients)));
@@ -605,19 +606,18 @@ function Workloads() {
         <Card
           className="p-3"
           container="container-sm">
+          <p>Add New POD (MAX. {curr} )</p>
           <TextField
-            label={"Add New POD (Max. " + curr + " )"}
+            label="What if I add ..."
             type="text"
             pattern="[0-9]*"
             value={submit}
-            onChange={handleChange}
-            size="small" />
+            onChange={handleChange} />
           <Button
             variant="dark"
             className="button"
             onClick={handleSubmit}
-            style={{ marginTop: "20px" }}
-            size="sm">
+            style={{ marginTop: "20px" }}>
             Submit
           </Button>
           {show && <InitNewPodValue value={add} />}
