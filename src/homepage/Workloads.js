@@ -247,7 +247,16 @@ function Workloads() {
     document.getElementById(srcLbl).innerText = "Predicted FTEs: " + sourceFte;
     document.getElementById(destLbl).innerText = "Predicted FTEs: " + destFte;
   };
-  const changeMembNum = (sourceDroppable, destDroppable, draggableId) => {
+  const changeMonthlyPCG = (destDroppable,draggableId) => {
+
+		for (let i = 0; i < activities.length; i++) {
+			if (activities[i].Group_Name === draggableId) {
+				activities[i].INITIAL_POD = parseInt(destDroppable);
+			}
+		}
+
+	};
+	const changeMembNum = (sourceDroppable, destDroppable, draggableId) => {
     let clientMembers = memMap.get(draggableId);
     let sourcePod =
       Number(
@@ -338,7 +347,7 @@ function Workloads() {
         .toString(),
       draggableId
     );
-    changeAllTimeHours(
+    changeMonthlyPCG(destination.droppableId,draggableId);changeAllTimeHours(
       source.droppableId,
       destination.droppableId,
       draggableId,
