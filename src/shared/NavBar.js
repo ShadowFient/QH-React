@@ -43,6 +43,10 @@ function QHNavBar(props) {
 		setAllPredictFTE,
 		cardsRefsMap,
 		initNewPod,
+		pcgInputFTEArray,
+		psrInputFTEArray,
+		pcgPredictFTEArray,
+		psrPredictFTEArray
 	} = props;
 
 	const [isFetchSucceed, setIsFetchSucceed] = useState(false);
@@ -190,15 +194,21 @@ function QHNavBar(props) {
 	}
 
 	function confirmFilter() {
+		let filteredAllInputFTE = 0;
+		let filteredAllPredictFTE = 0;
 		Object.keys(cardsRefsMap).forEach(key => {
-			console.log(filterMultiSelectRefs[key].current);
+			// console.log(filterMultiSelectRefs[key].current);
 			if (filterMultiSelectRefs[key].current.checked) {
 				cardsRefsMap[key].current.style.display = "inline-block";
+				filteredAllInputFTE += pcgInputFTEArray[key - 1] + psrInputFTEArray[key - 1];
+				filteredAllPredictFTE += pcgPredictFTEArray[key - 1] + psrPredictFTEArray[key - 1];
 			} else {
-				cardsRefsMap[key].current.style.display = "none"
+				cardsRefsMap[key].current.style.display = "none";
 			}
 			return null;
 		});
+		setAllInputFTE(filteredAllInputFTE);
+		setAllPredictFTE(filteredAllPredictFTE);
 		setShowFilterModal(false);
 	}
 

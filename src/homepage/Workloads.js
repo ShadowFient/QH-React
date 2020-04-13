@@ -31,8 +31,11 @@ function Workloads() {
   const [capacity, setCapacity] = useState();
   const [members, setMembers] = useState();
   const [allPredictFTE, setAllPredictFTE] = useState(0);
-  const [allInputFTE, setAllInputFTE] = useState(0);const [pcgInputFTEArray, setPcgInputFTEArray] = useState(Array(24).fill(0));
+  const [allInputFTE, setAllInputFTE] = useState(0);
+  const [pcgInputFTEArray, setPcgInputFTEArray] = useState(Array(24).fill(0));
+  const [pcgPredictFTEArray, setPcgPredictFTEArray] = useState(Array(24).fill(0));
   const [psrInputFTEArray, setPsrInputFTEArray] = useState(Array(24).fill(0));
+  const [psrPredictFTEArray, setPsrPredictFTEArray] = useState(Array(24).fill(0));
 
   const [workloadLoading, setWorkloadLoading] = useState(true);
   const [expRatioLoading, setExpRatioLoading] = useState(true);
@@ -393,8 +396,7 @@ function Workloads() {
       return (
         <Card key={index} className="p-3" container={"container-sm"}>
           <Card.Body>
-            <Card.Text>
-            {card}</Card.Text>
+            <Card.Text>{card}</Card.Text>
           </Card.Body>
         </Card>
       );
@@ -502,6 +504,8 @@ function Workloads() {
             }
             pcgInputFTEArray={pcgInputFTEArray}
             setPcgInputFTEArray={setPcgInputFTEArray}
+            pcgPredictFTEArray={pcgPredictFTEArray}
+            setPcgPredictFTEArray={setPcgPredictFTEArray}
           />
 
           {/* Predicted PSR FTE with its experience ratio */}
@@ -519,8 +523,10 @@ function Workloads() {
               document.getElementById("total_psr_" + parseInt(key)) &&
               document.getElementById("total_psr_" + parseInt(key)).innerText
             }
-          psrInputFTEArray={psrInputFTEArray}
+            psrInputFTEArray={psrInputFTEArray}
             setPsrInputFTEArray={setPsrInputFTEArray}
+            psrPredictFTEArray={psrPredictFTEArray}
+            setPsrPredictFTEArray={setPsrPredictFTEArray}
           />
 
           {/* Dropdown buttons for both PCG and PSR */}
@@ -581,6 +587,10 @@ function Workloads() {
         result[result.length] = len + i;
       }
       for (let i of result) {
+        pcgInputFTEArray[i.toFixed(1)] = 0;
+        psrInputFTEArray[i.toFixed(1)] = 0;
+        pcgPredictFTEArray[i.toFixed(1)] = 0;
+        psrPredictFTEArray[i.toFixed(1)] = 0;
         workloads[i.toFixed(1).toString()] = {
           PCGEMPGRP_TIME_HOURS: 0,
           PCGFLLUP_TIME_HOURS: 0,
@@ -607,6 +617,10 @@ function Workloads() {
       setExpRatios(JSON.parse(JSON.stringify(expRatios)));
       setClients(JSON.parse(JSON.stringify(clients)));
       setPsrWorks(JSON.parse(JSON.stringify(psrWorks)));
+      setPcgInputFTEArray(pcgInputFTEArray);
+      setPsrInputFTEArray(psrInputFTEArray);
+      setPcgPredictFTEArray(pcgPredictFTEArray);
+      setPsrPredictFTEArray(psrPredictFTEArray);
     }
     show = false;
     return (<></>)
@@ -696,19 +710,22 @@ function Workloads() {
           allPredictFTE={allPredictFTE}
           setAllPredictFTE={setAllPredictFTE}
           initNewPod={InitNewPodValue}
-        pcgInputFTEArray={pcgInputFTEArray}
-        psrInputFTEArray={psrInputFTEArray}/>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div>
-            <Container fluid>
+          pcgInputFTEArray={pcgInputFTEArray}
+          psrInputFTEArray={psrInputFTEArray}
+          pcgPredictFTEArray={pcgPredictFTEArray}
+          psrPredictFTEArray={psrPredictFTEArray}
+      />
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div>
+           <Container fluid>
               <Row>
                 <CardColumns style={{ margin: "15px 15px" }}>{updateCards()}</CardColumns>
               </Row>
               <Row>{addPOD()}</Row>
             </Container>
-          </div>
-        </DragDropContext>
-      </div>
-    );
+        </div>
+      </DragDropContext>
+    </div>
+  );
 }
 export default Workloads;

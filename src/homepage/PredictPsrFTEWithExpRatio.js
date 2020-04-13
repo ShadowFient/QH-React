@@ -53,7 +53,9 @@ const PredictPsrFTEWithExpRatio = props => {
     updateTotalPredictFTE,
     psrTime,
     psrInputFTEArray,
-    setPsrInputFTEArray
+    setPsrInputFTEArray,
+    psrPredictFTEArray,
+    setPsrPredictFTEArray
   } = props;
   const MonthCap1 = 0.76;
   const MonthCap2 = 0.83;
@@ -100,6 +102,8 @@ const PredictPsrFTEWithExpRatio = props => {
 		// if (
     //   document.getElementById(index + "_input_psr_fte").value !== ""
     // ) {
+    psrPredictFTEArray[index - 1] = parseFloat(predictedFTE.toFixed(2));
+    setPsrPredictFTEArray(psrPredictFTEArray);
     if (!initialize) {
       document.getElementById(index + "_input_psr_fte").value = parseFloat(
         predictedFTE.toFixed(2)

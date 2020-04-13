@@ -53,7 +53,9 @@ const PredictPcgFTEWithExpRatio = props => {
     updateTotalPredictFTE,
     pcgTime,
     pcgInputFTEArray,
-    setPcgInputFTEArray
+    setPcgInputFTEArray,
+    pcgPredictFTEArray,
+    setPcgPredictFTEArray
   } = props;
   const MonthCap1 = 0.76;
   const MonthCap2 = 0.83;
@@ -69,7 +71,8 @@ const PredictPcgFTEWithExpRatio = props => {
   const [initialize, setInitialize] = useState(false);
   const FTE_per_month = (capacity || 1570) / 12;
 
-  console.log("[pcg] rerender");useEffect(() => {
+  // console.log("[pcg] rerender");
+  useEffect(() => {
 		/**
 		 * From month 1 to 6,
 		 * Sum of [(exp_ratio)*(predictedFTE)*(FTE_per_month)*(MonthCap)
@@ -99,6 +102,8 @@ const PredictPcgFTEWithExpRatio = props => {
 			"Predicted FTEs: " + predictedFTE.toFixed(2).toString();
 		// if (!document.getElementById(index + "_input_pcg_fte").defaultValue) {
     // console.log(document.getElementById(index + "_input_pcg_fte"));
+    pcgPredictFTEArray[index - 1] = parseFloat(predictedFTE.toFixed(2));
+    setPcgPredictFTEArray(pcgPredictFTEArray);
     if (!initialize) {
       document.getElementById(index + "_input_pcg_fte").value = parseFloat(
         predictedFTE.toFixed(2)
