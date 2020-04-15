@@ -396,7 +396,9 @@ function Workloads() {
       return (
         <Card key={index} className="p-3" container={"container-sm"}>
           <Card.Body>
-            <Card.Text>{card}</Card.Text>
+            <Spinner animation={"border"} size={"sm"} variant={"warning"}
+              style={{ marginRight: "0.5rem" }} />
+            {card}
           </Card.Body>
         </Card>
       );
@@ -465,7 +467,7 @@ function Workloads() {
       return (
         <Card
           key={key}
-          className="p-3"
+          className="p-3 pod-card"
           container="container-sm"
           ref={cardsRefsMap[parseInt(key)]}
         >
